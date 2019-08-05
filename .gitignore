@@ -2,7 +2,13 @@
 
 !.gitignore
 !readme.md
+!conanfile.py
+!CMakeLists.txt
 
 !src/
-!src/*.h
 !src/*.cpp
+!include/
+!include/*.h
+
+!test_package/
+!test_package/*
