@@ -47,7 +47,7 @@ public:
 	std::string getstatus_str();
 
 	bool session_opened_by_me() {
-		return session_opened_by_me;
+		return session_opened_by_me_flag;
 	};
 
 	int startjob(std::string jobname);
@@ -61,7 +61,7 @@ private:
 
 	std::string cis_base_dir;
 	TStatus status;
-	bool session_opened_by_me;
+	bool session_opened_by_me_flag;
 	std::string session_id;
 
 	int invoke_session();
@@ -73,7 +73,7 @@ cis1_core::cis1_core() {
 
 	status = cis1_core::ERROR_NOT_INIT;
 	cis_base_dir = "";
-	session_opened_by_me = false;
+	session_opened_by_me_flag = false;
 
 }
 
@@ -94,7 +94,7 @@ int cis1_core::invoke_session() {
 
 	if (tmp != nullptr) {
 		session_id = (std::string)tmp;
-		session_opened_by_me = false;
+		session_opened_by_me_flag = false;
 		return 0;
 	}
 
@@ -104,7 +104,7 @@ int cis1_core::invoke_session() {
 		return 1;
 	}
 	
-	session_opened_by_me = true;
+	session_opened_by_me_flag = true;
 	return 0;
 
 }
