@@ -17,3 +17,4 @@ class Cis1CoreNative(ConanFile):
 
     def package(self):
         self.copy("*.h", dst="include", src="include")
+        self.copy("startjob", dst="bin", src="bin")
