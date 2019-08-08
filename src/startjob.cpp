@@ -32,9 +32,11 @@ int main( int argc, char *argv[] ) {
   char* tmp = getenv("session_id");
 
   if ( tmp !=nullptr )
-	  std::cout << "session_id" << (std::string)tmp << std::endl;
+	  std::cout << "session_id:" << (std::string)tmp << std::endl;
 
-  cis->startjob( argv[1] );
+  int exit_code = 0;
+
+  cis->startjob( argv[1],  &exit_code );
 
   delete cis;
 
