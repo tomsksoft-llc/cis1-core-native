@@ -58,7 +58,7 @@ public:
 		return session_id;
 	}
 
-	int startjob(std::string jobname);
+	int startjob(std::string jobname, int *exit_code);
 	int setparam(std::string param_name, std::string param_value);
 	std::string getparam(std::string param_name);
 
@@ -246,6 +246,6 @@ int cis1_core::invoke_session() {
 }
 
 std::string get_new_build_dir(std::string jobname) { return "000000"; }
-int create_dir(std::string dirname) { return 0 };
-int copy_file(std::string src, std::string dst) {return 0 };
-int execute_script_in_dir(std::string dir, std::string script_name, std::string log_file_name, std::string exit_code_file_name, int* exit_code) { return 0 };
+int create_dir(std::string dirname) { return 0; }
+int copy_file(std::string src, std::string dst) { return 0; }
+int execute_script_in_dir(std::string dir, std::string script_name, std::string log_file_name, std::string exit_code_file_name, int* exit_code) { return 0; }
