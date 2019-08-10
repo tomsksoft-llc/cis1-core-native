@@ -14,31 +14,45 @@ void usage() {
 
 int main( int argc, char *argv[] ) {
 
-  if( argc !=2 ) {
-    usage();
-    exit(1);
-  }
+	cis1_core *cis;
+	cis = new cis1_core;
 
-  cis1_core *cis;
-  cis = new cis1_core;
+	if( cis->init() != cis1_core::OK ) {
+		std::cout << cis->getstatus_str() << "\n";
+    		exit(3);
+	}
 
-  if( cis->init() != cis1_core::OK ) {
 
-    std::cout << cis->getstatus_str() << "\n";
-    exit(3);
+	if( argc !=2 ) {
+		usage();
+		// TODO cislog
+		exit(1);
+  	}
 
-  }
+
+	if(cis->invoke_session() != 0) {
+		std::cout << cis->getstatus_str() <<  std::endl;
+		exit(3);
+	}
+
 
   char* tmp = getenv("session_id");
-
   if ( tmp !=nullptr )
 	  std::cout << "session_id:" << (std::string)tmp << std::endl;
+  else
+	  std::cout << "Can't find session_id in env\n";
 
-  int exit_code = 0;
 
-  cis->startjob( argv[1],  &exit_code );
 
-  delete cis;
+	if (cis->session_opened_by_me() == true) {
+		// TODO set job params from console user input
+	}
 
-  return 0;
+	int exit_code = 0;
+
+	cis->startjob( argv[1],  &exit_code );
+
+	delete cis;
+
+	return 0;
 }
