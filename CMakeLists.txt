@@ -7,7 +7,7 @@ conan_basic_setup()
 
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
-add_executable(startjob src/startjob.cpp include/cis1_core.h)
+add_executable(startjob src/startjob.cpp src/cis1_core.cpp)
 target_link_libraries(startjob ${CONAN_LIBS})
 
 install(TARGETS startjob DESTINATION bin)

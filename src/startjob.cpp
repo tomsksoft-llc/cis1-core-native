@@ -7,7 +7,6 @@ void usage() {
   std::cout << "startjob project/job" << "\n";
 
   return;
-
 }
 
 
@@ -18,7 +17,7 @@ int main( int argc, char *argv[] ) {
 	cis = new cis1_core;
 
 	if( cis->init() != cis1_core::OK ) {
-		std::cout << cis->getstatus_str() << "\n";
+		std::cout << cis->getstatus_str() << std::endl;
     		exit(3);
 	}
 
@@ -36,23 +35,22 @@ int main( int argc, char *argv[] ) {
 	}
 
 
-  char* tmp = getenv("session_id");
-  if ( tmp !=nullptr )
-	  std::cout << "session_id:" << (std::string)tmp << std::endl;
-  else
-	  std::cout << "Can't find session_id in env\n";
-
-
-
 	if (cis->session_opened_by_me() == true) {
 		// TODO set job params from console user input
 	}
 
 	int exit_code = 0;
 
-	cis->startjob( argv[1],  &exit_code );
+	if( cis->startjob( argv[1],  &exit_code ) != 0 ) {
+		std::cout << cis->getstatus_str() << std::endl;
+		exit(3);
+	}
 
+	std::cout << "session_id=" << cis->get_session_id() << " action=start_job job_name=" << (std::string)(argv[1]) << std::endl;
+	std::cout << "Exit code: " << std::to_string(exit_code) << std::endl;
+
+	// TODO closesession to session log, corelog 
 	delete cis;
 
-	return 0;
+	return exit_code;
 }
