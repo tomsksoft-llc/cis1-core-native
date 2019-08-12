@@ -5,38 +5,36 @@
 */
 
 #include "cis1_core.h"
-#include "cis1_core_osdp.cpp"
-
 
 cis1_core::TStatus cis1_core::init() {
 
-	if (status != cis1_core::NOT_INIT) {
-		return cis1_core::ERROR_ALREADY_INIT;
+	if (status != TStatus::NOT_INIT) {
+		return TStatus::ERROR_ALREADY_INIT;
 	}
 
 	cis_base_dir = get_env_var("cis_base_dir");
 
 	if (cis_base_dir.empty()) {
-		status = cis1_core::ERROR_CIS_BASE_DIR_ENV_NOT_DEFINED;
+		status = TStatus::ERROR_CIS_BASE_DIR_ENV_NOT_DEFINED;
 		return status;
 	}
 
 	if (is_dir(cis_base_dir.c_str()) != 0) {
-		status = cis1_core::ERROR_CIS_BASE_DIR_NOTEXIST;
+		status = TStatus::ERROR_CIS_BASE_DIR_NOTEXIST;
 		return status;
 	}
 
 	// TODO: init corelog system
 
 	if (invoke_session() != 0) {
-		status = cis1_core::ERROR_CANT_OPEN_SESSION;
+		status = TStatus::ERROR_CANT_OPEN_SESSION;
 		// TODO: corelog
 		return status;
 	}
 
 	// TODO: corelog
 	// TODO: init sessionlog, log about new sessoin if need
-	status = cis1_core::OK;
+	status = TStatus::OK;
 	return status;
 
 }
@@ -61,7 +59,7 @@ int cis1_core::invoke_session() {
 	// TODO write properly session_id compute
 	session_id = "2019-08-07-00-00-541";
 	if (set_env_var("session_id", session_id.c_str()) != 0) {
-		status = cis1_core::ERROR_CANT_OPEN_SESSION;
+		status = TStatus::ERROR_CANT_OPEN_SESSION;
 		return 1;
 	}
 
@@ -81,10 +79,15 @@ std::string cis1_core::getstatus_str() {
 
 	switch (status) {
 
-	case cis1_core::OK: return (std::string)"OK";
-	case cis1_core::NOT_INIT: return (std::string)"Object not initialized";
-	case cis1_core::ERROR_CIS_BASE_DIR_ENV_NOT_DEFINED: return (std::string)"The cis_base_dir not defined in environment";
-	default: return (std::string)"Undefined error:"+std::to_string(status);
+	case TStatus::OK:
+            return "OK";
+	case TStatus::NOT_INIT:
+            return "Object not initialized";
+	case TStatus::ERROR_CIS_BASE_DIR_ENV_NOT_DEFINED:
+            return "The cis_base_dir not defined in environment";
+	default:
+            return std::string("Undefined error:")
+                 + std::to_string(static_cast<int>(status));
 
 	}
 
@@ -95,9 +98,9 @@ std::string cis1_core::getstatus_str() {
 	\brief starting job
 	@return int 0 if job was successfully started, non zero if any error
 */
-int cis1_core::startjob(std::string job_name, int* exit_code) {
+int cis1_core::startjob(const std::string& job_name, int& exit_code) {
 
-	if (status != cis1_core::OK) {
+	if (status != TStatus::OK) {
 		return 1;
 	}
 
@@ -110,25 +113,32 @@ int cis1_core::startjob(std::string job_name, int* exit_code) {
 	std::string build_num = get_new_build_dir(job_dir);
 
 	if (build_num.empty()) {
-		status = cis1_core::ERROR_CANT_EVAL_NEW_BUILD_NUM;
+		status = TStatus::ERROR_CANT_EVAL_NEW_BUILD_NUM;
 		// TODO: corelog, session log
 		return 1;
 	}
 
-	if (create_dir(job_dir+"/"+build_num) != 0) {
-		status = cis1_core::ERROR_CANT_CREATE_BUILD_DIR;
+	if (create_dir(job_dir + "/" + build_num) != 0) {
+		status = TStatus::ERROR_CANT_CREATE_BUILD_DIR;
 		// TODO corelog, session log
 		return 1;
 	}
 
-	if (copy_file(job_dir+"/"+script_file_name, job_dir+"/"+build_num+"/"+script_file_name) != 0) {
-		status = cis1_core::ERROR_CANT_COPY_SCRIPT_TO_BUILD_DIR;
+	if (copy_file(
+                job_dir + "/" + script_file_name,
+                job_dir + "/" + build_num + "/" + script_file_name) != 0) {
+		status = TStatus::ERROR_CANT_COPY_SCRIPT_TO_BUILD_DIR;
 		// TODO corelog, session log
 		return 1;
 	}
 
-	if (execute_script_in_dir(job_dir+"/"+build_num, script_file_name, "log.txt", "exitcode.txt", exit_code) != 0) {
-		status = cis1_core::ERROR_CANT_EXECUTE_SCRIPT;
+	if (execute_script_in_dir(
+                job_dir + "/" + build_num,
+                script_file_name,
+                "log.txt",
+                "exitcode.txt",
+                exit_code) != 0) {
+		status = TStatus::ERROR_CANT_EXECUTE_SCRIPT;
 		// TODO corelog, session log
 		return 1;
 	}
@@ -137,7 +147,7 @@ int cis1_core::startjob(std::string job_name, int* exit_code) {
 	return 0;
 }
 
-int cis1_core::setparam(std::string param_name, std::string param_value) { 
+int cis1_core::setparam(const std::string& param_name, const std::string& param_value) { 
 
 	// TODO check status, check session
 
@@ -149,9 +159,9 @@ int cis1_core::setparam(std::string param_name, std::string param_value) {
 
 }
 
-int cis1_core::getparam(std::string param_name, std::string *param_value) {
+int cis1_core::getparam(const std::string& param_name, std::string& param_value) {
 
-	param_value->assign("s3v");
+	param_value.assign("s3v");
 
 	// TODO check status, check session
 
@@ -165,16 +175,20 @@ int cis1_core::getparam(std::string param_name, std::string *param_value) {
 }
 
 
-int cis1_core::get_job_params_list( std::string job_name, std::vector<std::string> *params_list ) {
+int cis1_core::get_job_params_list( 
+        const std::string& job_name,
+        std::vector<std::string>& params_list ) {
 
 	// TODO check object status
 
 
 	// TODO check if job.params file exists, if no return 0
 
-	if( read_file_str(cis_base_dir+"/jobs/"+job_name+"/job_params", params_list ) != 0 ) {
+	if( read_file_str(
+                cis_base_dir + "/jobs/" + job_name + "/job_params",
+                params_list ) != 0 ) {
 
-		status = cis1_core::ERROR_CANT_READ_JOB_PARAMS_FILE;
+		status = TStatus::ERROR_CANT_READ_JOB_PARAMS_FILE;
 		return 1;
 
 	}

@@ -4,6 +4,7 @@
 Class cis1_core header file.
 
 */
+#pragma once
 
 #include <string>
 #include <vector>
@@ -26,7 +27,7 @@ public:
 		\brief cis1_core object statuses
 	*/
 
-	enum TStatus {
+	enum class TStatus {
 		OK,
 		NOT_INIT,
 		ERROR_ALREADY_INIT,
@@ -43,7 +44,7 @@ public:
 
 
 	cis1_core() {
-	        status = cis1_core::NOT_INIT;
+	        status = TStatus::NOT_INIT;
 	        cis_base_dir = "";
 	        session_id = "";
         	session_opened_by_me_flag = false;
@@ -86,15 +87,17 @@ public:
 
 
 	int invoke_session();
-	int get_job_params_list( std::string job_name, std::vector<std::string> *params_list ); // TODO change params type to map
+	int get_job_params_list(
+            const std::string& job_name,
+            std::vector<std::string>& params_list ); // TODO change params type to map
 
-	int startjob(std::string job_name, int *exit_code);
+	int startjob(const std::string& job_name, int& exit_code);
 
-	int setparam(std::string param_name, std::string param_value);
-	int getparam(std::string param_name, std::string *param_value);
+	int setparam(const std::string& param_name, const std::string& param_value);
+	int getparam(const std::string& param_name, std::string& param_value);
 
-	int setvalue(std::string value_name, std::string value);
-	int getvalue(std::string value_name, std::string *value);
+	int setvalue(const std::string& value_name, const std::string& value);
+	int getvalue(const std::string& value_name, std::string& value);
 
 private:
 
@@ -108,12 +111,17 @@ private:
 
 	// OS depended functions
 
-	std::string get_env_var( std::string var_name );
-	int set_env_var( std::string var_name, std::string value );
-	int is_dir( std::string dir );
-	std::string get_new_build_dir( std::string dir );
-	int create_dir(std::string dir);
-	int copy_file(std::string src, std::string dst);
-	int execute_script_in_dir(std::string dir, std::string script_file_name, std::string log_file_name, std::string exit_code_file_name, int* exit_code);
-	int read_file_str(std::string fname, std::vector<std::string> *lines);
+	std::string get_env_var( const std::string& var_name );
+	int set_env_var( const std::string& var_name, const std::string& value );
+	int is_dir( const std::string& dir );
+	std::string get_new_build_dir( const std::string& dir );
+	int create_dir(const std::string& dir);
+	int copy_file(const std::string& src, const std::string& dst);
+	int execute_script_in_dir(
+            const std::string& dir,
+            const std::string& script_file_name,
+            const std::string& log_file_name,
+            const std::string& exit_code_file_name,
+            int& exit_code);
+	int read_file_str(const std::string& fname, std::vector<std::string>& lines);
 };
