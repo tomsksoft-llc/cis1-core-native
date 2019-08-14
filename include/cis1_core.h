@@ -1,127 +1,105 @@
 /*! \file cis1_core.cpp
-	\brief Class cis1_core header.
+    \brief Class cis1_core header.
 
 Class cis1_core header file.
 
 */
 #pragma once
 
+#include <system_error>
 #include <string>
-#include <vector>
+#include <map>
+#include <filesystem>
 
-
+#include <boost/process.hpp>
 
 /*! \class cis1_core
-	\brief The cis1_core class incapsulate all cis1 core functionality.
+    \brief The cis1_core class incapsulate all cis1 core functionality.
 
-	The Init must be called before using any other function.
-	To test status call getstatus and then getstatus_str.
-
+    The Init must be called before using any other function.
 */
 
-class cis1_core {
-
+class cis1_core
+{
 public:
+    /*! \enum cis1_core object statuses
+        \brief cis1_core object statuses
+    */
+    enum class status
+    {
+        ok,
+        not_init,
+        error,
+    };
 
-	/*! \enum cis1_core object statuses
-		\brief cis1_core object statuses
-	*/
+    cis1_core();
+    ~cis1_core();
 
-	enum class TStatus {
-		OK,
-		NOT_INIT,
-		ERROR_ALREADY_INIT,
-		ERROR_CIS_BASE_DIR_ENV_NOT_DEFINED,
-		ERROR_CIS_BASE_DIR_NOTEXIST,
-		ERROR_CANT_OPEN_SESSION,
-		ERROR_CANT_EVAL_NEW_BUILD_NUM,
-		ERROR_CANT_CREATE_BUILD_DIR,
-		ERROR_CANT_COPY_SCRIPT_TO_BUILD_DIR,
-		ERROR_CANT_EXECUTE_SCRIPT,
-		ERROR_CANT_READ_JOB_PARAMS_FILE
-	};
-
-
-
-	cis1_core() {
-	        status = TStatus::NOT_INIT;
-	        cis_base_dir = "";
-	        session_id = "";
-        	session_opened_by_me_flag = false;
-	}
-
-	~cis1_core() {
-		// TODO closesession to sessionlog/corelog ???
-	};
+    /*! \fn init
+            \brief Initialize internal state for next works
+            @return void
+    */
+    void init(std::error_code& ec);
 
 
-	/*! \fn init
-	        \brief Initialize internal state for next works
-        	@return cis1_core::TStatus initialization result
-	*/
+    /*! \fn getstatus
+        \brief Return current status of the object
+        @return status Current status
+    */
+    status get_status();
 
-	TStatus init();
+    void invoke_session(std::error_code& ec);
+    bool session_opened_by_me();
+    std::string get_session_id();
 
-
-	/*! \fn getstatus
-		\brief Return current status of the object
-		@return TStatus Current status
-	*/
-
-	TStatus getstatus() {
-		return status;
-	}
-
-
-	std::string getstatus_str();
-
-
-	bool session_opened_by_me() {
-		return session_opened_by_me_flag;
-	};
-
-
-	std::string get_session_id() {
-		return session_id;
-	}
-
-
-	int invoke_session();
-	int get_job_params_list(
+    void startjob(
             const std::string& job_name,
-            std::vector<std::string>& params_list ); // TODO change params type to map
+            int& exit_code,
+            std::error_code& ec);
 
-	int startjob(const std::string& job_name, int& exit_code);
+    void setparam(
+            const std::string& param_name,
+            const std::string& param_value,
+            std::error_code& ec);
+    void getparam(
+            const std::string& param_name,
+            std::string& param_value,
+            std::error_code& ec);
 
-	int setparam(const std::string& param_name, const std::string& param_value);
-	int getparam(const std::string& param_name, std::string& param_value);
-
-	int setvalue(const std::string& value_name, const std::string& value);
-	int getvalue(const std::string& value_name, std::string& value);
+    void setvalue(
+            const std::string& value_name,
+            const std::string& value,
+            std::error_code& ec);
+    void getvalue(
+            const std::string& value_name,
+            std::string& value,
+            std::error_code& ec);
 
 private:
+    status status_ = status::not_init;
+    bool init_ = false;
 
-	TStatus status;
+    boost::process::environment env_;
+    std::filesystem::path cis_base_dir_;
 
-	std::string cis_base_dir;
+    std::string session_id_;
+    bool session_opened_by_me_ = false;
 
-	std::string session_id;
-	bool session_opened_by_me_flag;
+    std::string get_env_var(const std::string& var_name);
+    std::string get_new_build_dir(const std::filesystem::path& dir);
 
+    void read_job_params(std::map<std::string, std::string>& params);
+    void write_job_params(
+            const std::filesystem::path& path,
+            const std::map<std::string, std::string>& job_params,
+            std::error_code& ec);
 
-	// OS depended functions
+    int execute_job(
+            const std::filesystem::path& path,
+            const std::string& script,
+            std::error_code& ec);
 
-	std::string get_env_var( const std::string& var_name );
-	int set_env_var( const std::string& var_name, const std::string& value );
-	int is_dir( const std::string& dir );
-	std::string get_new_build_dir( const std::string& dir );
-	int create_dir(const std::string& dir);
-	int copy_file(const std::string& src, const std::string& dst);
-	int execute_script_in_dir(
-            const std::string& dir,
-            const std::string& script_file_name,
-            const std::string& log_file_name,
-            const std::string& exit_code_file_name,
-            int& exit_code);
-	int read_file_str(const std::string& fname, std::vector<std::string>& lines);
+    bool read_file_str(
+            const std::filesystem::path& path,
+            std::map<std::string, std::string>& result);
 };
