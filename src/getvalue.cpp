@@ -1,10 +1,11 @@
 #include "cis1_core.h"
+
 #include <iostream>
 
 void usage()
 {
     std::cout << "Usage:" << "\n"
-              << "startjob project/job" << "\n";
+              << "getvalue value_name" << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -29,22 +30,22 @@ int main(int argc, char *argv[])
 		exit(1);
   	}
 
-	int exit_code = 0;
+	if(cis.session_opened_by_me() == true)
+    {
+		// TODO cis log, session log
+		exit(1);
+	}
 
-	cis.startjob(argv[1], exit_code, ec);
+	std::string value;
+
+	cis.getvalue(argv[1], value, ec);
     if(ec)
     {
 		std::cout << ec.message() << std::endl;
 		exit(3);
 	}
 
-	std::cout << "session_id=" << cis.get_session_id()
-              << " action=start_job job_name="
-              << argv[1] << std::endl;
+	std::cout << value << std::endl;
 
-	std::cout << "Exit code: " << exit_code << std::endl;
-
-	// TODO closesession to session log, corelog
-
-	return exit_code;
+	return 0;
 }

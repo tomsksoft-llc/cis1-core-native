@@ -8,7 +8,11 @@ class Cis1CoreNative(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     generators = "cmake"
     exports = "*"
-    requires = "gtest/1.8.1@bincrafters/stable"
+    requires = ("gtest/1.8.1@bincrafters/stable",
+                "boost_process/1.69.0@bincrafters/stable",
+                "boost_filesystem/1.69.0@bincrafters/stable",
+                "boost_system/1.69.0@bincrafters/stable",
+                "boost_asio/1.69.0@bincrafters/stable")
 
     def build(self):
         cmake = CMake(self)

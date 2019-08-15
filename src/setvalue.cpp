@@ -5,7 +5,7 @@
 void usage()
 {
     std::cout << "Usage:" << "\n"
-              << "setparam param_name param_value" << std::endl;
+              << "setvalue value_name value_value" << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	cis.setparam(argv[1], argv[2], ec);
+	cis.setvalue(argv[1], argv[2], ec);
     if(ec)
     {
 		// TODO cislog, session log

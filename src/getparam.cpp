@@ -2,48 +2,46 @@
 
 #include <iostream>
 
-void usage() {
-
-  std::cout << "Usage:" << "\n";
-  std::cout << "getparam param_name" << "\n";
-
-  return;
+void usage()
+{
+    std::cout << "Usage:" << "\n"
+              << "getparam param_name" << std::endl;
 }
 
-
-
-int main( int argc, char *argv[] ) {
+int main(int argc, char *argv[])
+{
 
 	cis1_core cis;
 
-	if( cis.init() != cis1_core::TStatus::OK ) {
-		std::cout << cis.getstatus_str() << std::endl;
+    std::error_code ec;
+
+    cis.init(ec);
+
+    if(ec)
+    {
+		std::cout << ec.message() << std::endl;
     	exit(3);
 	}
 
-
-	if( argc != 2 ) {
+	if(argc != 2)
+    {
 		usage();
 		// TODO cislog
 		exit(1);
   	}
 
-
-	if( cis.invoke_session() != 0 ) {
-		std::cout << cis.getstatus_str() << std::endl;
-		exit(3);
-	}
-
-
-	if( cis.session_opened_by_me() == true ) {
+	if(cis.session_opened_by_me() == true)
+    {
 		// TODO cis log, session log
 		exit(1);
 	}
 
 	std::string param_value;
 
-	if( cis.getparam( argv[1], param_value ) != 0 ) {
-		std::cout << cis.getstatus_str() << std::endl;
+	cis.getparam(argv[1], param_value, ec);
+    if(ec)
+    {
+		std::cout << ec.message() << std::endl;
 		exit(3);
 	}
 
