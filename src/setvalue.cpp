@@ -11,7 +11,7 @@ void usage()
 int main(int argc, char *argv[])
 {
 
-	cis1_core cis;
+    cis1_core cis;
 
     std::error_code ec;
 
@@ -19,30 +19,30 @@ int main(int argc, char *argv[])
 
     if(ec)
     {
-		std::cout << ec.message() << std::endl;
-    	exit(3);
-	}
+        std::cout << ec.message() << std::endl;
+        exit(3);
+    }
 
-	if(argc != 3)
+    if(argc != 3)
     {
-		usage();
-		// TODO cislog
-		exit(1);
-  	}
+        usage();
+        // TODO cislog
+        exit(1);
+      }
 
-	if(cis.session_opened_by_me() == true)
+    if(cis.session_opened_by_me() == true)
     {
-		// TODO cis log, session log
-		exit(1);
-	}
+        // TODO cis log, session log
+        exit(1);
+    }
 
-	cis.setvalue(argv[1], argv[2], ec);
+    cis.setvalue(argv[1], argv[2], ec);
     if(ec)
     {
-		// TODO cislog, session log
-		std::cout << ec.message() << std::endl; // debug
-		exit(3);
-	}
+        // TODO cislog, session log
+        std::cout << ec.message() << std::endl; // debug
+        exit(3);
+    }
 
-	return 0;
+    return 0;
 }

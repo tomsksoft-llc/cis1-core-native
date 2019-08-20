@@ -10,7 +10,7 @@ void usage()
 int main(int argc, char *argv[])
 {
 
-	cis1_core cis;
+    cis1_core cis;
 
     std::error_code ec;
 
@@ -18,33 +18,33 @@ int main(int argc, char *argv[])
 
     if(ec)
     {
-		std::cout << ec.message() << std::endl;
-    	exit(3);
-	}
+        std::cout << ec.message() << std::endl;
+        exit(3);
+    }
 
-	if(argc != 2)
+    if(argc != 2)
     {
-		usage();
-		// TODO cislog
-		exit(1);
-  	}
+        usage();
+        // TODO cislog
+        exit(1);
+      }
 
-	int exit_code = 0;
+    int exit_code = 0;
 
-	cis.startjob(argv[1], exit_code, ec);
+    cis.startjob(argv[1], exit_code, ec);
     if(ec)
     {
-		std::cout << ec.message() << std::endl;
-		exit(3);
-	}
+        std::cout << ec.message() << std::endl;
+        exit(3);
+    }
 
-	std::cout << "session_id=" << cis.get_session_id()
+    std::cout << "session_id=" << cis.get_session_id()
               << " action=start_job job_name="
               << argv[1] << std::endl;
 
-	std::cout << "Exit code: " << exit_code << std::endl;
+    std::cout << "Exit code: " << exit_code << std::endl;
 
-	// TODO closesession to session log, corelog
+    // TODO closesession to session log, corelog
 
-	return exit_code;
+    return exit_code;
 }
