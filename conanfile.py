@@ -12,7 +12,8 @@ class Cis1CoreNative(ConanFile):
                 "boost_process/1.69.0@bincrafters/stable",
                 "boost_filesystem/1.69.0@bincrafters/stable",
                 "boost_system/1.69.0@bincrafters/stable",
-                "boost_asio/1.69.0@bincrafters/stable")
+                "boost_asio/1.69.0@bincrafters/stable",
+                "boost_type_erasure/1.69.0@bincrafters/stable")
 
     def build(self):
         cmake = CMake(self)

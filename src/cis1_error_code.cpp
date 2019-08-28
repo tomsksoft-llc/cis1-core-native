@@ -24,8 +24,11 @@ std::string error_category::message(int ev) const
         case error_code::base_dir_not_defined:
             return "CIS base dir not defined";
 
-        case error_code::base_dir_doesent_exist:
+        case error_code::base_dir_doesnt_exist:
             return "CIS base dir doesnt exist";
+        
+        case error_code::job_dir_doesnt_exist:
+            return "Job dir doesnt exist";
 
         case error_code::cant_read_base_conf_file:
             return "Cant cis configuration file";
@@ -48,6 +51,12 @@ std::string error_category::message(int ev) const
         case error_code::cant_open_session:
             return "Cant open session";
 
+        case error_code::cant_open_build_output_file:
+            return "Cant open build output file";
+    
+        case error_code::cant_open_build_exit_code_file:
+            return "Cant open build exit_code file";
+
         case error_code::cant_generate_build_num:
             return "Cant generate build number";
 
@@ -59,6 +68,9 @@ std::string error_category::message(int ev) const
 
         case error_code::cant_execute_script:
             return "Cant execute job script";
+
+        case error_code::invalid_kv_file_format:
+            return "Cant parse kv-file";
 
         default:
             return "(unrecognized error)";

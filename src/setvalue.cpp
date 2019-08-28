@@ -1,6 +1,9 @@
-#include "cis1_core.h"
-
 #include <iostream>
+
+#include "cis1_context.h"
+#include "session.h"
+#include "set_value.h"
+#include "logger.h"
 
 void usage()
 {
@@ -10,38 +13,43 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-
-    cis1_core cis;
+    os std_os;
 
     std::error_code ec;
 
-    cis.init(ec);
-
-    if(ec)
-    {
-        std::cout << ec.message() << std::endl;
-        exit(3);
-    }
-
     if(argc != 3)
     {
-        usage();
-        // TODO cislog
-        exit(1);
-      }
-
-    if(cis.session_opened_by_me() == true)
-    {
-        // TODO cis log, session log
-        exit(1);
+        //...
+        return 1;
     }
 
-    cis.setvalue(argv[1], argv[2], ec);
+    auto ctx_opt = cis1::init_context(ec, std_os);
     if(ec)
     {
-        // TODO cislog, session log
-        std::cout << ec.message() << std::endl; // debug
-        exit(3);
+        //...
+        return 1;
+    }
+    auto& ctx = ctx_opt.value();
+
+    auto session_opt = cis1::invoke_session(ctx, ec, std_os);
+    if(ec)
+    {
+        //...
+        return 1;
+    }
+    auto& session = session_opt.value();
+
+    if(session.opened_by_me())
+    {
+        //...
+        return 1;
+    }
+
+    set_value(ctx, session, argv[1], argv[2], ec);
+    if(ec)
+    {
+        //...
+        return 1;
     }
 
     return 0;

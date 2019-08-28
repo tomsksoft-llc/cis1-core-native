@@ -1,5 +1,10 @@
-#include "cis1_core.h"
 #include <iostream>
+
+#include "cis1_context.h"
+#include "session.h"
+#include "build.h"
+#include "set_value.h"
+#include "logger.h"
 
 void usage()
 {
@@ -7,44 +12,122 @@ void usage()
               << "startjob project/job" << "\n";
 }
 
-int main(int argc, char *argv[])
+std::optional<std::string> check_startjob_args(
+        int argc,
+        char* argv[],
+        std::error_code& ec)
 {
+    if(argc != 2)
+    {
+        ec.assign(1, ec.category()); // FIXME
+        return std::nullopt;
+    }
 
-    cis1_core cis;
+    return argv[1];
+}
+
+int main(int argc, char* argv[])
+{
+    os std_os;
 
     std::error_code ec;
 
-    cis.init(ec);
-
+    auto ctx_opt = cis1::init_context(ec, std_os);
     if(ec)
     {
-        std::cout << ec.message() << std::endl;
-        exit(3);
+        //...
+        return 1;
     }
+    auto& ctx = ctx_opt.value();
 
-    if(argc != 2)
+    auto session_opt = cis1::invoke_session(ctx, ec, std_os);
+    if(ec)
+    {
+        //...
+        return 1;
+    }
+    auto& session = session_opt.value();
+
+    auto job_name_opt = check_startjob_args(argc, argv, ec);
+    if(ec)
     {
         usage();
-        // TODO cislog
-        exit(1);
-      }
+        return 1;
+    }
+    auto& job_name = job_name_opt.value();
 
-    int exit_code = 0;
-
-    cis.startjob(argv[1], exit_code, ec);
+    auto build_opt = cis1::prepare_build(ctx, job_name, ec, std_os);
     if(ec)
     {
-        std::cout << ec.message() << std::endl;
-        exit(3);
+        //...
+        return 1;
+    }
+    auto& build = build_opt.value();
+
+    if(!build.params().empty() && session.opened_by_me())
+    {
+        for(auto& [k, v] : build.params())
+        {
+            std::cout << "Type param value for parameter " << k
+                      << "(\"Enter\" for default value:\""
+                      << v << "\")" << std::endl;
+
+            std::string tmp;
+            std::getline(std::cin, tmp, '\n');
+
+            if(!tmp.empty())
+            {
+                v = tmp;
+            }
+        }
+    }
+    else if(!build.params().empty())
+    {
+        build.prepare_params(ctx, session, ec);
     }
 
-    std::cout << "session_id=" << cis.get_session_id()
-              << " action=start_job job_name="
-              << argv[1] << std::endl;
+    if(ec)
+    {
+        //...
+        return 1;
+    }
 
-    std::cout << "Exit code: " << exit_code << std::endl;
+    build.copy_files(ec);
+    if(ec)
+    {
+        //...
+        return 1;
+    }
 
-    // TODO closesession to session log, corelog
+    set_value(ctx, session, "last_job_name", job_name, ec);
+    if(ec)
+    {
+        //...
+        return 1;
+    }
 
-    return exit_code;
+    ctx.set_env("job_name", job_name);
+
+    set_value(ctx, session, "last_job_build_number", build.build_num(), ec);
+    if(ec)
+    {
+        //...
+        return 1;
+    }
+    
+    ctx.set_env("build_number", build.build_num());
+
+    LOG(ctx, session) << "action=\"start_job\"" << std::endl;
+
+    int exit_code = -1;
+
+    build.execute(ctx, ec, exit_code);
+    if(ec)
+    {
+        //...
+        return 1;
+    }
+
+    LOG(ctx, session) << "action=\"start_job\" exit_code=" 
+                      << exit_code << std::endl;
 }

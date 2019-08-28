@@ -1,51 +1,58 @@
-#include "cis1_core.h"
-
 #include <iostream>
+
+#include "cis1_context.h"
+#include "session.h"
+#include "get_param.h"
+#include "logger.h"
 
 void usage()
 {
     std::cout << "Usage:" << "\n"
-              << "getparam param_name" << std::endl;
+              << "getparam value_name" << std::endl;
 }
 
 int main(int argc, char *argv[])
 {
-
-    cis1_core cis;
+    os std_os;
 
     std::error_code ec;
 
-    cis.init(ec);
-
-    if(ec)
-    {
-        std::cout << ec.message() << std::endl;
-        exit(3);
-    }
-
     if(argc != 2)
     {
-        usage();
-        // TODO cislog
-        exit(1);
-      }
-
-    if(cis.session_opened_by_me() == true)
-    {
-        // TODO cis log, session log
-        exit(1);
+        //...
+        return 1;
     }
 
-    std::string param_value;
-
-    cis.getparam(argv[1], param_value, ec);
+    auto ctx_opt = cis1::init_context(ec, std_os);
     if(ec)
     {
-        std::cout << ec.message() << std::endl;
-        exit(3);
+        //...
+        return 1;
+    }
+    auto& ctx = ctx_opt.value();
+
+    auto session_opt = cis1::invoke_session(ctx, ec, std_os);
+    if(ec)
+    {
+        //...
+        return 1;
+    }
+    auto& session = session_opt.value();
+
+    if(session.opened_by_me())
+    {
+        //...
+        return 1;
     }
 
-    std::cout << param_value << std::endl;
+    auto param_opt = get_param(ctx, session, argv[1], ec);
+    if(ec)
+    {
+        //...
+        return 1;
+    }
+
+    std::cout << param_opt.value() << std::endl;
 
     return 0;
 }

@@ -8,22 +8,16 @@
 #include <boost/bind.hpp>
 #include <boost/asio/placeholders.hpp>
 
-#ifdef __linux__
-    const std::string run_prefix{"./"};
-#elif _WIN32
-    const std::string run_prefix{"start "};
-#else
-#error "Unsupported platform."
-#endif
-
 job_runner::job_runner(
         boost::asio::io_context& ctx,
         boost::process::environment env,
-        const std::filesystem::path& working_dir)
+        const std::filesystem::path& working_dir,
+        const os_interface& os)
     : ctx_(ctx)
     , out_pipe_(ctx)
     , env_(env)
     , working_dir_(working_dir)
+    , os_(os)
 {}
 
 void job_runner::run(
@@ -31,26 +25,10 @@ void job_runner::run(
         on_exit_cb_t&& on_exit_cb,
         on_line_read_cb_t&& on_line_read_cb)
 {
-    on_line_read_cb_ = std::move(on_line_read_cb);
-
-    boost::process::async_system(
-            ctx_,
+    run_impl(
+            filename,
             std::move(on_exit_cb),
-            run_prefix + filename,
-            boost::process::env = env_,
-            boost::process::start_dir = working_dir_.string(),
-            boost::process::std_out > out_pipe_,
-            boost::process::std_in.close());
-
-    boost::asio::async_read_until(
-            out_pipe_,
-            streambuf_,
-            '\n',
-            boost::bind(
-                    &job_runner::on_line_read,
-                    this,
-                    boost::asio::placeholders::error,
-                    boost::asio::placeholders::bytes_transferred));
+            std::move(on_line_read_cb));
 }
 
 std::string make_string(boost::asio::streambuf& streambuf, size_t size)
@@ -66,10 +44,20 @@ void job_runner::on_line_read(
     if(!ec)
     {
         on_line_read_cb_(
-                make_string(streambuf_, bytes_transferred));
+                make_string(streambuf_, bytes_transferred - 1));
 
         streambuf_.consume(bytes_transferred);
+    }
+    else if(ec == boost::asio::error::eof)
+    {
+        on_line_read_cb_(
+                make_string(streambuf_, streambuf_.size()));
 
+        streambuf_.consume(streambuf_.size());
+    }
+
+    if(!ec)
+    {
         boost::asio::async_read_until(
                 out_pipe_,
                 streambuf_,
