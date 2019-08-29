@@ -5,6 +5,10 @@
 !conanfile.py
 !CMakeLists.txt
 
+!cmake
+!cmake/modules
+!cmake/modules/*
+
 !src/
 !src/*.cpp
 !include/
