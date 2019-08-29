@@ -41,10 +41,10 @@ TEST(get_value, correct)
 
     EXPECT_CALL(os, open_ifstream(base_dir / "sessions" / "test_id.dat", _))
         .WillOnce(Return(ByMove(std::move(ss))));
-    
+
     std::error_code ec;
 
-    auto result = get_value(ctx, session, "test_value", ec, os);
+    auto result = cis1::get_value(ctx, session, "test_value", ec, os);
 
     ASSERT_EQ((bool)ec, false);
     ASSERT_EQ((bool)result, true);
@@ -74,7 +74,7 @@ TEST(get_value, no_file)
 
     std::error_code ec;
 
-    auto result = get_value(ctx, session, "test_value", ec, os);
+    auto result = cis1::get_value(ctx, session, "test_value", ec, os);
 
     ASSERT_EQ((bool)ec, false);
     ASSERT_EQ((bool)result, true);
@@ -119,7 +119,7 @@ TEST(get_value, invalid_file)
 
     std::error_code ec;
 
-    auto result = get_value(ctx, session, "test_value", ec, os);
+    auto result = cis1::get_value(ctx, session, "test_value", ec, os);
 
     ASSERT_EQ((bool)ec, true);
     ASSERT_EQ((bool)result, false);

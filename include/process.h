@@ -8,6 +8,9 @@
 #include <boost/process.hpp>
 #include <boost/asio.hpp>
 
+namespace cis1
+{
+
 class process
 {
 public:
@@ -50,3 +53,5 @@ public:
         return boost::process::std_err;
     }
 };
+
+} // namespace cis1

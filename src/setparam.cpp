@@ -1,9 +1,10 @@
 #include <iostream>
 
-#include "cis1_context.h"
+#include "context.h"
 #include "session.h"
 #include "set_param.h"
 #include "logger.h"
+#include "os.h"
 
 void usage()
 {
@@ -13,7 +14,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-    os std_os;
+    cis1::os std_os;
 
     std::error_code ec;
 
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    set_param(ctx, session, argv[1], argv[2], ec);
+    cis1::set_param(ctx, session, argv[1], argv[2], ec, std_os);
     if(ec)
     {
         //...

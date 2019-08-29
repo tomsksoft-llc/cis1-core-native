@@ -13,13 +13,10 @@
 #include "job_runner_interface.h"
 #include "process.h"
 
-#ifdef __linux__
-    inline const std::string run_prefix{"./"};
-#elif _WIN32
-    inline const std::string run_prefix{"start "};
-#else
-#error "Unsupported platform."
-#endif
+class build_execute_job_runner_Test;
+
+namespace cis1
+{
 
 class job_runner
     : public job_runner_interface
@@ -29,15 +26,23 @@ public:
             boost::asio::io_context& ctx,
             boost::process::environment env,
             const std::filesystem::path& working_dir,
-            const os_interface& os = os{});
+            const os_interface& os);
 
     virtual void run(
             const std::string& filename,
             on_exit_cb_t&& on_exit_cb,
             on_line_read_cb_t&& on_line_read_cb) override;
 
-    FRIEND_TEST(build_execute, job_runner);
+    FRIEND_TEST(::build_execute, job_runner);
 private:
+    boost::asio::io_context& ctx_;
+    boost::process::async_pipe out_pipe_;
+    boost::process::environment env_;
+    std::filesystem::path working_dir_;
+    boost::asio::streambuf streambuf_;
+    on_line_read_cb_t on_line_read_cb_;
+    const os_interface& os_;
+
     template <class Process = process>
     void run_impl(
             const std::string& filename,
@@ -45,6 +50,13 @@ private:
             on_line_read_cb_t&& on_line_read_cb,
             const Process& p = {})
     {
+#ifdef __linux__
+        const std::string run_prefix{"./"};
+#elif _WIN32
+        const std::string run_prefix{"start "};
+#else
+#error "Unsupported platform."
+#endif
         on_line_read_cb_ = std::move(on_line_read_cb);
 
         p.async_system(
@@ -67,15 +79,10 @@ private:
                         boost::asio::placeholders::error,
                         boost::asio::placeholders::bytes_transferred));
     }
-    boost::asio::io_context& ctx_;
-    boost::process::async_pipe out_pipe_;
-    boost::process::environment env_;
-    std::filesystem::path working_dir_;
-    boost::asio::streambuf streambuf_;
-    on_line_read_cb_t on_line_read_cb_;
-    const os_interface& os_;
 
     void on_line_read(
             const boost::system::error_code& error,
             std::size_t bytes_transferred);
 };
+
+} // namespace cis1

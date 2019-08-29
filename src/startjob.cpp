@@ -1,10 +1,11 @@
 #include <iostream>
 
-#include "cis1_context.h"
+#include "context.h"
 #include "session.h"
 #include "build.h"
 #include "set_value.h"
 #include "logger.h"
+#include "os.h"
 
 void usage()
 {
@@ -28,7 +29,7 @@ std::optional<std::string> check_startjob_args(
 
 int main(int argc, char* argv[])
 {
-    os std_os;
+    cis1::os std_os;
 
     std::error_code ec;
 
@@ -92,14 +93,14 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    build.copy_files(ec);
+    build.prepare_build_dir(ec);
     if(ec)
     {
         //...
         return 1;
     }
 
-    set_value(ctx, session, "last_job_name", job_name, ec);
+    cis1::set_value(ctx, session, "last_job_name", job_name, ec, std_os);
     if(ec)
     {
         //...
@@ -108,16 +109,18 @@ int main(int argc, char* argv[])
 
     ctx.set_env("job_name", job_name);
 
-    set_value(ctx, session, "last_job_build_number", build.build_num(), ec);
+    cis1::set_value(ctx, session, "last_job_build_number", build.build_num(), ec, std_os);
     if(ec)
     {
         //...
         return 1;
     }
-    
+
     ctx.set_env("build_number", build.build_num());
 
+    /*
     LOG(ctx, session) << "action=\"start_job\"" << std::endl;
+    */
 
     int exit_code = -1;
 
@@ -128,6 +131,17 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    LOG(ctx, session) << "action=\"start_job\" exit_code=" 
+    /*
+    LOG(ctx, session) << "action=\"start_job\" exit_code="
                       << exit_code << std::endl;
+    */
+
+    std::cout << session.session_id() << std::endl;
+    std::cout << "session_id=" << session.session_id()
+              << " action=start_job"
+              << " job_name=" << job_name
+              << " build_dir=" << build.build_num()
+              << " pid=" << boost::this_process::get_id()
+              << " ppid=" << 0 /*FIXME*/ << std::endl;
+    std::cout << "Exit code: " << exit_code << std::endl;
 }

@@ -19,7 +19,7 @@ TEST(set_param, correct)
 
     EXPECT_CALL(ctx, base_dir())
         .WillOnce(ReturnRef(base_dir));
-    
+
     std::string session_id = "test_session";
 
     EXPECT_CALL(session, session_id())
@@ -64,10 +64,10 @@ TEST(set_param, correct)
                     base_dir / "sessions" / (session_id + ".prm"),
                     _))
         .WillOnce(Return(ByMove(std::move(oss))));
-    
+
     std::error_code ec;
 
-    set_param(ctx, session, "test_value", "value", ec, os);
+    cis1::set_param(ctx, session, "test_value", "value", ec, os);
 
     ASSERT_EQ((bool)ec, false);
     ASSERT_STREQ(fc2.str().c_str(), "test_value=value\n");
@@ -85,7 +85,7 @@ TEST(set_param, no_file)
 
     EXPECT_CALL(ctx, base_dir())
         .WillOnce(ReturnRef(base_dir));
-    
+
     std::string session_id = "test_session";
 
     EXPECT_CALL(session, session_id())
@@ -113,10 +113,10 @@ TEST(set_param, no_file)
                     base_dir / "sessions" / (session_id + ".prm"),
                     _))
         .WillOnce(Return(ByMove(std::move(oss))));
-    
+
     std::error_code ec;
 
-    set_param(ctx, session, "test_value", "value", ec, os);
+    cis1::set_param(ctx, session, "test_value", "value", ec, os);
 
     ASSERT_EQ((bool)ec, false);
     ASSERT_STREQ(fc2.str().c_str(), "test_value=value\n");
@@ -134,7 +134,7 @@ TEST(set_param, invalid_file)
 
     EXPECT_CALL(ctx, base_dir())
         .WillOnce(ReturnRef(base_dir));
-    
+
     std::string session_id = "test_session";
 
     EXPECT_CALL(session, session_id())
@@ -167,7 +167,7 @@ TEST(set_param, invalid_file)
 
     std::error_code ec;
 
-    set_param(ctx, session, "test_value", "value", ec, os);
+    cis1::set_param(ctx, session, "test_value", "value", ec, os);
 
     ASSERT_EQ((bool)ec, true);
 }

@@ -21,7 +21,7 @@ TEST(get_param, correct)
 
     EXPECT_CALL(os, get_env_var("job_name"))
         .WillOnce(Return("test_job"));
-    
+
     EXPECT_CALL(os, get_env_var("build_number"))
         .WillOnce(Return("000001"));
 
@@ -49,10 +49,10 @@ TEST(get_param, correct)
                     base_dir / "jobs" / "test_job" / "000001" / "job.params",
                     _))
         .WillOnce(Return(ByMove(std::move(ss))));
-    
+
     std::error_code ec;
 
-    auto result = get_param(ctx, session, "test_value", ec, os);
+    auto result = cis1::get_param(ctx, session, "test_value", ec, os);
 
     ASSERT_EQ((bool)ec, false);
     ASSERT_EQ((bool)result, true);
@@ -74,7 +74,7 @@ TEST(get_param, no_file)
 
     EXPECT_CALL(os, get_env_var("job_name"))
         .WillOnce(Return("test_job"));
-    
+
     EXPECT_CALL(os, get_env_var("build_number"))
         .WillOnce(Return("000001"));
 
@@ -86,7 +86,7 @@ TEST(get_param, no_file)
 
     std::error_code ec;
 
-    auto result = get_param(ctx, session, "test_value", ec, os);
+    auto result = cis1::get_param(ctx, session, "test_value", ec, os);
 
     ASSERT_EQ((bool)ec, false);
     ASSERT_EQ((bool)result, true);
@@ -108,7 +108,7 @@ TEST(get_param, invalid_file)
 
     EXPECT_CALL(os, get_env_var("job_name"))
         .WillOnce(Return("test_job"));
-    
+
     EXPECT_CALL(os, get_env_var("build_number"))
         .WillOnce(Return("000001"));
 
@@ -139,7 +139,7 @@ TEST(get_param, invalid_file)
 
     std::error_code ec;
 
-    auto result = get_param(ctx, session, "test_value", ec, os);
+    auto result = cis1::get_param(ctx, session, "test_value", ec, os);
 
     ASSERT_EQ((bool)ec, true);
     ASSERT_EQ((bool)result, false);

@@ -7,7 +7,7 @@
 #include <boost/asio.hpp>
 
 #include "job_runner.h"
-#include "cis1_error_code.h"
+#include "error_code.h"
 #include "read_istream_kv_str.h"
 
 namespace cis1
@@ -78,7 +78,7 @@ void build::prepare_params(
         auto session_prm_file = os_.open_ifstream(session_prm);
         if(!session_prm_file || !session_prm_file->is_open())
         {
-            ec = cis1::error::error_code::cant_read_session_values_file;
+            ec = cis1::error_code::cant_read_session_values_file;
 
             // TODO: corelog, session log
 
@@ -87,14 +87,14 @@ void build::prepare_params(
         read_istream_kv_str(session_prm_file->istream(), values, ec);
         if(ec)
         {
-            ec = cis1::error::error_code::cant_read_session_values_file;
+            ec = cis1::error_code::cant_read_session_values_file;
 
             // TODO: corelog, session log
 
             return;
         }
     }
-   
+
     for(auto it1 = params_.begin(), it2 = values.begin(); it1 != params_.end(); ++it1)
     {
         while(it2 != values.end() && it1->first > it2->first)
@@ -113,7 +113,7 @@ void build::prepare_params(
     }
 }
 
-void build::copy_files(std::error_code& ec)
+void build::prepare_build_dir(std::error_code& ec)
 {
     create_build_dir(ec);
     if(ec)
@@ -154,7 +154,7 @@ void build::execute(
         job_runner_factory_t job_runner_factory)
 {
     boost::asio::io_context io_ctx;
-    
+
     ctx.set_env("build", build_dir_.filename());
 
     auto runner = job_runner_factory(
@@ -166,7 +166,7 @@ void build::execute(
     auto output = os_.open_ofstream(build_dir_ / "output.txt");
     if(!output || !output->is_open())
     {
-        ec = cis1::error::error_code::cant_open_build_output_file;
+        ec = cis1::error_code::cant_open_build_output_file;
 
         return;
     }
@@ -186,7 +186,7 @@ void build::execute(
                     auto ec_file = os_.open_ofstream(build_dir_ / "exit_code.txt");
                     if(!ec_file || !ec_file->is_open())
                     {
-                        ec = cis1::error::error_code::cant_open_build_exit_code_file;
+                        ec = cis1::error_code::cant_open_build_exit_code_file;
 
                         return;
                     }
@@ -202,9 +202,9 @@ void build::execute(
     io_ctx.run();
 
     if(ec
-        && ec != cis1::error::error_code::cant_open_build_exit_code_file)
+        && ec != cis1::error_code::cant_open_build_exit_code_file)
     {
-        ec = cis1::error::error_code::cant_execute_script;
+        ec = cis1::error_code::cant_execute_script;
     }
 }
 
@@ -225,7 +225,7 @@ std::optional<build> prepare_build(
 
     if(!os.is_directory(job_dir, ec) || ec)
     {
-        ec = cis1::error::error_code::job_dir_doesnt_exist;
+        ec = cis1::error_code::job_dir_doesnt_exist;
 
         return std::nullopt;
     }
@@ -233,7 +233,7 @@ std::optional<build> prepare_build(
     auto is = os.open_ifstream(job_dir / "job.conf");
     if(!is || !is->is_open())
     {
-        ec = cis1::error::error_code::cant_read_job_conf_file;
+        ec = cis1::error_code::cant_read_job_conf_file;
 
         return std::nullopt;
     }
@@ -243,7 +243,7 @@ std::optional<build> prepare_build(
 
     if(ec || job_conf.find("script") == job_conf.end())
     {
-        ec = cis1::error::error_code::cant_read_job_conf_file;
+        ec = cis1::error_code::cant_read_job_conf_file;
 
         // TODO: corelog, session log
 
@@ -254,7 +254,7 @@ std::optional<build> prepare_build(
 
     if(!os.exists(job_dir / script_file_name, ec) || ec)
     {
-        ec = cis1::error::error_code::script_doesnt_exist;
+        ec = cis1::error_code::script_doesnt_exist;
 
         // TODO: corelog, session log
 
@@ -269,7 +269,7 @@ std::optional<build> prepare_build(
 
         if(ec)
         {
-            ec = cis1::error::error_code::cant_read_job_params_file;
+            ec = cis1::error_code::cant_read_job_params_file;
 
             // TODO: corelog, session log
 

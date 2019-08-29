@@ -5,7 +5,7 @@
 #include "job_runner_interface.h"
 
 class job_runner_mock
-    : public job_runner_interface
+    : public cis1::job_runner_interface
 {
 public:
     void run(
@@ -29,20 +29,20 @@ public:
 class job_runner_factory_mock
 {
 public:
-    std::unique_ptr<job_runner_interface> operator()(
+    std::unique_ptr<cis1::job_runner_interface> operator()(
             boost::asio::io_context& ctx,
             boost::process::environment env,
             const std::filesystem::path& working_dir,
-            const os_interface& os) const
+            const cis1::os_interface& os) const
     {
         return call_operator(ctx, env, working_dir, os);
     }
 
     MOCK_CONST_METHOD4(
             call_operator,
-            std::unique_ptr<job_runner_interface>(
+            std::unique_ptr<cis1::job_runner_interface>(
                     boost::asio::io_context& ctx,
                     boost::process::environment env,
                     const std::filesystem::path& working_dir,
-                    const os_interface& os));
+                    const cis1::os_interface& os));
 };

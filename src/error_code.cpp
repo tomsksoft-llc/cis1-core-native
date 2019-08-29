@@ -1,9 +1,6 @@
-#include "cis1_error_code.h"
+#include "error_code.h"
 
 namespace cis1
-{
-
-namespace error
 {
 
 const char * error_category::name() const noexcept
@@ -26,7 +23,7 @@ std::string error_category::message(int ev) const
 
         case error_code::base_dir_doesnt_exist:
             return "CIS base dir doesnt exist";
-        
+
         case error_code::job_dir_doesnt_exist:
             return "Job dir doesnt exist";
 
@@ -53,7 +50,7 @@ std::string error_category::message(int ev) const
 
         case error_code::cant_open_build_output_file:
             return "Cant open build output file";
-    
+
         case error_code::cant_open_build_exit_code_file:
             return "Cant open build exit_code file";
 
@@ -83,7 +80,5 @@ std::error_code make_error_code(error_code e)
 {
     return {static_cast<int>(e), category};
 }
-
-} // namespace error
 
 } // namespace cis1

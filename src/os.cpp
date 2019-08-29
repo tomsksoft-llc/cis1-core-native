@@ -1,10 +1,13 @@
-#include "os_interface.h"
+#include "os.h"
 
 #include <boost/process.hpp>
 
 #include "ifstream_adapter.h"
 #include "ofstream_adapter.h"
 #include "fs_entry_adapter.h"
+
+namespace cis1
+{
 
 std::unique_ptr<os_interface> os::clone() const
 {
@@ -81,3 +84,5 @@ std::unique_ptr<ofstream_interface> os::open_ofstream(
 {
     return std::make_unique<ofstream_adapter>(path, mode);
 }
+
+} // namespace cis1

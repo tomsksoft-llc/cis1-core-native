@@ -23,7 +23,7 @@ TEST(build, create_directory_error)
 
     EXPECT_CALL(os, list_directory(job_dir))
         .WillOnce(Return(ByMove(
-                std::vector<std::unique_ptr<fs_entry_interface>>{})));
+                std::vector<std::unique_ptr<cis1::fs_entry_interface>>{})));
 
     std::error_code err;
     err.assign(1, err.category());
@@ -35,7 +35,7 @@ TEST(build, create_directory_error)
 
     std::error_code ec;
 
-    build.copy_files(ec);
+    build.prepare_build_dir(ec);
 
     ASSERT_EQ((bool)ec, true);
 }
@@ -50,7 +50,7 @@ TEST(build, copy_error)
 
     EXPECT_CALL(os, list_directory(job_dir))
         .WillOnce(Return(ByMove(
-                std::vector<std::unique_ptr<fs_entry_interface>>{})));
+                std::vector<std::unique_ptr<cis1::fs_entry_interface>>{})));
 
     EXPECT_CALL(os, create_directory(job_dir / "000000", _))
         .Times(1);
@@ -68,7 +68,7 @@ TEST(build, copy_error)
 
     std::error_code ec;
 
-    build.copy_files(ec);
+    build.prepare_build_dir(ec);
 
     ASSERT_EQ((bool)ec, true);
 }
@@ -83,7 +83,7 @@ TEST(build, cant_open_job_params)
 
     EXPECT_CALL(os, list_directory(job_dir))
         .WillOnce(Return(ByMove(
-                std::vector<std::unique_ptr<fs_entry_interface>>{})));
+                std::vector<std::unique_ptr<cis1::fs_entry_interface>>{})));
 
     EXPECT_CALL(os, create_directory(job_dir / "000000", _))
         .Times(1);
@@ -108,7 +108,7 @@ TEST(build, cant_open_job_params)
 
     std::error_code ec;
 
-    build.copy_files(ec);
+    build.prepare_build_dir(ec);
 
     ASSERT_EQ((bool)ec, true);
 }
@@ -121,7 +121,7 @@ TEST(build, correct)
 
     std::filesystem::path job_dir = "/test/test_job";
 
-    std::vector<std::unique_ptr<fs_entry_interface>> fs_entries;
+    std::vector<std::unique_ptr<cis1::fs_entry_interface>> fs_entries;
     auto entry1 = std::make_unique<fs_entry_mock>();
     EXPECT_CALL(*entry1, is_directory())
         .WillRepeatedly(Return(true));
@@ -167,7 +167,7 @@ TEST(build, correct)
 
     std::error_code ec;
 
-    build.copy_files(ec);
+    build.prepare_build_dir(ec);
 
     ASSERT_EQ((bool)ec, false);
 }
@@ -188,7 +188,7 @@ TEST(build_execute, job_runner)
     StrictMock<context_mock> ctx;
 
     std::filesystem::path job_dir = "/test/test_job";
-    
+
     boost::process::environment env{};
 
     EXPECT_CALL(ctx, env())
@@ -196,7 +196,7 @@ TEST(build_execute, job_runner)
 
     boost::asio::io_context io_ctx;
 
-    job_runner runner(
+    cis1::job_runner runner(
             io_ctx,
             ctx.env(),
             job_dir / "000012",
@@ -288,7 +288,7 @@ TEST(build_execute, correct)
 
     std::filesystem::path job_dir = "/test/test_job";
 
-    std::vector<std::unique_ptr<fs_entry_interface>> fs_entries;
+    std::vector<std::unique_ptr<cis1::fs_entry_interface>> fs_entries;
     auto entry1 = std::make_unique<fs_entry_mock>();
     EXPECT_CALL(*entry1, is_directory())
         .WillRepeatedly(Return(true));
@@ -334,19 +334,19 @@ TEST(build_execute, correct)
 
     std::error_code ec;
 
-    build.copy_files(ec);
+    build.prepare_build_dir(ec);
 
     ASSERT_EQ((bool)ec, false);
 
     int exit_code = -1;
 
     StrictMock<context_mock> ctx;
-    
+
     boost::process::environment env{};
-    
+
     EXPECT_CALL(ctx, set_env("build", "000012"))
         .Times(1);
-    
+
     EXPECT_CALL(ctx, env())
         .WillOnce(ReturnRef(env));
 

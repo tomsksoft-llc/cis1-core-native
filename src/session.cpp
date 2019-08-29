@@ -45,7 +45,7 @@ std::optional<session> invoke_session(
         auto time = std::chrono::system_clock::to_time_t(now);
         auto id = boost::this_process::get_id();
         std::stringstream ss;
-        ss << std::put_time(std::localtime(&time), "%Y-%m-%d-%H-%M-%S-") << id;
+        ss << std::put_time(std::localtime(&time), "%Y-%m-%d-%H-%M-%S-") << id; // << ppid FIXME
         session_id = ss.str();
     }
 

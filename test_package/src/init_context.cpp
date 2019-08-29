@@ -2,8 +2,8 @@
 
 #include "os_mock.h"
 #include "ifstream_mock.h"
-#include "cis1_context.h"
-#include "cis1_error_code.h"
+#include "context.h"
+#include "error_code.h"
 
 TEST(init_context, correct)
 {
@@ -60,7 +60,7 @@ TEST(init_context, invalid_env)
 
     auto ctx = cis1::init_context(ec, os);
 
-    ASSERT_EQ(ec, cis1::error::error_code::base_dir_not_defined);
+    ASSERT_EQ(ec, cis1::error_code::base_dir_not_defined);
     ASSERT_EQ((bool)ctx, false);
 }
 
@@ -82,7 +82,7 @@ TEST(init_context, no_base_dir)
 
     auto ctx = cis1::init_context(ec, os);
 
-    ASSERT_EQ(ec, cis1::error::error_code::base_dir_doesnt_exist);
+    ASSERT_EQ(ec, cis1::error_code::base_dir_doesnt_exist);
     ASSERT_EQ((bool)ctx, false);
 }
 
@@ -112,7 +112,7 @@ TEST(init_context, no_base_conf_file)
 
     auto ctx = cis1::init_context(ec, os);
 
-    ASSERT_EQ(ec, cis1::error::error_code::cant_read_base_conf_file);
+    ASSERT_EQ(ec, cis1::error_code::cant_read_base_conf_file);
     ASSERT_EQ((bool)ctx, false);
 }
 
@@ -149,7 +149,7 @@ TEST(init_context, invalid_base_conf_file)
 
     auto ctx = cis1::init_context(ec, os);
 
-    ASSERT_EQ(ec, cis1::error::error_code::cant_read_base_conf_file);
+    ASSERT_EQ(ec, cis1::error_code::cant_read_base_conf_file);
     ASSERT_EQ((bool)ctx, false);
 }
 

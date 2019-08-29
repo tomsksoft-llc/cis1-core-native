@@ -2,7 +2,10 @@
 
 #include <algorithm>
 
-#include "cis1_error_code.h"
+#include "error_code.h"
+
+namespace cis1
+{
 
 void read_istream_kv_str(
         std::istream& is,
@@ -18,7 +21,7 @@ void read_istream_kv_str(
 
         if(key.empty() && is.good() && !is.eof())
         {
-            ec = cis1::error::error_code::invalid_kv_file_format;
+            ec = cis1::error_code::invalid_kv_file_format;
 
             return;
         }
@@ -42,3 +45,5 @@ void read_istream_kv_str(
         lines[key] = val;
     }
 }
+
+} // namespace cis1

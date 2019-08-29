@@ -3,7 +3,7 @@
 #include "build.h"
 #include "os_mock.h"
 #include "context_mock.h"
-#include "cis1_error_code.h"
+#include "error_code.h"
 #include "ifstream_mock.h"
 #include "utils.h"
 
@@ -29,7 +29,7 @@ TEST(prepare_build, job_doesnt_exist)
 
     auto build = cis1::prepare_build(ctx, "test_job", ec, os);
 
-    ASSERT_EQ(ec, cis1::error::error_code::job_dir_doesnt_exist);
+    ASSERT_EQ(ec, cis1::error_code::job_dir_doesnt_exist);
     ASSERT_EQ((bool)build, false);
 }
 
@@ -65,7 +65,7 @@ TEST(prepare_build, no_job_conf)
 
     auto build = cis1::prepare_build(ctx, "test_job", ec, os);
 
-    ASSERT_EQ(ec, cis1::error::error_code::cant_read_job_conf_file);
+    ASSERT_EQ(ec, cis1::error_code::cant_read_job_conf_file);
     ASSERT_EQ((bool)build, false);
 }
 
@@ -106,7 +106,7 @@ TEST(prepare_build, invalid_job_conf)
 
     auto build = cis1::prepare_build(ctx, "test_job", ec, os);
 
-    ASSERT_EQ(ec, cis1::error::error_code::cant_read_job_conf_file);
+    ASSERT_EQ(ec, cis1::error_code::cant_read_job_conf_file);
     ASSERT_EQ((bool)build, false);
 }
 
@@ -152,7 +152,7 @@ TEST(prepare_build, script_doesnt_exist)
 
     auto build = cis1::prepare_build(ctx, "test_job", ec, os);
 
-    ASSERT_EQ(ec, cis1::error::error_code::script_doesnt_exist);
+    ASSERT_EQ(ec, cis1::error_code::script_doesnt_exist);
     ASSERT_EQ((bool)build, false);
 }
 
@@ -267,7 +267,7 @@ TEST(prepare_build, invalid_job_params)
 
     auto build = cis1::prepare_build(ctx, "test_job", ec, os);
 
-    ASSERT_EQ(ec, cis1::error::error_code::cant_read_job_params_file);
+    ASSERT_EQ(ec, cis1::error_code::cant_read_job_params_file);
     ASSERT_EQ((bool)build, false);
 }
 

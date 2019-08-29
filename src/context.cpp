@@ -1,9 +1,9 @@
-#include "cis1_context.h"
+#include "context.h"
 
 #include <map>
 #include <string>
 
-#include "cis1_error_code.h"
+#include "error_code.h"
 #include "read_istream_kv_str.h"
 
 namespace cis1
@@ -46,14 +46,14 @@ std::optional<context> init_context(
 
     if(cis_base_dir.empty())
     {
-        ec = cis1::error::error_code::base_dir_not_defined;
+        ec = cis1::error_code::base_dir_not_defined;
 
         return std::nullopt;
     }
 
     if(!os.is_directory(cis_base_dir, ec) || ec)
     {
-        ec = cis1::error::error_code::base_dir_doesnt_exist;
+        ec = cis1::error_code::base_dir_doesnt_exist;
 
         return std::nullopt;
     }
@@ -61,7 +61,7 @@ std::optional<context> init_context(
     auto is = os.open_ifstream(cis_base_dir / "core" / "cis.conf");
     if(!is || !is->is_open())
     {
-        ec = cis1::error::error_code::cant_read_base_conf_file;
+        ec = cis1::error_code::cant_read_base_conf_file;
 
         return std::nullopt;
     }
@@ -74,7 +74,7 @@ std::optional<context> init_context(
 
     if(ec)
     {
-        ec = cis1::error::error_code::cant_read_base_conf_file;
+        ec = cis1::error_code::cant_read_base_conf_file;
 
         return std::nullopt;
     }

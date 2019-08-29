@@ -24,18 +24,22 @@ public:
                     boost::process::environment env,
                     const std::filesystem::path& working_dir,
                     const os_interface& os)>;
+
     build(  const std::string& job_name,
             const std::filesystem::path& job_dir,
             const std::filesystem::path& script,
             const std::map<std::string, std::string>& params,
-            const os_interface& os = os{});
+            const os_interface& os);
 
     std::map<std::string, std::string>& params();
+
     void prepare_params(
             const context_interface& ctx,
             const session_interface& session,
             std::error_code& ec);
-    void copy_files(std::error_code& ec);
+
+    void prepare_build_dir(std::error_code& ec);
+
     void execute(
             context_interface& ctx,
             std::error_code& ec,
@@ -46,7 +50,9 @@ public:
                                 return std::make_unique<job_runner>(
                                         std::forward<decltype(args)>(args)...);
                             });
+
     std::string build_num();
+
 private:
     const std::string job_name_;
     const std::filesystem::path job_dir_;
@@ -62,6 +68,6 @@ std::optional<build> prepare_build(
         context_interface& ctx,
         std::string job_name,
         std::error_code& ec,
-        const os_interface& os = os{});
+        const os_interface& os);
 
 } // namespace cis1

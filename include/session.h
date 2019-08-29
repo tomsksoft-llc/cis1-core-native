@@ -16,8 +16,11 @@ class session
 public:
     session(const std::string& session_id,
             bool opened_by_me);
+
     virtual bool opened_by_me() const override;
+
     virtual const std::string& session_id() const override;
+
 private:
     const std::string session_id_;
     const bool opened_by_me_;
@@ -26,6 +29,6 @@ private:
 std::optional<session> invoke_session(
         context_interface& ctx,
         std::error_code& ec,
-        const os_interface& os = os{});
+        const os_interface& os);
 
 } // namespace cis1

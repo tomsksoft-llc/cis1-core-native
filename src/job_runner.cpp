@@ -8,6 +8,9 @@
 #include <boost/bind.hpp>
 #include <boost/asio/placeholders.hpp>
 
+namespace cis1
+{
+
 job_runner::job_runner(
         boost::asio::io_context& ctx,
         boost::process::environment env,
@@ -69,3 +72,5 @@ void job_runner::on_line_read(
                         boost::asio::placeholders::bytes_transferred));
     }
 }
+
+} // namespace cis1

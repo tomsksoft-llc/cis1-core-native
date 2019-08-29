@@ -5,7 +5,7 @@
 #include "ofstream_interface.h"
 
 class ofstream_mock
-    : public ofstream_interface
+    : public cis1::ofstream_interface
 {
 public:
     MOCK_CONST_METHOD0(is_open, bool());

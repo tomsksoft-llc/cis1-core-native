@@ -5,7 +5,7 @@
 #include "fs_entry_interface.h"
 
 class fs_entry_mock
-    : public fs_entry_interface
+    : public cis1::fs_entry_interface
 {
 public:
     MOCK_CONST_METHOD0(

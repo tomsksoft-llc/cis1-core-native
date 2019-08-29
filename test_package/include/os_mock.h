@@ -5,12 +5,12 @@
 #include "os_interface.h"
 
 class os_mock
-    : public os_interface
+    : public cis1::os_interface
 {
 public:
     MOCK_CONST_METHOD0(
             clone,
-            std::unique_ptr<os_interface>());
+            std::unique_ptr<cis1::os_interface>());
 
     MOCK_CONST_METHOD1(
             get_env_var,
@@ -27,7 +27,7 @@ public:
     MOCK_CONST_METHOD1(
             list_directory,
             std::vector<
-            std::unique_ptr<fs_entry_interface>>(
+            std::unique_ptr<cis1::fs_entry_interface>>(
             const std::filesystem::path& path));
 
     MOCK_CONST_METHOD2(
@@ -42,13 +42,13 @@ public:
 
     MOCK_CONST_METHOD2(
             open_ifstream,
-            std::unique_ptr<ifstream_interface>(
+            std::unique_ptr<cis1::ifstream_interface>(
                     const std::filesystem::path& path,
                     std::ios_base::openmode mode));
 
     MOCK_CONST_METHOD2(
             open_ofstream,
-            std::unique_ptr<ofstream_interface>(
+            std::unique_ptr<cis1::ofstream_interface>(
                     const std::filesystem::path& path,
                     std::ios_base::openmode mode));
 };

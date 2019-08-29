@@ -5,7 +5,7 @@
 #include "session_interface.h"
 
 class session_mock
-    : public session_interface
+    : public cis1::session_interface
 {
 public:
     MOCK_CONST_METHOD0(

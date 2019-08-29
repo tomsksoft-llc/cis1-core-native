@@ -1,5 +1,8 @@
 #include "ifstream_adapter.h"
 
+namespace cis1
+{
+
 ifstream_adapter::ifstream_adapter(
         const std::filesystem::path& filename,
         std::ios_base::openmode mode)
@@ -15,3 +18,5 @@ std::istream& ifstream_adapter::istream()
 {
     return ifs_;
 }
+
+} // namespace cis1

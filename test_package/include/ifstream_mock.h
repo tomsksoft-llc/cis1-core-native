@@ -7,7 +7,7 @@
 #include "ifstream_interface.h"
 
 class ifstream_mock
-    : public ifstream_interface
+    : public cis1::ifstream_interface
 {
 public:
     MOCK_CONST_METHOD0(is_open, bool());

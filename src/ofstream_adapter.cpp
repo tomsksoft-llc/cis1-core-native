@@ -1,5 +1,8 @@
 #include "ofstream_adapter.h"
 
+namespace cis1
+{
+
 ofstream_adapter::ofstream_adapter(
         const std::filesystem::path& filename,
         std::ios_base::openmode mode)
@@ -15,3 +18,5 @@ std::ostream& ofstream_adapter::ostream()
 {
     return ofs_;
 }
+
+} // namespace cis1

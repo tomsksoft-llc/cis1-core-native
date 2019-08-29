@@ -1,9 +1,10 @@
 #include <iostream>
 
-#include "cis1_context.h"
+#include "context.h"
 #include "session.h"
 #include "get_value.h"
 #include "logger.h"
+#include "os.h"
 
 void usage()
 {
@@ -14,7 +15,7 @@ void usage()
 int main(int argc, char *argv[])
 {
 
-    os std_os;
+    cis1::os std_os;
 
     std::error_code ec;
 
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    auto value_opt = get_value(ctx, session, argv[1], ec);
+    auto value_opt = cis1::get_value(ctx, session, argv[1], ec, std_os);
     if(ec)
     {
         //...

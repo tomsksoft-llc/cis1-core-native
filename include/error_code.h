@@ -5,9 +5,6 @@
 namespace cis1
 {
 
-namespace error
-{
-
 enum class error_code
 {
     ok,
@@ -41,15 +38,13 @@ struct error_category
     std::string message(int ev) const override;
 };
 
-} // namespace error
-
 } // namespace cis1
 
 namespace std
 {
 
 template<>
-struct is_error_code_enum<cis1::error::error_code>
+struct is_error_code_enum<cis1::error_code>
     : public true_type
 {};
 
