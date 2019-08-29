@@ -3,10 +3,8 @@ from conans import CMake
 
 
 class Cis1CoreNativeTests(ConanFile):
-    name = "cis1-core-native-tests"
     settings = "os", "compiler", "arch", "build_type"
     generators = "cmake"
-    cmake = None
     requires = "gtest/1.8.1@bincrafters/stable"
 
     def build(self):
@@ -17,3 +15,8 @@ class Cis1CoreNativeTests(ConanFile):
     def test(self):
         target_test = "RUN_TESTS" if self.settings.os == "Windows" else "test"
         self.cmake.build(target=target_test)
+
+    def imports(self):
+        self.copy("libcis1_core.a", dst="lib", src="lib")
+        self.copy("libcis1_core.lib", dst="lib", src="lib")
+        self.copy("FindFilesystem.cmake", dst="cmake/modules", src="cmake/modules")

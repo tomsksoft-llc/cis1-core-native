@@ -5,7 +5,15 @@ project(tests)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+
+find_package(Filesystem REQUIRED Final)
+
+if(BUILD_TESTING)
 include_directories(${CMAKE_SOURCE_DIR}/test_package/include)
+else()
+include_directories(${CMAKE_SOURCE_DIR}/include)
+endif()
 
 add_executable(
     tests
@@ -20,7 +28,11 @@ add_executable(
     src/set_value.cpp
     src/set_param.cpp)
 
+if(BUILD_TESTING)
 target_link_libraries(tests ${CONAN_LIBS} cis1_core std::filesystem)
+else()
+target_link_libraries(tests ${CONAN_LIBS} std::filesystem)
+endif()
 
 enable_testing()
 add_test(NAME tests

@@ -46,6 +46,7 @@ set_property(TARGET setparam PROPERTY CXX_STANDARD 17)
 set_property(TARGET getvalue PROPERTY CXX_STANDARD 17)
 set_property(TARGET setvalue PROPERTY CXX_STANDARD 17)
 
+install(TARGETS cis1_core DESTINATION lib)
 install(TARGETS startjob DESTINATION bin)
 install(TARGETS getparam DESTINATION bin)
 install(TARGETS setparam DESTINATION bin)

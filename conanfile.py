@@ -23,3 +23,14 @@ class Cis1CoreNative(ConanFile):
     def package(self):
         self.copy("*.h", dst="include", src="include")
         self.copy("startjob", dst="bin", src="bin")
+        self.copy("setparam", dst="bin", src="bin")
+        self.copy("getparam", dst="bin", src="bin")
+        self.copy("setvalue", dst="bin", src="bin")
+        self.copy("getvalue", dst="bin", src="bin")
+        self.copy("libcis1_core.a", dst="lib", src="lib")
+        self.copy("libcis1_core.lib", dst="lib", src="lib")
+        self.copy("FindFilesystem.cmake", dst="cmake/modules", src="cmake/modules")
+
+    def package_info(self):
+        self.cpp_info.builddirs = ["", "cmake/modules"]
+        self.cpp_info.libs = ["cis1_core"]
