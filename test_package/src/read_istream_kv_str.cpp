@@ -7,9 +7,12 @@ TEST(read_istream_kv_str, empty_file)
 {
     std::stringstream ss;
     std::map<std::string, std::string> lines;
+
     std::error_code ec;
+
     cis1::read_istream_kv_str(ss, lines, ec);
-    ASSERT_NE((bool)ec, true);
+
+    ASSERT_EQ((bool)ec, false);
     ASSERT_EQ(lines.empty(), true);
 }
 
@@ -30,8 +33,10 @@ TEST(read_istream_kv_str, trailing_space)
     };
 
     std::error_code ec;
+
     cis1::read_istream_kv_str(ss, lines, ec);
-    ASSERT_NE((bool)ec, true);
+
+    ASSERT_EQ((bool)ec, false);
     ASSERT_EQ(is_maps_equal(lines, lines2), true);
 }
 
@@ -50,7 +55,9 @@ TEST(read_istream_kv_str, empty_value)
     };
 
     std::error_code ec;
+
     cis1::read_istream_kv_str(ss, lines, ec);
+
     ASSERT_NE((bool)ec, true);
     ASSERT_EQ(is_maps_equal(lines, lines2), true);
 }
@@ -64,6 +71,6 @@ TEST(read_istream_kv_str, invalid_file)
 
     std::error_code ec;
     cis1::read_istream_kv_str(ss, lines, ec);
-    ASSERT_NE((bool)ec, false);
+    ASSERT_EQ((bool)ec, true);
     ASSERT_EQ(lines.empty(), true);
 }

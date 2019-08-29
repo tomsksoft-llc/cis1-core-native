@@ -123,15 +123,20 @@ TEST(build, correct)
 
     std::vector<std::unique_ptr<cis1::fs_entry_interface>> fs_entries;
     auto entry1 = std::make_unique<fs_entry_mock>();
+
     EXPECT_CALL(*entry1, is_directory())
         .WillRepeatedly(Return(true));
+
     EXPECT_CALL(*entry1, path())
         .WillRepeatedly(Return(job_dir / "000011"));
+
     fs_entries.push_back(std::move(entry1));
 
     auto entry2 = std::make_unique<fs_entry_mock>();
+
     EXPECT_CALL(*entry2, is_directory())
         .WillRepeatedly(Return(false));
+
     fs_entries.push_back(std::move(entry2));
 
     EXPECT_CALL(os, list_directory(job_dir))
@@ -194,14 +199,6 @@ TEST(build_execute, job_runner)
     EXPECT_CALL(ctx, env())
         .WillOnce(ReturnRef(env));
 
-    boost::asio::io_context io_ctx;
-
-    cis1::job_runner runner(
-            io_ctx,
-            ctx.env(),
-            job_dir / "000012",
-            os);
-
     StrictMock<process_mock> process;
 
     StrictMock<sys_stream_mock> std_in;
@@ -226,8 +223,10 @@ TEST(build_execute, job_runner)
 
     EXPECT_CALL(process, std_in())
         .WillOnce(ReturnRef(std_in));
+
     EXPECT_CALL(process, std_out())
         .WillOnce(ReturnRef(std_out));
+
     EXPECT_CALL(process, std_err())
         .WillOnce(ReturnRef(std_err));
 
@@ -253,6 +252,14 @@ TEST(build_execute, job_runner)
     };
 
     std::vector<std::string> result;
+
+    boost::asio::io_context io_ctx;
+
+    cis1::job_runner runner(
+            io_ctx,
+            ctx.env(),
+            job_dir / "000012",
+            os);
 
     runner.run_impl(
             "test_script",
@@ -289,16 +296,22 @@ TEST(build_execute, correct)
     std::filesystem::path job_dir = "/test/test_job";
 
     std::vector<std::unique_ptr<cis1::fs_entry_interface>> fs_entries;
+
     auto entry1 = std::make_unique<fs_entry_mock>();
+
     EXPECT_CALL(*entry1, is_directory())
         .WillRepeatedly(Return(true));
+
     EXPECT_CALL(*entry1, path())
         .WillRepeatedly(Return(job_dir / "000011"));
+
     fs_entries.push_back(std::move(entry1));
 
     auto entry2 = std::make_unique<fs_entry_mock>();
+
     EXPECT_CALL(*entry2, is_directory())
         .WillRepeatedly(Return(false));
+
     fs_entries.push_back(std::move(entry2));
 
     EXPECT_CALL(os, list_directory(job_dir))
@@ -329,16 +342,6 @@ TEST(build_execute, correct)
                 job_dir / "000012" / "job.conf",
                 _))
         .Times(1);
-
-    cis1::build build("test_job", job_dir, job_dir / "script", {}, os);
-
-    std::error_code ec;
-
-    build.prepare_build_dir(ec);
-
-    ASSERT_EQ((bool)ec, false);
-
-    int exit_code = -1;
 
     StrictMock<context_mock> ctx;
 
@@ -399,6 +402,16 @@ TEST(build_execute, correct)
                     job_dir / "000012" / "exit_code.txt",
                     _))
         .WillOnce(Return(ByMove(std::move(ss))));
+
+    cis1::build build("test_job", job_dir, job_dir / "script", {}, os);
+
+    std::error_code ec;
+
+    build.prepare_build_dir(ec);
+
+    ASSERT_EQ((bool)ec, false);
+
+    int exit_code = -1;
 
     build.execute(
             ctx,

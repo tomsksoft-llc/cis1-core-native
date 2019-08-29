@@ -337,8 +337,5 @@ TEST(prepare_build, correct)
 
     ASSERT_EQ((bool)ec, false);
     ASSERT_EQ((bool)build, true);
-    if(build)
-    {
-        ASSERT_EQ(is_maps_equal(params, build->params()), true);
-    }
+    ASSERT_EQ(is_maps_equal(params, build->params()), true);
 }

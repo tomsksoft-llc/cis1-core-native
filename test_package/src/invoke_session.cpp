@@ -24,12 +24,10 @@ TEST(invoke_session, opened_by_me)
     std::error_code ec;
 
     auto session = cis1::invoke_session(ctx, ec, os);
+
     ASSERT_EQ((bool)ec, false);
     ASSERT_EQ((bool)session, true);
-    if(session)
-    {
-        ASSERT_EQ(session.value().opened_by_me(), true);
-    }
+    ASSERT_EQ(session.value().opened_by_me(), true);
 }
 
 TEST(invoke_session, opened_by_smbd)
@@ -52,10 +50,8 @@ TEST(invoke_session, opened_by_smbd)
     std::error_code ec;
 
     auto session = cis1::invoke_session(ctx, ec, os);
+
     ASSERT_EQ((bool)ec, false);
     ASSERT_EQ((bool)session, true);
-    if(session)
-    {
-        ASSERT_EQ(session.value().opened_by_me(), false);
-    }
+    ASSERT_EQ(session.value().opened_by_me(), false);
 }
