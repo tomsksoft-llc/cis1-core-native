@@ -1,5 +1,8 @@
 #include "job_runner.h"
 
+#include <functional>
+#include <vector>
+
 #include <boost/process/async_system.hpp>
 #include <boost/process/start_dir.hpp>
 #include <boost/process/io.hpp>

@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <memory>
 
 #include "error_code.h"
 #include "read_istream_kv_str.h"

@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <system_error>
+#include <string>
 
 #include "context_interface.h"
 #include "os_interface.h"
