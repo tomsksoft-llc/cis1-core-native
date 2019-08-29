@@ -22,6 +22,8 @@ enum class error_code
     cant_open_session,
     cant_open_build_output_file,
     cant_open_build_exit_code_file,
+    cant_write_job_params_file,
+    cant_write_job_conf_file,
     cant_generate_build_num,
     cant_create_build_dir,
     cant_copy_script,

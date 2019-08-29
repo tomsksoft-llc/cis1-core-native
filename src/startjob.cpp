@@ -13,25 +13,18 @@ void usage()
               << "startjob project/job" << "\n";
 }
 
-std::optional<std::string> check_startjob_args(
-        int argc,
-        char* argv[],
-        std::error_code& ec)
-{
-    if(argc != 2)
-    {
-        ec.assign(1, ec.category()); // FIXME
-        return std::nullopt;
-    }
-
-    return argv[1];
-}
-
 int main(int argc, char* argv[])
 {
     cis1::os std_os;
 
     std::error_code ec;
+
+    if(argc != 2)
+    {
+        //...
+        return 1;
+    }
+    std::string job_name = argv[1];
 
     auto ctx_opt = cis1::init_context(ec, std_os);
     if(ec)
@@ -48,14 +41,6 @@ int main(int argc, char* argv[])
         return 1;
     }
     auto& session = session_opt.value();
-
-    auto job_name_opt = check_startjob_args(argc, argv, ec);
-    if(ec)
-    {
-        usage();
-        return 1;
-    }
-    auto& job_name = job_name_opt.value();
 
     auto build_opt = cis1::prepare_build(ctx, job_name, ec, std_os);
     if(ec)

@@ -53,6 +53,12 @@ std::string error_category::message(int ev) const
 
         case error_code::cant_open_build_exit_code_file:
             return "Cant open build exit_code file";
+    
+        case error_code::cant_write_job_params_file:
+            return "Cant write job params file";
+
+        case error_code::cant_write_job_conf_file:
+            return "Cant write job conf file";
 
         case error_code::cant_generate_build_num:
             return "Cant generate build number";

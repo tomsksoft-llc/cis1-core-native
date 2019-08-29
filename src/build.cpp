@@ -130,7 +130,7 @@ void build::prepare_build_dir(std::error_code& ec)
     auto os = os_.open_ofstream(build_dir_ / "job.params");
     if(!os || !os->is_open())
     {
-        ec.assign(1, ec.category()); //FIXME
+        ec = cis1::error_code::cant_write_job_params_file;
 
         return;
     }
@@ -143,6 +143,8 @@ void build::prepare_build_dir(std::error_code& ec)
     os_.copy(job_dir_ / "job.conf", build_dir_ / "job.conf", ec);
     if(ec)
     {
+        ec = cis1::error_code::cant_write_job_conf_file;
+
         return;
     }
 }
