@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include <gmock/gmock.h>
+
 #include "ofstream_interface.h"
 
 class ofstream_mock

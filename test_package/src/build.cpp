@@ -29,7 +29,7 @@ TEST(build, create_directory_error)
     err.assign(1, err.category());
 
     EXPECT_CALL(os, create_directory(job_dir / "000000", _))
-        .WillOnce(SetArgReferee<1>(err));
+        .WillOnce(DoAll(SetArgReferee<1>(err), Return(false)));
 
     cis1::build build("test_job", job_dir, job_dir / "script", {}, os);
 
@@ -53,7 +53,7 @@ TEST(build, copy_error)
                 std::vector<std::unique_ptr<cis1::fs_entry_interface>>{})));
 
     EXPECT_CALL(os, create_directory(job_dir / "000000", _))
-        .Times(1);
+        .WillOnce(Return(true));
 
     std::error_code err;
     err.assign(1, err.category());
@@ -86,7 +86,7 @@ TEST(build, cant_open_job_params)
                 std::vector<std::unique_ptr<cis1::fs_entry_interface>>{})));
 
     EXPECT_CALL(os, create_directory(job_dir / "000000", _))
-        .Times(1);
+        .WillOnce(Return(true));
 
     EXPECT_CALL(os, copy(
                 job_dir / "script",
@@ -144,7 +144,7 @@ TEST(build, correct)
              std::move(fs_entries))));
 
     EXPECT_CALL(os, create_directory(job_dir / "000012", _))
-        .Times(1);
+        .WillOnce(Return(true));
 
     EXPECT_CALL(os, copy(
                 job_dir / "script",
@@ -319,7 +319,7 @@ TEST(build_execute, correct)
              std::move(fs_entries))));
 
     EXPECT_CALL(os, create_directory(job_dir / "000012", _))
-        .Times(1);
+        .WillOnce(Return(true));
 
     EXPECT_CALL(os, copy(
                 job_dir / "script",
