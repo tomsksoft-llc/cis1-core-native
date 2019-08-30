@@ -12,9 +12,20 @@ conan_basic_setup()
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 add_library(cis1_core STATIC
-        src/cis1_core.cpp
         src/job_runner.cpp
-        src/cis1_error_code.cpp)
+        src/error_code.cpp
+        src/context.cpp
+        src/session.cpp
+        src/build.cpp
+        src/os.cpp
+        src/read_istream_kv_str.cpp
+        src/ifstream_adapter.cpp
+        src/ofstream_adapter.cpp
+        src/fs_entry_adapter.cpp
+        src/get_param.cpp
+        src/set_param.cpp
+        src/get_value.cpp
+        src/set_value.cpp)
 
 add_executable(startjob src/startjob.cpp)
 add_executable(getparam src/getparam.cpp)
@@ -35,6 +46,7 @@ set_property(TARGET setparam PROPERTY CXX_STANDARD 17)
 set_property(TARGET getvalue PROPERTY CXX_STANDARD 17)
 set_property(TARGET setvalue PROPERTY CXX_STANDARD 17)
 
+install(TARGETS cis1_core DESTINATION lib)
 install(TARGETS startjob DESTINATION bin)
 install(TARGETS getparam DESTINATION bin)
 install(TARGETS setparam DESTINATION bin)
