@@ -17,6 +17,10 @@ struct context_interface
     virtual const boost::process::environment& env() const = 0;
 
     virtual const std::filesystem::path& base_dir() const = 0;
+
+    virtual size_t pid() const = 0;
+
+    virtual size_t ppid() const = 0;
 };
 
 } // namespace cis1

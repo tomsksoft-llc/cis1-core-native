@@ -6,6 +6,8 @@
 
 #include <boost/process.hpp>
 
+#include "get_parent_id.h"
+
 namespace cis1
 {
 
@@ -44,8 +46,9 @@ std::optional<session> invoke_session(
         auto now = std::chrono::system_clock::now();
         auto time = std::chrono::system_clock::to_time_t(now);
         auto id = boost::this_process::get_id();
+        auto parent_id = get_parent_id();
         std::stringstream ss;
-        ss << std::put_time(std::localtime(&time), "%Y-%m-%d-%H-%M-%S-") << id; // << ppid FIXME
+        ss << std::put_time(std::localtime(&time), "%Y-%m-%d-%H-%M-%S-") << id << "_"  << parent_id;
         session_id = ss.str();
     }
 

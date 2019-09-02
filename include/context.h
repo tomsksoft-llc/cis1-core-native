@@ -29,10 +29,16 @@ public:
 
     virtual const std::filesystem::path& base_dir() const override;
 
+    virtual size_t pid() const override;
+
+    virtual size_t ppid() const override;
+
 private:
     const std::filesystem::path base_dir_;
     const std::map<std::string, std::string> executables_;
     boost::process::environment env_;
+    size_t pid_;
+    size_t ppid_;
 };
 
 std::optional<context> init_context(

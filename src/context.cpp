@@ -6,6 +6,7 @@
 
 #include "error_code.h"
 #include "read_istream_kv_str.h"
+#include "get_parent_id.h"
 
 namespace cis1
 {
@@ -16,6 +17,8 @@ context::context(
     : base_dir_(base_dir)
     , executables_(executables)
     , env_(boost::this_process::environment())
+    , pid_(boost::this_process::get_id())
+    , ppid_(get_parent_id())
 {
     for(auto& [k, v] : executables)
     {
@@ -87,6 +90,16 @@ std::optional<context> init_context(
     // TODO: init sessionlog, log about new sessoin if need
 
     return context{cis_base_dir, executables};
+}
+
+size_t context::pid() const
+{
+    return pid_;
+}
+
+size_t context::ppid() const
+{
+    return ppid_;
 }
 
 } // namespace cis1
