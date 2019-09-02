@@ -20,16 +20,12 @@ std::optional<std::string> get_value(
         {
             ec = cis1::error_code::cant_read_session_values_file;
 
-            // TODO: corelog, session log
-
             return std::nullopt;
         }
         read_istream_kv_str(session_dat_file->istream(), values, ec);
         if(ec)
         {
             ec = cis1::error_code::cant_read_session_values_file;
-
-            // TODO: corelog, session log
 
             return std::nullopt;
         }
@@ -39,10 +35,6 @@ std::optional<std::string> get_value(
     {
         return it->second;
     }
-
-    // TODO check if value exist in job.value
-
-    // TODO read session prm file and replace the value value or add it to the prm file
 
     return "";
 }

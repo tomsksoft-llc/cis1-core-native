@@ -43,10 +43,6 @@ std::optional<std::string> get_param(
         return it->second;
     }
 
-    // TODO check if value exist in job.value
-
-    // TODO read session prm file and replace the value value or add it to the prm file
-
     return "";
 }
 

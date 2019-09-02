@@ -19,4 +19,12 @@ public:
     MOCK_CONST_METHOD0(
             base_dir,
             const std::filesystem::path&());
+
+    MOCK_CONST_METHOD0(
+            pid,
+            size_t());
+
+    MOCK_CONST_METHOD0(
+            ppid,
+            size_t());
 };
