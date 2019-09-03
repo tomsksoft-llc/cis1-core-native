@@ -23,16 +23,12 @@ std::optional<std::string> get_param(
         {
             ec = cis1::error_code::cant_read_job_params_file;
 
-            // TODO: corelog, session log
-
             return std::nullopt;
         }
         read_istream_kv_str(job_prm_file->istream(), values, ec);
         if(ec)
         {
             ec = cis1::error_code::cant_read_job_params_file;
-
-            // TODO: corelog, session log
 
             return std::nullopt;
         }

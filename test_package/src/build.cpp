@@ -16,6 +16,7 @@ TEST(build, create_directory_error)
     using namespace ::testing;
 
     StrictMock<os_mock> os;
+    StrictMock<session_mock> session;
 
     auto internal_os = std::make_unique<StrictMock<os_mock>>();
 
@@ -35,7 +36,7 @@ TEST(build, create_directory_error)
 
     std::error_code ec;
 
-    build.prepare_build_dir(ec);
+    build.prepare_build_dir(session, ec);
 
     ASSERT_EQ((bool)ec, true);
 }
@@ -45,6 +46,7 @@ TEST(build, copy_error)
     using namespace ::testing;
 
     StrictMock<os_mock> os;
+    StrictMock<session_mock> session;
 
     std::filesystem::path job_dir = "/test/test_job";
 
@@ -68,7 +70,7 @@ TEST(build, copy_error)
 
     std::error_code ec;
 
-    build.prepare_build_dir(ec);
+    build.prepare_build_dir(session, ec);
 
     ASSERT_EQ((bool)ec, true);
 }
@@ -78,6 +80,7 @@ TEST(build, cant_open_job_params)
     using namespace ::testing;
 
     StrictMock<os_mock> os;
+    StrictMock<session_mock> session;
 
     std::filesystem::path job_dir = "/test/test_job";
 
@@ -108,16 +111,17 @@ TEST(build, cant_open_job_params)
 
     std::error_code ec;
 
-    build.prepare_build_dir(ec);
+    build.prepare_build_dir(session, ec);
 
     ASSERT_EQ((bool)ec, true);
 }
 
-TEST(build, correct)
+TEST(build, cant_open_session_id)
 {
     using namespace ::testing;
 
     StrictMock<os_mock> os;
+    StrictMock<session_mock> session;
 
     std::filesystem::path job_dir = "/test/test_job";
 
@@ -168,13 +172,109 @@ TEST(build, correct)
                 _))
         .Times(1);
 
+    ss = std::make_unique<StrictMock<ofstream_mock>>();
+
+    EXPECT_CALL(*ss, is_open())
+        .WillOnce(Return(false));
+
+    EXPECT_CALL(os, open_ofstream(
+                job_dir / "000012" / "session_id.txt",
+                _))
+        .WillOnce(Return(ByMove(std::move(ss))));
+
     cis1::build build("test_job", job_dir, job_dir / "script", {}, os);
 
     std::error_code ec;
 
-    build.prepare_build_dir(ec);
+    build.prepare_build_dir(session, ec);
+
+    ASSERT_EQ((bool)ec, true);
+}
+
+TEST(build, correct)
+{
+    using namespace ::testing;
+
+    StrictMock<os_mock> os;
+    StrictMock<session_mock> session;
+
+    std::filesystem::path job_dir = "/test/test_job";
+
+    std::vector<std::unique_ptr<cis1::fs_entry_interface>> fs_entries;
+    auto entry1 = std::make_unique<fs_entry_mock>();
+
+    EXPECT_CALL(*entry1, is_directory())
+        .WillRepeatedly(Return(true));
+
+    EXPECT_CALL(*entry1, path())
+        .WillRepeatedly(Return(job_dir / "000011"));
+
+    fs_entries.push_back(std::move(entry1));
+
+    auto entry2 = std::make_unique<fs_entry_mock>();
+
+    EXPECT_CALL(*entry2, is_directory())
+        .WillRepeatedly(Return(false));
+
+    fs_entries.push_back(std::move(entry2));
+
+    EXPECT_CALL(os, list_directory(job_dir))
+        .WillOnce(Return(ByMove(
+             std::move(fs_entries))));
+
+    EXPECT_CALL(os, create_directory(job_dir / "000012", _))
+        .WillOnce(Return(true));
+
+    EXPECT_CALL(os, copy(
+                job_dir / "script",
+                job_dir / "000012" / "script",
+                _))
+        .Times(1);
+
+    auto ss = std::make_unique<StrictMock<ofstream_mock>>();
+
+    EXPECT_CALL(*ss, is_open())
+        .WillOnce(Return(true));
+
+    EXPECT_CALL(os, open_ofstream(
+                job_dir / "000012" / "job.params",
+                _))
+        .WillOnce(Return(ByMove(std::move(ss))));
+
+    EXPECT_CALL(os, copy(
+                job_dir / "job.conf",
+                job_dir / "000012" / "job.conf",
+                _))
+        .Times(1);
+
+    ss = std::make_unique<StrictMock<ofstream_mock>>();
+
+    EXPECT_CALL(*ss, is_open())
+        .WillOnce(Return(true));
+
+    std::stringstream fc;
+
+    EXPECT_CALL(*ss, ostream())
+        .WillOnce(ReturnRef(fc));
+
+    EXPECT_CALL(os, open_ofstream(
+                job_dir / "000012" / "session_id.txt",
+                _))
+        .WillOnce(Return(ByMove(std::move(ss))));
+
+    std::string session_id = "test_session";
+
+    EXPECT_CALL(session, session_id())
+        .WillOnce(ReturnRef(session_id));
+
+    cis1::build build("test_job", job_dir, job_dir / "script", {}, os);
+
+    std::error_code ec;
+
+    build.prepare_build_dir(session, ec);
 
     ASSERT_EQ((bool)ec, false);
+    ASSERT_STREQ(fc.str().c_str(), (session_id + "\n").c_str());
 }
 
 ACTION_TEMPLATE(SaveArgReferee,
@@ -191,6 +291,8 @@ TEST(build_execute, job_runner)
     StrictMock<os_mock> os;
 
     StrictMock<context_mock> ctx;
+
+    StrictMock<session_mock> session;
 
     std::filesystem::path job_dir = "/test/test_job";
 
@@ -292,6 +394,8 @@ TEST(build_execute, correct)
     using namespace ::testing;
 
     StrictMock<os_mock> os;
+
+    StrictMock<session_mock> session;
 
     std::filesystem::path job_dir = "/test/test_job";
 
@@ -399,15 +503,35 @@ TEST(build_execute, correct)
     EXPECT_CALL(
             os,
             open_ofstream(
-                    job_dir / "000012" / "exit_code.txt",
+                    job_dir / "000012" / "exitcode.txt",
                     _))
+        .WillOnce(Return(ByMove(std::move(ss))));
+
+    std::string session_id = "test_session";
+
+    EXPECT_CALL(session, session_id())
+        .WillOnce(ReturnRef(session_id));
+
+    ss = std::make_unique<StrictMock<ofstream_mock>>();
+
+    EXPECT_CALL(*ss, is_open())
+        .WillOnce(Return(true));
+
+    std::stringstream fc2;
+
+    EXPECT_CALL(*ss, ostream())
+        .WillOnce(ReturnRef(fc2));
+
+    EXPECT_CALL(os, open_ofstream(
+                job_dir / "000012" / "session_id.txt",
+                _))
         .WillOnce(Return(ByMove(std::move(ss))));
 
     cis1::build build("test_job", job_dir, job_dir / "script", {}, os);
 
     std::error_code ec;
 
-    build.prepare_build_dir(ec);
+    build.prepare_build_dir(session, ec);
 
     ASSERT_EQ((bool)ec, false);
 
@@ -421,6 +545,7 @@ TEST(build_execute, correct)
 
     ASSERT_EQ((bool)ec, false);
     ASSERT_EQ(exit_code, 0);
+    ASSERT_STREQ(fc2.str().c_str(), (session_id + "\n").c_str());
 }
 
 TEST(build_prepare_params, correct)

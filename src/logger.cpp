@@ -16,7 +16,7 @@ struct logger
 
     std::optional<std::string> session_id;
 
-    std::unique_ptr<std::ostream> default_sink = 
+    std::unique_ptr<std::ostream> default_sink =
             std::make_unique<
                     boost::iostreams::stream<boost::iostreams::null_sink>>();
 
@@ -28,7 +28,7 @@ struct logger
             boost::iostreams::tee_device<
                     std::ostream,
                     std::ostream>> both_log_device;
-    
+
     std::unique_ptr<std::ostream> both_log_sink = nullptr;
 
     void write_time(std::ostream& os)

@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    build.prepare_build_dir(ec);
+    build.prepare_build_dir(session, ec);
     if(ec)
     {
         both_log() << "action=\"error\" " << ec.message() << std::endl;

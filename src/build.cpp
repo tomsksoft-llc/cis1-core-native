@@ -80,16 +80,12 @@ void build::prepare_params(
         {
             ec = cis1::error_code::cant_read_session_values_file;
 
-            // TODO: corelog, session log
-
             return;
         }
         read_istream_kv_str(session_prm_file->istream(), values, ec);
         if(ec)
         {
             ec = cis1::error_code::cant_read_session_values_file;
-
-            // TODO: corelog, session log
 
             return;
         }
@@ -113,7 +109,9 @@ void build::prepare_params(
     }
 }
 
-void build::prepare_build_dir(std::error_code& ec)
+void build::prepare_build_dir(
+        const session_interface& session,
+        std::error_code& ec)
 {
     create_build_dir(ec);
     if(ec)
@@ -147,6 +145,16 @@ void build::prepare_build_dir(std::error_code& ec)
 
         return;
     }
+
+    os = os_.open_ofstream(build_dir_ / "session_id.txt");
+    if(!os || !os->is_open())
+    {
+        ec = cis1::error_code::cant_write_session_id_file;
+
+        return;
+    }
+
+    os->ostream() << session.session_id() << std::endl;
 }
 
 void build::execute(
@@ -185,7 +193,7 @@ void build::execute(
                 {
                     exit_code = exit;
 
-                    auto ec_file = os_.open_ofstream(build_dir_ / "exit_code.txt");
+                    auto ec_file = os_.open_ofstream(build_dir_ / "exitcode.txt");
                     if(!ec_file || !ec_file->is_open())
                     {
                         ec = cis1::error_code::cant_open_build_exit_code_file;
@@ -193,7 +201,7 @@ void build::execute(
                         return;
                     }
 
-                    ec_file->ostream() << exit;
+                    ec_file->ostream() << exit << std::endl;
                 }
             },
             [&](const std::string& str)
@@ -247,8 +255,6 @@ std::optional<build> prepare_build(
     {
         ec = cis1::error_code::cant_read_job_conf_file;
 
-        // TODO: corelog, session log
-
         return std::nullopt;
     }
 
@@ -257,8 +263,6 @@ std::optional<build> prepare_build(
     if(!os.exists(job_dir / script_file_name, ec) || ec)
     {
         ec = cis1::error_code::script_doesnt_exist;
-
-        // TODO: corelog, session log
 
         return std::nullopt;
     }
@@ -272,8 +276,6 @@ std::optional<build> prepare_build(
         if(ec)
         {
             ec = cis1::error_code::cant_read_job_params_file;
-
-            // TODO: corelog, session log
 
             return std::nullopt;
         }

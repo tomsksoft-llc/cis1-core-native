@@ -38,7 +38,9 @@ public:
             const session_interface& session,
             std::error_code& ec);
 
-    void prepare_build_dir(std::error_code& ec);
+    void prepare_build_dir(
+            const session_interface& session,
+            std::error_code& ec);
 
     void execute(
             context_interface& ctx,

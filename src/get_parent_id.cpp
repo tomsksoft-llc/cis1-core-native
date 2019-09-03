@@ -1,5 +1,3 @@
-#pragma once
-
 #include "get_parent_id.h"
 
 #ifdef _WIN32
