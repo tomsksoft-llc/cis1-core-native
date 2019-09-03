@@ -21,16 +21,12 @@ void set_value(
         {
             ec = cis1::error_code::cant_read_session_values_file;
 
-            // TODO: corelog, session log
-
             return;
         }
         read_istream_kv_str(session_dat_file->istream(), values, ec);
         if(ec)
         {
             ec = cis1::error_code::cant_read_session_values_file;
-
-            // TODO: corelog, session log
 
             return;
         }
@@ -40,8 +36,6 @@ void set_value(
     if(!session_dat_file || !session_dat_file->is_open())
     {
         ec = cis1::error_code::cant_read_session_values_file;
-
-        // TODO: corelog, session log
 
         return;
     }
@@ -61,10 +55,6 @@ void set_value(
     {
         session_dat_file->ostream() << value_name << '=' << value << '\n';
     }
-
-    // TODO check if value exist in job.value
-
-    // TODO read session prm file and replace the value value or add it to the prm file
 }
 
 } // namespace cis1

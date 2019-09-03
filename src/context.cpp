@@ -83,12 +83,6 @@ std::optional<context> init_context(
         return std::nullopt;
     }
 
-    // TODO: init corelog system
-
-    // TODO: corelog
-
-    // TODO: init sessionlog, log about new sessoin if need
-
     return context{cis_base_dir, executables};
 }
 
