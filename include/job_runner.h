@@ -31,23 +31,28 @@ public:
     virtual void run(
             const std::string& filename,
             on_exit_cb_t&& on_exit_cb,
-            on_line_read_cb_t&& on_line_read_cb) override;
+            on_line_read_cb_t&& on_out_line_read_cb,
+            on_line_read_cb_t&& on_err_line_read_cb) override;
 
     FRIEND_TEST(::build_execute, job_runner);
 private:
     boost::asio::io_context& ctx_;
     boost::process::async_pipe out_pipe_;
+    boost::process::async_pipe err_pipe_;
     boost::process::environment env_;
     std::filesystem::path working_dir_;
-    boost::asio::streambuf streambuf_;
-    on_line_read_cb_t on_line_read_cb_;
+    boost::asio::streambuf outbuf_;
+    boost::asio::streambuf errbuf_;
+    on_line_read_cb_t on_out_line_read_cb_;
+    on_line_read_cb_t on_err_line_read_cb_;
     const os_interface& os_;
 
     template <class Process = process>
     void run_impl(
             const std::string& filename,
             on_exit_cb_t&& on_exit_cb,
-            on_line_read_cb_t&& on_line_read_cb,
+            on_line_read_cb_t&& on_out_line_read_cb,
+            on_line_read_cb_t&& on_err_line_read_cb,
             const Process& p = {})
     {
 #ifdef __linux__
@@ -57,7 +62,8 @@ private:
 #else
 #error "Unsupported platform."
 #endif
-        on_line_read_cb_ = std::move(on_line_read_cb);
+        on_out_line_read_cb_ = std::move(on_out_line_read_cb);
+        on_err_line_read_cb_ = std::move(on_err_line_read_cb);
 
         p.async_system(
                 ctx_,
@@ -67,20 +73,34 @@ private:
                 working_dir_,
                 p.std_in().close(),
                 p.std_out() > out_pipe_,
-                p.std_err().close());
+                p.std_err() > err_pipe_);
 
         boost::asio::async_read_until(
                 out_pipe_,
-                streambuf_,
+                outbuf_,
                 '\n',
                 boost::bind(
-                        &job_runner::on_line_read,
+                        &job_runner::on_out_line_read,
+                        this,
+                        boost::asio::placeholders::error,
+                        boost::asio::placeholders::bytes_transferred));
+
+        boost::asio::async_read_until(
+                err_pipe_,
+                errbuf_,
+                '\n',
+                boost::bind(
+                        &job_runner::on_err_line_read,
                         this,
                         boost::asio::placeholders::error,
                         boost::asio::placeholders::bytes_transferred));
     }
 
-    void on_line_read(
+    void on_out_line_read(
+            const boost::system::error_code& error,
+            std::size_t bytes_transferred);
+
+    void on_err_line_read(
             const boost::system::error_code& error,
             std::size_t bytes_transferred);
 };

@@ -20,7 +20,8 @@ struct job_runner_interface
     virtual void run(
             const std::string& filename,
             on_exit_cb_t&& on_exit_cb,
-            on_line_read_cb_t&& on_line_read_cb) = 0;
+            on_line_read_cb_t&& on_out_line_read_cb,
+            on_line_read_cb_t&& on_err_line_read_cb) = 0;
 };
 
 } // namespace cis1

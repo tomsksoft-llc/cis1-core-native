@@ -11,19 +11,22 @@ public:
     void run(
             const std::string& filename,
             on_exit_cb_t&& on_exit_cb,
-            on_line_read_cb_t&& on_line_read_cb)
+            on_line_read_cb_t&& on_out_line_read_cb,
+            on_line_read_cb_t&& on_err_line_read_cb)
     {
         run_impl(
                 filename,
                 on_exit_cb,
-                on_line_read_cb);
+                on_out_line_read_cb,
+                on_err_line_read_cb);
     }
 
-    MOCK_METHOD3(
+    MOCK_METHOD4(
             run_impl,
             void(   const std::string& filename,
                     on_exit_cb_t& on_exit_cb,
-                    on_line_read_cb_t& on_line_read_cb));
+                    on_line_read_cb_t& on_out_line_read_cb,
+                    on_line_read_cb_t& on_err_line_read_cb));
 };
 
 class job_runner_factory_mock
