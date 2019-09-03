@@ -207,6 +207,10 @@ void build::execute(
             [&](const std::string& str)
             {
                 output->ostream() << str << '\n';
+            },
+            [&](const std::string& str)
+            {
+                output->ostream() << str << '\n';
             });
 
     io_ctx.run();

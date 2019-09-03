@@ -320,8 +320,13 @@ TEST(build_execute, job_runner)
 
     StrictMock<sys_stream_mock> std_err;
 
-    EXPECT_CALL(std_err, close())
-        .WillOnce(ReturnRef(std_err));
+    boost::process::async_pipe* err_pipe;
+
+    EXPECT_CALL(std_err, less_op(_))
+        .WillOnce(
+                DoAll(
+                        SaveArgReferee<0>(&err_pipe),
+                        ReturnRef(std_err)));
 
     EXPECT_CALL(process, std_in())
         .WillOnce(ReturnRef(std_in));
@@ -370,6 +375,10 @@ TEST(build_execute, job_runner)
             {
                 result.push_back(str);
             },
+            [&](const std::string& str)
+            {
+                result.push_back(str);
+            },
             process);
 
     std::error_code ec;
@@ -380,6 +389,7 @@ TEST(build_execute, job_runner)
             [&](std::error_code err, size_t bytes_transferred) mutable
             {
                 std::move(*out_pipe).sink().close();
+                std::move(*err_pipe).sink().close();
                 ec = err;
             });
 
@@ -467,6 +477,7 @@ TEST(build_execute, correct)
             *job_runner,
             run_impl(
                     "script",
+                    _,
                     _,
                     _))
         .WillOnce(InvokeArgument<1>(err, 0));

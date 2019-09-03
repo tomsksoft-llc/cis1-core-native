@@ -21,6 +21,7 @@ job_runner::job_runner(
         const os_interface& os)
     : ctx_(ctx)
     , out_pipe_(ctx)
+    , err_pipe_(ctx)
     , env_(env)
     , working_dir_(working_dir)
     , os_(os)
@@ -29,12 +30,14 @@ job_runner::job_runner(
 void job_runner::run(
         const std::string& filename,
         on_exit_cb_t&& on_exit_cb,
-        on_line_read_cb_t&& on_line_read_cb)
+        on_line_read_cb_t&& on_out_line_read_cb,
+        on_line_read_cb_t&& on_err_line_read_cb)
 {
     run_impl(
             filename,
             std::move(on_exit_cb),
-            std::move(on_line_read_cb));
+            std::move(on_out_line_read_cb),
+            std::move(on_err_line_read_cb));
 }
 
 std::string make_string(boost::asio::streambuf& streambuf, size_t size)
@@ -43,33 +46,66 @@ std::string make_string(boost::asio::streambuf& streambuf, size_t size)
             buffers_begin(streambuf.data()) + size};
 }
 
-void job_runner::on_line_read(
+void job_runner::on_out_line_read(
         const boost::system::error_code& ec,
         std::size_t bytes_transferred)
 {
     if(!ec)
     {
-        on_line_read_cb_(
-                make_string(streambuf_, bytes_transferred - 1));
+        on_out_line_read_cb_(
+                make_string(outbuf_, bytes_transferred - 1));
 
-        streambuf_.consume(bytes_transferred);
+        outbuf_.consume(bytes_transferred);
     }
     else if(ec == boost::asio::error::eof)
     {
-        on_line_read_cb_(
-                make_string(streambuf_, streambuf_.size()));
+        on_out_line_read_cb_(
+                make_string(outbuf_, outbuf_.size()));
 
-        streambuf_.consume(streambuf_.size());
+        outbuf_.consume(outbuf_.size());
     }
 
     if(!ec)
     {
         boost::asio::async_read_until(
                 out_pipe_,
-                streambuf_,
+                outbuf_,
                 '\n',
                 boost::bind(
-                        &job_runner::on_line_read,
+                        &job_runner::on_out_line_read,
+                        this,
+                        boost::asio::placeholders::error,
+                        boost::asio::placeholders::bytes_transferred));
+    }
+}
+
+void job_runner::on_err_line_read(
+        const boost::system::error_code& ec,
+        std::size_t bytes_transferred)
+{
+    if(!ec)
+    {
+        on_err_line_read_cb_(
+                make_string(errbuf_, bytes_transferred - 1));
+
+        errbuf_.consume(bytes_transferred);
+    }
+    else if(ec == boost::asio::error::eof && bytes_transferred != 0)
+    {
+        on_err_line_read_cb_(
+                make_string(errbuf_, errbuf_.size()));
+
+        errbuf_.consume(errbuf_.size());
+    }
+
+    if(!ec)
+    {
+        boost::asio::async_read_until(
+                err_pipe_,
+                errbuf_,
+                '\n',
+                boost::bind(
+                        &job_runner::on_err_line_read,
                         this,
                         boost::asio::placeholders::error,
                         boost::asio::placeholders::bytes_transferred));
