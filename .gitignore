@@ -4,6 +4,8 @@
 !readme.md
 !conanfile.py
 !CMakeLists.txt
+!version.txt
+!component_version.txt
 
 !cmake
 !cmake/modules
