@@ -5,6 +5,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Adapts std::filesystem::directory_entry to fs_entry_interface
+ */
 class fs_entry_adapter
     : public fs_entry_interface
 {

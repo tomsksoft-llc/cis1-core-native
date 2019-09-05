@@ -5,6 +5,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Interface for ifstream
+ */
 struct ifstream_interface
 {
     virtual ~ifstream_interface() = default;

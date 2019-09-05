@@ -14,6 +14,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Interface for all os calls
+ */
 struct os_interface
 {
     virtual ~os_interface() = default;

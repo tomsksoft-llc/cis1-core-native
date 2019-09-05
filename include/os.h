@@ -5,6 +5,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Default os calls implementation
+ */
 class os
     : public os_interface
 {

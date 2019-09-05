@@ -8,6 +8,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Interface for CIS
+ */
 struct context_interface
 {
     virtual ~context_interface() = default;

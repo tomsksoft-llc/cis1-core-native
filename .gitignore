@@ -6,6 +6,7 @@
 !CMakeLists.txt
 !version.txt
 !component_version.txt
+!Doxyfile.in
 
 !cmake
 !cmake/modules
