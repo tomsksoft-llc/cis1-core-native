@@ -10,6 +10,12 @@
 namespace cis1
 {
 
+/**
+ * \brief Function for reading 'key=value' from istream
+ * @param[in] is
+ * @param[out] lines
+ * @param[out] ec
+ */
 void read_istream_kv_str(
         std::istream& is,
         std::map<std::string, std::string>& lines,

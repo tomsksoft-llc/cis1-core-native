@@ -5,6 +5,10 @@
 namespace cis1
 {
 
+
+/**
+ * \brief Interface of CIS session
+ */
 struct session_interface
 {
     virtual ~session_interface() = default;

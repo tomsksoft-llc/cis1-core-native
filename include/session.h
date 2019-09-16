@@ -11,6 +11,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Represents CIS session
+ */
 class session
     : public session_interface
 {
@@ -18,8 +21,16 @@ public:
     session(const std::string& session_id,
             bool opened_by_me);
 
+    /**
+     * \brief Identifies is current process session owner
+     * \return \b true if session opened by current executable \b false otherwise
+     */
     virtual bool opened_by_me() const override;
 
+    /**
+     * \brief Getter for session identifier
+     * \return current session identifier
+     */
     virtual const std::string& session_id() const override;
 
 private:
@@ -27,6 +38,13 @@ private:
     const bool opened_by_me_;
 };
 
+/**
+ * \brief Create session if possible
+ * \return valid session or std::nullopt
+ * @param[in, out] ctx session env vars will be set
+ * @param[out] ec
+ * @param[in] os
+ */
 std::optional<session> invoke_session(
         context_interface& ctx,
         std::error_code& ec,

@@ -8,6 +8,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Adapts std::ofstream to ofstream_interface
+ */
 class ofstream_adapter
     : public ofstream_interface
 {

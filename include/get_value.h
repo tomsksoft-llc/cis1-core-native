@@ -12,6 +12,15 @@
 namespace cis1
 {
 
+/**
+ * \brief Function for retrieve value from current session
+ * \return value or std::nullopt
+ * @param[in] ctx
+ * @param[in] session
+ * @param[in] value_name
+ * @param[out] ec
+ * @param[in] os
+ */
 std::optional<std::string> get_value(
         const cis1::context_interface& ctx,
         const session_interface& session,

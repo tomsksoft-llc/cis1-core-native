@@ -8,6 +8,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Adapts std::ifstream to ifstream_interface
+ */
 class ifstream_adapter
     : public ifstream_interface
 {

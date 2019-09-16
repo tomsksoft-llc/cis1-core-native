@@ -9,6 +9,15 @@
 namespace cis1
 {
 
+/**
+ * \brief Function that sets value in current session
+ * @param[in] ctx
+ * @param[in] session
+ * @param[in] value_name
+ * @param[in] value
+ * @param[out] ec
+ * @param[in] os
+ */
 void set_value(
         const cis1::context_interface& ctx,
         const session_interface& session,

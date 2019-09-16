@@ -5,6 +5,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Interface for entriy in filesystem
+ */
 struct fs_entry_interface
 {
     virtual ~fs_entry_interface() = default;

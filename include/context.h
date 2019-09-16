@@ -14,6 +14,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Represents CIS itself and process info
+ */
 class context
     : public context_interface
 {
@@ -21,16 +24,37 @@ public:
     context(const std::filesystem::path& base_dir,
             const std::map<std::string, std::string>& executables);
 
+    /**
+     * \brief Set environment variable locally
+     * @param[in] key environment variable
+     * @param[in] val value
+     */
     virtual void set_env(
             const std::string& key,
             const std::string& val) override;
 
+    /**
+     * \brief Getter for environment
+     * \return environment merged from process and locally set variables
+     */
     virtual const boost::process::environment& env() const override;
 
+    /**
+     * \brief Getter for CIS base directory
+     * \return CIS base directory
+     */
     virtual const std::filesystem::path& base_dir() const override;
 
+    /**
+     * \brief Getter for process id
+     * \return current process id
+     */
     virtual size_t pid() const override;
 
+    /**
+     * \brief Getter for parent process id
+     * \return parent process pid
+     */
     virtual size_t ppid() const override;
 
 private:
@@ -41,6 +65,12 @@ private:
     size_t ppid_;
 };
 
+/**
+ * \brief Creates context if possible
+ * \return valid context or std::nullopt
+ * @param[out] ec
+ * @param[in] os
+ */
 std::optional<context> init_context(
         std::error_code& ec,
         const os_interface& os);

@@ -1,10 +1,13 @@
 #pragma once
 
-#include <istream>
+#include <ostream>
 
 namespace cis1
 {
 
+/**
+ * \brief Interface for ofstream
+ */
 struct ofstream_interface
 {
     virtual ~ofstream_interface() = default;

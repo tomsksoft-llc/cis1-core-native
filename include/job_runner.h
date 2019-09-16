@@ -13,11 +13,16 @@
 #include "job_runner_interface.h"
 #include "process.h"
 
+/// \cond DO_NOT_DOCUMENT
 class build_execute_job_runner_Test;
+/// \endcond
 
 namespace cis1
 {
 
+/**
+ * \brief Implementation of job_runner_interface
+ */
 class job_runner
     : public job_runner_interface
 {
@@ -28,13 +33,23 @@ public:
             const std::filesystem::path& working_dir,
             const os_interface& os);
 
+    /**
+     * \brief Starts job
+     * @param filename name of executable
+     * @param on_exit_cb will be called on exit
+     * @param on_out_line_read_cb will be called on new line in stdout
+     * @param on_err_line_read_cb will be called on new line in stderr
+     */
     virtual void run(
             const std::string& filename,
             on_exit_cb_t&& on_exit_cb,
             on_line_read_cb_t&& on_out_line_read_cb,
             on_line_read_cb_t&& on_err_line_read_cb) override;
 
+    /// \cond DO_NOT_DOCUMENT
     FRIEND_TEST(::build_execute, job_runner);
+    /// \endcond
+
 private:
     boost::asio::io_context& ctx_;
     boost::process::async_pipe out_pipe_;

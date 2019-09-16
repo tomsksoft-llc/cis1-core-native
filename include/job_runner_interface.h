@@ -7,6 +7,9 @@
 namespace cis1
 {
 
+/**
+ * \brief Abstracts jobs running
+ */
 struct job_runner_interface
 {
     using on_exit_cb_t = std::function<void(

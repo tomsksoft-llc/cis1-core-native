@@ -9,6 +9,15 @@
 namespace cis1
 {
 
+/**
+ * \brief Function that sets param for the next job
+ * @param[in] ctx
+ * @param[in] session
+ * @param[in] param_name
+ * @param[in] value
+ * @param[out] ec
+ * @param[in] os
+ */
 void set_param(
         const cis1::context_interface& ctx,
         const session_interface& session,
