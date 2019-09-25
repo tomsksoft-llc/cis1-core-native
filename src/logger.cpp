@@ -27,9 +27,9 @@ struct logger
     std::unique_ptr<
             boost::iostreams::tee_device<
                     std::ostream,
-                    std::ostream>> both_log_device;
+                    std::ostream>> tie_log_device;
 
-    std::unique_ptr<std::ostream> both_log_sink = nullptr;
+    std::unique_ptr<std::ostream> tie_log_sink = nullptr;
 
     void write_time(std::ostream& os)
     {
@@ -103,18 +103,18 @@ void init_session_log(
 
     if(state.cis_log_sink)
     {
-        state.both_log_device = std::make_unique<
+        state.tie_log_device = std::make_unique<
                 boost::iostreams::tee_device<
                         std::ostream,
                         std::ostream>>(
                         *state.cis_log_sink,
                         *state.session_log_sink);
 
-        state.both_log_sink = std::make_unique<
+        state.tie_log_sink = std::make_unique<
                 boost::iostreams::stream<
                         boost::iostreams::tee_device<
                                 std::ostream,
-                                std::ostream>>>(*state.both_log_device);
+                                std::ostream>>>(*state.tie_log_device);
     }
 }
 
@@ -166,14 +166,14 @@ std::ostream& session_log()
     return *state.default_sink;
 }
 
-std::ostream& both_log()
+std::ostream& tie_log()
 {
-    if(state.both_log_sink)
+    if(state.tie_log_sink)
     {
         cis_log();
         session_log();
 
-        return *state.both_log_sink;
+        return *state.tie_log_sink;
     }
 
     return *state.default_sink;

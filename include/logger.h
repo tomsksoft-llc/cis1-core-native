@@ -16,4 +16,4 @@ std::ostream& cis_log();
 
 std::ostream& session_log();
 
-std::ostream& both_log();
+std::ostream& tie_log();

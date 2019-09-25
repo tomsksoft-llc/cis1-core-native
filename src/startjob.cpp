@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     auto build_opt = cis1::prepare_build(ctx, job_name, ec, std_os);
     if(ec)
     {
-        both_log() << "action=\"error\" " << ec.message() << std::endl;
+        tie_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 
     if(ec)
     {
-        both_log() << "action=\"error\" " << ec.message() << std::endl;
+        tie_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
     build.prepare_build_dir(session, ec);
     if(ec)
     {
-        both_log() << "action=\"error\" " << ec.message() << std::endl;
+        tie_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
     cis1::set_value(ctx, session, "last_job_name", job_name, ec, std_os);
     if(ec)
     {
-        both_log() << ec.message() << std::endl;
+        tie_log() << ec.message() << std::endl;
 
         return 1;
     }
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
     cis1::set_value(ctx, session, "last_job_build_number", build.build_num(), ec, std_os);
     if(ec)
     {
-        both_log() << "action=\"error\" " << ec.message() << std::endl;
+        tie_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
     build.execute(ctx, ec, exit_code);
     if(ec)
     {
-        both_log() << "action=\"error\" " << ec.message() << std::endl;
+        tie_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
