@@ -7,6 +7,10 @@
 #include "logger.h"
 #include "os.h"
 
+#include "webui_session.h"
+
+#include <protocol.h>
+
 void usage()
 {
     std::cout << "Usage:" << "\n"
@@ -27,6 +31,13 @@ int main(int argc, char* argv[])
         return 1;
     }
     auto& ctx = ctx_opt.value();
+
+    auto webui_session = init_webui_session(ctx);
+
+    if(webui_session != nullptr)
+    {
+        init_webui_log(webui_session);
+    }
 
     init_cis_log(ctx);
 
@@ -57,7 +68,7 @@ int main(int argc, char* argv[])
     auto build_opt = cis1::prepare_build(ctx, job_name, ec, std_os);
     if(ec)
     {
-        tie_log() << "action=\"error\" " << ec.message() << std::endl;
+        tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
@@ -87,7 +98,7 @@ int main(int argc, char* argv[])
 
     if(ec)
     {
-        tie_log() << "action=\"error\" " << ec.message() << std::endl;
+        tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
@@ -95,7 +106,7 @@ int main(int argc, char* argv[])
     build.prepare_build_dir(session, ec);
     if(ec)
     {
-        tie_log() << "action=\"error\" " << ec.message() << std::endl;
+        tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
@@ -103,7 +114,7 @@ int main(int argc, char* argv[])
     cis1::set_value(ctx, session, "last_job_name", job_name, ec, std_os);
     if(ec)
     {
-        tie_log() << ec.message() << std::endl;
+        tee_log() << ec.message() << std::endl;
 
         return 1;
     }
@@ -113,7 +124,7 @@ int main(int argc, char* argv[])
     cis1::set_value(ctx, session, "last_job_build_number", build.build_num(), ec, std_os);
     if(ec)
     {
-        tie_log() << "action=\"error\" " << ec.message() << std::endl;
+        tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
@@ -127,7 +138,7 @@ int main(int argc, char* argv[])
     build.execute(ctx, ec, exit_code);
     if(ec)
     {
-        tie_log() << "action=\"error\" " << ec.message() << std::endl;
+        tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }

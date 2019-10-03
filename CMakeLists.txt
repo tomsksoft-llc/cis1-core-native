@@ -30,7 +30,8 @@ add_library(cis1_core STATIC
         src/get_value.cpp
         src/set_value.cpp
         src/logger.cpp
-        src/get_parent_id.cpp)
+        src/get_parent_id.cpp
+	src/webui_session.cpp)
 
 add_executable(startjob src/startjob.cpp)
 add_executable(getparam src/getparam.cpp)

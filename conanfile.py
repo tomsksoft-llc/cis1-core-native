@@ -13,7 +13,10 @@ class Cis1CoreNative(ConanFile):
                 "boost_filesystem/1.69.0@bincrafters/stable",
                 "boost_system/1.69.0@bincrafters/stable",
                 "boost_asio/1.69.0@bincrafters/stable",
-                "boost_iostreams/1.69.0@bincrafters/stable")
+                "boost_iostreams/1.69.0@bincrafters/stable",
+                "ccwu_transport/0.0.0@demo/testing",
+                "ccwu_protocol/0.0.0@demo/testing",
+                "cis1_proto_utils/0.0.0@demo/testing")
 
     def build(self):
         cmake = CMake(self)

@@ -42,6 +42,16 @@ const std::filesystem::path& context::base_dir() const
     return base_dir_;
 }
 
+size_t context::pid() const
+{
+    return pid_;
+}
+
+size_t context::ppid() const
+{
+    return ppid_;
+}
+
 std::optional<context> init_context(
         std::error_code& ec,
         const os_interface& os)
@@ -84,16 +94,6 @@ std::optional<context> init_context(
     }
 
     return context{cis_base_dir, executables};
-}
-
-size_t context::pid() const
-{
-    return pid_;
-}
-
-size_t context::ppid() const
-{
-    return ppid_;
 }
 
 } // namespace cis1
