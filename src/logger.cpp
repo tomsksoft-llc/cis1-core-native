@@ -10,7 +10,7 @@
 #include <boost/iostreams/tee.hpp>
 #include <boost/iostreams/device/null.hpp>
 
-#include <protocol.h>
+#include <cis1_cwu_protocol/protocol.h>
 
 struct cis_info
 {
@@ -160,8 +160,8 @@ public:
 
 private:
     std::shared_ptr<webui_session> remote_logger_;
-    log_entry dto_;
-    transaction tr_;
+    cis1::cwu::log_entry dto_;
+    cis1::proto_utils::transaction tr_;
 };
 
 class combined_logger

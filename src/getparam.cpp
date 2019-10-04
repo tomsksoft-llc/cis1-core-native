@@ -5,6 +5,7 @@
 #include "get_param.h"
 #include "logger.h"
 #include "os.h"
+#include "webui_session.h"
 
 void usage()
 {
@@ -26,6 +27,13 @@ int main(int argc, char *argv[])
         return 1;
     }
     auto& ctx = ctx_opt.value();
+
+    auto webui_session = init_webui_session(ctx);
+
+    if(webui_session != nullptr)
+    {
+        init_webui_log(webui_session);
+    }
 
     init_cis_log(ctx);
 

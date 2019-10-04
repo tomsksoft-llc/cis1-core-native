@@ -5,6 +5,7 @@
 #include "set_value.h"
 #include "logger.h"
 #include "os.h"
+#include "webui_session.h"
 
 void usage()
 {
@@ -27,6 +28,12 @@ int main(int argc, char *argv[])
     }
     auto& ctx = ctx_opt.value();
 
+    auto webui_session = init_webui_session(ctx);
+
+    if(webui_session != nullptr)
+    {
+        init_webui_log(webui_session);
+    }
     init_cis_log(ctx);
 
     auto session_opt = cis1::invoke_session(ctx, ec, std_os);

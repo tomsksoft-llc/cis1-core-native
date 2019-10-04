@@ -6,10 +6,7 @@
 #include "set_value.h"
 #include "logger.h"
 #include "os.h"
-
 #include "webui_session.h"
-
-#include <protocol.h>
 
 void usage()
 {

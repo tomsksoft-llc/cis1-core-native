@@ -92,7 +92,7 @@ void webui_session::run()
     running_ = true;
 }
 
-transaction webui_session::make_transaction(uint32_t id)
+cis1::proto_utils::transaction webui_session::make_transaction(uint32_t id)
 {
-    return transaction(client_.get_queue(), id);
+    return cis1::proto_utils::transaction(client_.get_queue(), id);
 }

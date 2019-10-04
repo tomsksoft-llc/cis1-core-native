@@ -5,6 +5,7 @@
 #include "set_param.h"
 #include "logger.h"
 #include "os.h"
+#include "webui_session.h"
 
 void usage()
 {

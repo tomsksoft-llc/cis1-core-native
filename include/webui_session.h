@@ -5,8 +5,8 @@
 
 #include <boost/asio.hpp>
 
-#include <transaction.h>
-#include <ccwu_tcp_client.h>
+#include <cis1_proto_utils/transaction.h>
+#include <cis1_cwu_transport/ccwu_tcp_client.h>
 
 #include "context.h"
 
@@ -19,11 +19,11 @@ public:
             const boost::asio::ip::tcp::endpoint& ep,
             boost::system::error_code& ec);
     void run();
-    transaction make_transaction(uint32_t id = 0);
+    cis1::proto_utils::transaction make_transaction(uint32_t id = 0);
 private:
     std::thread working_thread_;
     boost::asio::io_context ctx_;
-    ccwu::tcp_client client_;
+    cis1::cwu::tcp_client client_;
     bool running_ = false;
 };
 
