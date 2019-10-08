@@ -5,6 +5,7 @@
 #include "set_param.h"
 #include "logger.h"
 #include "os.h"
+#include "webui_session.h"
 
 void usage()
 {
@@ -42,7 +43,7 @@ int main(int argc, char *argv[])
 
     if(argc != 3)
     {
-        tie_log()  << "action=\"error\" "
+        tee_log()  << "action=\"error\" "
                     << "Wrong args count in setparam" << std::endl;
 
         return 1;
@@ -50,7 +51,7 @@ int main(int argc, char *argv[])
 
     if(session.opened_by_me())
     {
-        tie_log()  << "action=\"error\" "
+        tee_log()  << "action=\"error\" "
                     << "Cant set param outside the session" << std::endl;
 
         return 1;
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
     cis1::set_param(ctx, session, argv[1], argv[2], ec, std_os);
     if(ec)
     {
-        tie_log() << "action=\"error\" " << ec.message() << std::endl;
+        tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }

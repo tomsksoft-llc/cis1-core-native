@@ -2,8 +2,11 @@
 
 #include <ostream>
 
+#include "webui_session.h"
 #include "context_interface.h"
 #include "session_interface.h"
+
+void init_webui_log(std::shared_ptr<webui_session> session);
 
 void init_cis_log(
         const cis1::context_interface& ctx);
@@ -16,4 +19,6 @@ std::ostream& cis_log();
 
 std::ostream& session_log();
 
-std::ostream& tie_log();
+std::ostream& webui_log();
+
+std::ostream& tee_log();

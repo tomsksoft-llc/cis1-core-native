@@ -5,6 +5,7 @@
 #include "set_value.h"
 #include "logger.h"
 #include "os.h"
+#include "webui_session.h"
 
 void usage()
 {
@@ -27,6 +28,12 @@ int main(int argc, char *argv[])
     }
     auto& ctx = ctx_opt.value();
 
+    auto webui_session = init_webui_session(ctx);
+
+    if(webui_session != nullptr)
+    {
+        init_webui_log(webui_session);
+    }
     init_cis_log(ctx);
 
     auto session_opt = cis1::invoke_session(ctx, ec, std_os);
@@ -42,7 +49,7 @@ int main(int argc, char *argv[])
 
     if(argc != 3)
     {
-        tie_log()  << "action=\"error\" "
+        tee_log()  << "action=\"error\" "
                     << "Wrong args count in setvalue" << std::endl;
 
         return 1;
@@ -50,7 +57,7 @@ int main(int argc, char *argv[])
 
     if(session.opened_by_me())
     {
-        tie_log()  << "action=\"error\" "
+        tee_log()  << "action=\"error\" "
                     << "Cant set value outside the session" << std::endl;
 
         return 1;
@@ -59,7 +66,7 @@ int main(int argc, char *argv[])
     cis1::set_value(ctx, session, argv[1], argv[2], ec, std_os);
     if(ec)
     {
-        tie_log() << "action=\"error\" " << ec.message() << std::endl;
+        tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
