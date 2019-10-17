@@ -28,6 +28,12 @@ int main(int argc, char *argv[])
     }
     auto& ctx = ctx_opt.value();
 
+    auto webui_session = init_webui_session(ctx);
+
+    if(webui_session != nullptr)
+    {
+        init_webui_log(webui_session);
+    }
     init_cis_log(ctx);
 
     auto session_opt = cis1::invoke_session(ctx, ec, std_os);
@@ -38,6 +44,8 @@ int main(int argc, char *argv[])
         return 1;
     }
     auto& session = session_opt.value();
+
+    webui_session->auth(session);
 
     init_session_log(ctx, session);
 

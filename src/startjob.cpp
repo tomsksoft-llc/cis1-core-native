@@ -55,6 +55,9 @@ int main(int argc, char* argv[])
     }
     auto& session = session_opt.value();
 
+    std::cout << session.session_id() << std::endl;
+    webui_session->auth(session);
+
     init_session_log(ctx, session);
 
     if(session.opened_by_me())
@@ -142,12 +145,11 @@ int main(int argc, char* argv[])
 
     session_log() << "action=\"finish_job\" job_name=\"" << job_name << "\"" << std::endl;
 
-    std::cout << session.session_id() << std::endl;
     std::cout << "session_id=" << session.session_id()
               << " action=start_job"
               << " job_name=" << job_name
               << " build_dir=" << build.build_num()
-              << " pid=" << ctx.pid() 
+              << " pid=" << ctx.pid()
               << " ppid=" << ctx.ppid() << std::endl;
     std::cout << "Exit code: " << exit_code << std::endl;
 

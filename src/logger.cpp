@@ -145,9 +145,6 @@ public:
     void prepare(const cis_info& state) override
     {
         dto_.time = std::chrono::system_clock::now();
-        dto_.pid = state.pid;
-        dto_.ppid = state.ppid;
-        dto_.session_id = state.session_id;
     }
 
     void log(const std::string& s) override
@@ -188,7 +185,7 @@ public:
             (*logger)->log(s);
         }
     }
-    
+
 private:
     std::set<std::shared_ptr<logger_interface>*> loggers_;
 };
@@ -268,7 +265,7 @@ struct logger
 
     logger(const logger& other) = delete;
     logger(logger&& other) = delete;
-    
+
     logger& operator=(const logger& other) = delete;
     logger& operator=(logger&& other) = delete;
 
@@ -281,19 +278,19 @@ struct logger
             , cis_file(&null, [](auto*){})
             , session_file(&null, [](auto*){})
         {}
-        
+
         null_logger null;
-        
+
         std::shared_ptr<logger_interface> remote;
-        
+
         std::shared_ptr<logger_interface> cis_file;
-        
+
         std::shared_ptr<logger_interface> session_file;
     } basic_loggers;
 
     struct combined_loggers
     {
-        combined_loggers(  
+        combined_loggers(
                 std::shared_ptr<logger_interface>* cis_file,
                 std::shared_ptr<logger_interface>* session_file,
                 std::shared_ptr<logger_interface>* remote)
@@ -304,12 +301,12 @@ struct logger
         {}
 
         combined_logger cis;
-        
+
         combined_logger session;
 
-        combined_logger tee;    
-        
-        combined_logger remote; 
+        combined_logger tee;
+
+        combined_logger remote;
     } combined_loggers;
 
     std::unique_ptr<std::ostream> cis_log_sink;
@@ -370,7 +367,7 @@ void init_session_log(
         std::cerr << "Cant open session log file" << std::endl;
         exit(1);
     }
-    
+
     global_logger.basic_loggers.session_file = std::move(session_log);
 }
 
