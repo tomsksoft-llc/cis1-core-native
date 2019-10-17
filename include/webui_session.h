@@ -9,6 +9,7 @@
 #include <cis1_cwu_transport/ccwu_tcp_client.h>
 
 #include "context.h"
+#include "session.h"
 
 class webui_session
 {
@@ -18,6 +19,7 @@ public:
     void connect(
             const boost::asio::ip::tcp::endpoint& ep,
             boost::system::error_code& ec);
+    void auth(const cis1::session& session);
     void run();
     cis1::proto_utils::transaction make_transaction(uint32_t id = 0);
 private:

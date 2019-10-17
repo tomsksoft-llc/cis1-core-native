@@ -1,5 +1,7 @@
 #include "webui_session.h"
 
+#include <cis1_cwu_protocol/protocol.h>
+
 std::string get_address(const boost::process::environment& env)
 {
     if(auto addr = env.find("webui_address"); addr != env.end())
@@ -29,19 +31,19 @@ uint16_t get_port(const boost::process::environment& env)
 
 std::shared_ptr<webui_session> init_webui_session(const cis1::context& ctx)
 {
-        auto& env = ctx.env();    
+        auto& env = ctx.env();
 
         std::string address = get_address(env);
         uint16_t port = get_port(env);
 
-        boost::system::error_code ec;    
+        boost::system::error_code ec;
 
         auto real_address = boost::asio::ip::make_address(address, ec);
         if(ec)
         {
             return nullptr;
         }
-        
+
         auto session = std::make_shared<webui_session>();
 
         session->connect(
@@ -79,6 +81,15 @@ void webui_session::connect(
         boost::system::error_code& ec)
 {
     client_.connect(ep, ec);
+}
+
+void webui_session::auth(
+        const cis1::session& session)
+{
+    cis1::cwu::session_auth dto;
+    dto.session_id = session.session_id();
+
+    make_transaction().send(dto);
 }
 
 void webui_session::run()
