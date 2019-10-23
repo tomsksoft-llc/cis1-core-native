@@ -46,7 +46,10 @@ int main(int argc, char *argv[])
     }
     auto& session = session_opt.value();
 
-    webui_session->auth(session);
+    if(webui_session)
+    {
+        webui_session->auth(session);
+    }
 
     init_session_log(ctx, session);
 
