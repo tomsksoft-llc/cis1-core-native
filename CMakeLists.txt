@@ -31,19 +31,24 @@ add_library(cis1_core STATIC
         src/set_value.cpp
         src/logger.cpp
         src/get_parent_id.cpp
-	src/webui_session.cpp)
+	    src/webui_session.cpp
+        src/cron.cpp)
 
 add_executable(startjob src/startjob.cpp)
 add_executable(getparam src/getparam.cpp)
 add_executable(setparam src/setparam.cpp)
 add_executable(getvalue src/getvalue.cpp)
 add_executable(setvalue src/setvalue.cpp)
+add_executable(cis_cron src/cis_cron.cpp)
+add_executable(cis_cron_daemon src/cis_cron_daemon.cpp)
 
 target_link_libraries(startjob cis1_core ${CONAN_LIBS} std::filesystem)
 target_link_libraries(getparam cis1_core ${CONAN_LIBS} std::filesystem)
 target_link_libraries(setparam cis1_core ${CONAN_LIBS} std::filesystem)
 target_link_libraries(getvalue cis1_core ${CONAN_LIBS} std::filesystem)
 target_link_libraries(setvalue cis1_core ${CONAN_LIBS} std::filesystem)
+target_link_libraries(cis_cron cis1_core ${CONAN_LIBS} std::filesystem)
+target_link_libraries(cis_cron_daemon cis1_core ${CONAN_LIBS} std::filesystem)
 
 set_property(TARGET cis1_core PROPERTY CXX_STANDARD 17)
 set_property(TARGET startjob PROPERTY CXX_STANDARD 17)
@@ -51,6 +56,8 @@ set_property(TARGET getparam PROPERTY CXX_STANDARD 17)
 set_property(TARGET setparam PROPERTY CXX_STANDARD 17)
 set_property(TARGET getvalue PROPERTY CXX_STANDARD 17)
 set_property(TARGET setvalue PROPERTY CXX_STANDARD 17)
+set_property(TARGET cis_cron PROPERTY CXX_STANDARD 17)
+set_property(TARGET cis_cron_daemon PROPERTY CXX_STANDARD 17)
 
 install(TARGETS cis1_core DESTINATION lib)
 install(TARGETS startjob DESTINATION bin)
@@ -58,6 +65,8 @@ install(TARGETS getparam DESTINATION bin)
 install(TARGETS setparam DESTINATION bin)
 install(TARGETS getvalue DESTINATION bin)
 install(TARGETS setvalue DESTINATION bin)
+install(TARGETS cis_cron DESTINATION bin)
+install(TARGETS cis_cron_daemon DESTINATION bin)
 
 if(BUILD_DOC)
     find_package(Doxygen REQUIRED)
