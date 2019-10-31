@@ -228,7 +228,7 @@ void cron_manager::run_job(const std::string& job)
                 boost::process::start_dir =
                         ctx_.base_dir().generic_string(),
                 executable.generic_string(),
-                job,
+                boost::process::args = std::vector<std::string>{job},
                 ctx_.env());
     }
     catch(boost::process::process_error ex)

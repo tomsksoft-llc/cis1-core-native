@@ -230,9 +230,18 @@ int main(int argc, char *argv[])
         }
         case 3:
         {
-            if(strcmp(argv[1], "--list") == 0 && validate_mask(argv[2]))
+            if(strcmp(argv[1], "--list") == 0)
             {
-                return list(ctx, argv[2]);
+                if(validate_mask(argv[2]))
+                {
+                    return list(ctx, argv[2]);
+                }
+                else
+                {
+                    std::cout << "Invalid mask." << std::endl;
+                    
+                    return EXIT_FAILURE;
+                }
             }
             else
             {
