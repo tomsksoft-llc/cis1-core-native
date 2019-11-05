@@ -91,3 +91,13 @@ private:
 
     void run_job(const std::string& job);
 };
+
+void notify_daemon();
+
+int start_daemon(cis1::context_interface& ctx, cis1::os_interface& os);
+
+std::optional<cron::cronexpr> make_cron(
+        const std::string& str,
+        std::error_code& ec);
+
+bool validate_mask(const char* mask);

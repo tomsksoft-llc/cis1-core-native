@@ -1,77 +1,10 @@
-#include <string>
 #include <iostream>
 #include <iomanip>
-#include <filesystem>
-#include <set>
-#include <fstream>
-
-#include <boost/interprocess/sync/named_condition.hpp>
-
-#include <croncpp.h>
 
 #include "context.h"
 #include "logger.h"
 #include "os.h"
 #include "cron.h"
-
-void notify_daemon()
-{
-    boost::interprocess::named_condition cv1(
-            boost::interprocess::open_or_create,
-            "cis1_cron_cv1");
-
-    cv1.notify_one();
-}
-
-int start_daemon(cis1::context_interface& ctx, cis1::os_interface& os)
-{
-    try
-    {
-        auto executable =
-                std::filesystem::path{"core"}
-                / ctx.env().at("cis_cron_daemon").to_vector()[0];
-
-        os.spawn_process(
-                ctx.base_dir().generic_string(),
-                executable.generic_string(),
-                {},
-                ctx.env());
-
-        return EXIT_SUCCESS;
-    }
-    catch(boost::process::process_error ex)
-    {
-        return EXIT_FAILURE;
-    }
-}
-
-std::optional<cron::cronexpr> make_cron(
-        const std::string& str,
-        std::error_code& ec)
-{
-    try
-    {
-        return cron::make_cron(str);
-    }
-    catch(const cron::bad_cronexpr& ex)
-    {
-        return std::nullopt;
-    }
-}
-
-bool validate_mask(const char* mask)
-{
-    try
-    {
-        std::regex rx(mask);
-
-        return true;
-    }
-    catch(...)
-    {
-        return false;
-    }
-}
 
 void usage()
 {
