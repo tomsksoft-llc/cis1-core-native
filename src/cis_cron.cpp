@@ -34,7 +34,7 @@ int add(cis1::context_interface& ctx,
 
     if(!cronexpr_opt)
     {
-        std::cout << "Invalid cron expression" << std::endl;
+        std::cout << ec.message() << std::endl;
 
         return EXIT_FAILURE;
     }
@@ -45,9 +45,10 @@ int add(cis1::context_interface& ctx,
             os);
     if(!opt_cron_list)
     {
-        cis_log() << "action=\"error\" " << "Can't load crons file." << std::endl;
+        cis_log() << "action=\"error\" "
+                  << ec.message() << std::endl;
 
-        std::cout << "Can't load crons file." << std::endl;
+        std::cout << ec.message() << std::endl;
 
         return EXIT_FAILURE;
     }
@@ -55,7 +56,14 @@ int add(cis1::context_interface& ctx,
 
     cron_list.add(cron_entry{job, cron});
 
-    cron_list.save();
+    cron_list.save(ec);
+    
+    if(ec)
+    {
+        std::cout << ec.message() << std::endl;
+
+        return EXIT_FAILURE;
+    }
 
     notify_daemon();
 
@@ -84,9 +92,9 @@ int del(cis1::context_interface& ctx,
             os);
     if(!opt_cron_list)
     {
-        cis_log() << "action=\"error\" " << "Can't load crons file." << std::endl;
+        cis_log() << "action=\"error\" " << ec.message() << std::endl;
 
-        std::cout << "Can't load crons file." << std::endl;
+        std::cout << ec.message() << std::endl;
 
         return EXIT_FAILURE;
     }
@@ -99,7 +107,14 @@ int del(cis1::context_interface& ctx,
         return EXIT_FAILURE;
     }
 
-    cron_list.save();
+    cron_list.save(ec);
+    
+    if(ec)
+    {
+        std::cout << ec.message() << std::endl;
+
+        return EXIT_FAILURE;
+    }
 
     notify_daemon();
 

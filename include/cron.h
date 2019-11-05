@@ -37,7 +37,7 @@ public:
             const std::set<cron_entry>& crons,
             cis1::os_interface& os);
 
-    void save();
+    void save(std::error_code& ec);
 
     const std::set<cron_entry>& list() const;
 

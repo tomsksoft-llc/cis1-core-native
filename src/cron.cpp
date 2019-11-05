@@ -4,6 +4,7 @@
 #include <boost/interprocess/sync/named_condition.hpp>
 
 #include "logger.h"
+#include "error_code.h"
 
 cron_entry::cron_entry(
         const std::string& job,
@@ -37,9 +38,16 @@ cron_list::cron_list(
     , os_(os)
 {}
 
-void cron_list::save()
+void cron_list::save(std::error_code& ec)
 {
     auto crons_file = os_.open_ofstream(crons_file_path_);
+
+    if(!crons_file)
+    {
+        ec = cis1::error_code::cant_write_crons_file;
+
+        return;
+    }
 
     for(auto& cron : crons_)
     {
@@ -70,8 +78,10 @@ std::optional<cron_list> load_cron_list(
 {
     auto crons_file = os.open_ifstream(path);
 
-    if(!crons_file->is_open())
+    if(!crons_file || !crons_file->is_open())
     {
+        ec = cis1::error_code::cant_read_crons_file;
+
         return std::nullopt;
     }
 
@@ -143,8 +153,11 @@ void cron_manager::update()
 {
     auto crons_file = os_.open_ifstream(crons_file_path_);
 
-    if(!crons_file->is_open())
+    if(!crons_file || !crons_file->is_open())
     {
+        cis_log() << "action=\"error\" "
+                  << "Daemon can't read crons file" << std::endl;
+
         return;
     }
 
@@ -284,6 +297,8 @@ std::optional<cron::cronexpr> make_cron(
     }
     catch(const cron::bad_cronexpr& ex)
     {
+        ec = cis1::error_code::invalid_cron_expression;
+
         return std::nullopt;
     }
 }
