@@ -29,7 +29,7 @@ add_executable(
     src/set_param.cpp)
 
 if(BUILD_TESTING)
-target_link_libraries(tests ${CONAN_LIBS} cis1_core std::filesystem)
+target_link_libraries(tests cis1_core ${CONAN_LIBS} std::filesystem)
 else()
 target_link_libraries(tests ${CONAN_LIBS} std::filesystem)
 endif()
