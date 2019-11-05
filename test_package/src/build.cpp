@@ -609,11 +609,13 @@ TEST(build_prepare_params, correct)
 
     auto& params = build.params();
 
-    params["param1"] = "1";
-    params["param2"] = "2";
-    params["param3"] = "3";
+    params.clear();
 
-    std::map<std::string, std::string> expected_params =
+    params.emplace_back("param1", "1");
+    params.emplace_back("param2", "2");
+    params.emplace_back("param3", "3");
+
+    std::vector<std::pair<std::string, std::string>> expected_params =
     {
         {"param1", "11"},
         {"param2", "2"},
@@ -625,5 +627,5 @@ TEST(build_prepare_params, correct)
     build.prepare_params(ctx, session, ec);
 
     ASSERT_EQ((bool)ec, false);
-    ASSERT_EQ(is_maps_equal(params, expected_params), true);
+    ASSERT_THAT(params, ElementsAreArray(expected_params));
 }

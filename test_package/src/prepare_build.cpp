@@ -314,16 +314,16 @@ TEST(prepare_build, correct)
     EXPECT_CALL(*ss, is_open())
         .WillOnce(Return(true));
 
-    std::map<std::string, std::string> params =
+    std::vector<std::pair<std::string, std::string>> params =
     {
-        {"arg1", "test"},
-        {"arg2", ""}
+        {"arg2", "test"},
+        {"arg1", ""}
     };
 
     std::stringstream fc2;
 
-    fc2 << "arg1=test\n"
-              << "arg2=";
+    fc2 << "arg2=test\n"
+              << "arg1=";
 
     EXPECT_CALL(*ss, istream())
         .WillOnce(ReturnRef(fc2));
@@ -337,5 +337,5 @@ TEST(prepare_build, correct)
 
     ASSERT_EQ((bool)ec, false);
     ASSERT_EQ((bool)build, true);
-    ASSERT_EQ(is_maps_equal(params, build->params()), true);
+    ASSERT_THAT(build->params(), ElementsAreArray(params));
 }

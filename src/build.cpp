@@ -17,7 +17,9 @@ build::build(
         const std::string& job_name,
         const std::filesystem::path& job_dir,
         const std::filesystem::path& script,
-        const std::map<std::string, std::string>& params,
+        const std::vector<
+                std::pair<
+                        std::string, std::string>>& params,
         const os_interface& os)
     : job_name_(job_name)
     , job_dir_(job_dir)
@@ -26,7 +28,7 @@ build::build(
     , os_(os)
 {}
 
-std::map<std::string, std::string>& build::params()
+std::vector<std::pair<std::string, std::string>>& build::params()
 {
     return params_;
 }
@@ -91,20 +93,11 @@ void build::prepare_params(
         }
     }
 
-    for(auto it1 = params_.begin(), it2 = values.begin(); it1 != params_.end(); ++it1)
+    for(auto& [k, v] : params_)
     {
-        while(it2 != values.end() && it1->first > it2->first)
+        if(auto it = values.find(k); it != values.end())
         {
-            ++it2;
-        }
-
-        if(it2 == values.end())
-        {
-            break;
-        }
-        else if(it1->first == it2->first)
-        {
-            it1->second = it2->second;
+            v = it->second;
         }
     }
 }
@@ -272,10 +265,13 @@ std::optional<build> prepare_build(
     }
 
     is = os.open_ifstream(job_dir / "job.params");
-    std::map<std::string, std::string> job_params;
+    std::vector<std::pair<std::string, std::string>> job_params;
     if(is && is->is_open())
     {
-        read_istream_kv_str(is->istream(), job_params, ec);
+        read_istream_ordered_kv_str(
+                is->istream(),
+                job_params,
+                ec);
 
         if(ec)
         {
