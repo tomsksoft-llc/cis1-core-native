@@ -34,14 +34,17 @@ public:
     build(  const std::string& job_name,
             const std::filesystem::path& job_dir,
             const std::filesystem::path& script,
-            const std::map<std::string, std::string>& params,
+            const std::vector<
+                    std::pair<
+                            std::string,
+                            std::string>>& params,
             const os_interface& os);
 
     /**
      * \brief Method for modifying params (e.g. from user input)
      * \return reference to params field
      */
-    std::map<std::string, std::string>& params();
+    std::vector<std::pair<std::string, std::string>>& params();
 
     /**
      * \brief Merge default params and session or user ones
@@ -92,7 +95,7 @@ private:
     const std::filesystem::path job_dir_;
     const std::filesystem::path script_;
     std::filesystem::path build_dir_;
-    std::map<std::string, std::string> params_;
+    std::vector<std::pair<std::string, std::string>> params_;
     const os_interface& os_;
 
     void create_build_dir(std::error_code& ec);

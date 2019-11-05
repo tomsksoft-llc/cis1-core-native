@@ -2,6 +2,7 @@
 
 #include <istream>
 #include <map>
+#include <vector>
 #include <string>
 #include <system_error>
 
@@ -19,6 +20,11 @@ namespace cis1
 void read_istream_kv_str(
         std::istream& is,
         std::map<std::string, std::string>& lines,
+        std::error_code& ec);
+
+void read_istream_ordered_kv_str(
+        std::istream& is,
+        std::vector<std::pair<std::string, std::string>>& lines,
         std::error_code& ec);
 
 } // namespace cis1
