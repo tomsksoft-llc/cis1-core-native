@@ -9,6 +9,7 @@
 #include <croncpp.h>
 
 #include "context_interface.h"
+#include "os_interface.h"
 
 class cron_entry
 {
@@ -33,7 +34,8 @@ class cron_list
 public:
     cron_list(
             const std::filesystem::path& path,
-            const std::set<cron_entry>& crons);
+            const std::set<cron_entry>& crons,
+            cis1::os_interface& os);
 
     void save();
 
@@ -46,11 +48,13 @@ public:
 private:
     std::filesystem::path crons_file_path_;
     std::set<cron_entry> crons_;
+    cis1::os_interface& os_;
 };
 
 std::optional<cron_list> load_cron_list(
         const std::filesystem::path& path,
-        std::error_code& ec);
+        std::error_code& ec,
+        cis1::os_interface& os);
 
 struct cron_timer
 {
@@ -73,7 +77,8 @@ public:
     cron_manager(
             boost::asio::io_context& io_ctx,
             cis1::context_interface& ctx,
-            const std::filesystem::path& path);
+            const std::filesystem::path& path,
+            cis1::os_interface& os);
 
     void update();
 
@@ -81,6 +86,7 @@ private:
     boost::asio::io_context& io_ctx_;
     cis1::context_interface& ctx_;
     std::filesystem::path crons_file_path_;
+    cis1::os_interface& os_;
     std::map<cron_entry, cron_timer> timers_;
 
     void run_job(const std::string& job);

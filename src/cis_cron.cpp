@@ -23,7 +23,7 @@ void notify_daemon()
     cv1.notify_one();
 }
 
-int start_daemon(cis1::context_interface& ctx)
+int start_daemon(cis1::context_interface& ctx, cis1::os_interface& os)
 {
     try
     {
@@ -31,10 +31,10 @@ int start_daemon(cis1::context_interface& ctx)
                 std::filesystem::path{"core"}
                 / ctx.env().at("cis_cron_daemon").to_vector()[0];
 
-        boost::process::spawn(
-                boost::process::start_dir =
-                        ctx.base_dir().generic_string(),
+        os.spawn_process(
+                ctx.base_dir().generic_string(),
                 executable.generic_string(),
+                {},
                 ctx.env());
 
         return EXIT_SUCCESS;
@@ -90,7 +90,10 @@ void usage()
               << std::endl;
 }
 
-int add(cis1::context_interface& ctx, const char* cron, const char* job)
+int add(cis1::context_interface& ctx,
+        const char* cron,
+        const char* job,
+        cis1::os_interface& os)
 {
     std::error_code ec;
 
@@ -103,7 +106,10 @@ int add(cis1::context_interface& ctx, const char* cron, const char* job)
         return EXIT_FAILURE;
     }
 
-    auto opt_cron_list = load_cron_list(ctx.base_dir() / "core" / "crons", ec);
+    auto opt_cron_list = load_cron_list(
+            ctx.base_dir() / "core" / "crons",
+            ec,
+            os);
     if(!opt_cron_list)
     {
         cis_log() << "action=\"error\" " << "Can't load crons file." << std::endl;
@@ -123,7 +129,10 @@ int add(cis1::context_interface& ctx, const char* cron, const char* job)
     return EXIT_SUCCESS;
 }
 
-int del(cis1::context_interface& ctx, const char* cron, const char* job)
+int del(cis1::context_interface& ctx,
+        const char* cron,
+        const char* job,
+        cis1::os_interface& os)
 {
     std::error_code ec;
 
@@ -136,7 +145,10 @@ int del(cis1::context_interface& ctx, const char* cron, const char* job)
         return EXIT_FAILURE;
     }
 
-    auto opt_cron_list = load_cron_list(ctx.base_dir() / "core" / "crons", ec);
+    auto opt_cron_list = load_cron_list(
+            ctx.base_dir() / "core" / "crons",
+            ec,
+            os);
     if(!opt_cron_list)
     {
         cis_log() << "action=\"error\" " << "Can't load crons file." << std::endl;
@@ -161,11 +173,18 @@ int del(cis1::context_interface& ctx, const char* cron, const char* job)
     return EXIT_SUCCESS;
 }
 
-int list(cis1::context_interface& ctx, const char* mask)
+int list(
+        cis1::context_interface& ctx,
+        const char* mask,
+        cis1::os_interface& os)
 {
     std::error_code ec;
 
-    auto opt_cron_list = load_cron_list(ctx.base_dir() / "core" / "crons", ec);
+    auto opt_cron_list = load_cron_list(
+            ctx.base_dir() / "core" / "crons",
+            ec,
+            os);
+
     if(!opt_cron_list)
     {
         cis_log() << "action=\"error\" " << "Can't load crons file." << std::endl;
@@ -175,7 +194,7 @@ int list(cis1::context_interface& ctx, const char* mask)
         return EXIT_FAILURE;
     }
     auto& cron_list = opt_cron_list.value();
-    
+
     std::regex rx(mask);
 
     for(const auto& entry : cron_list.list())
@@ -219,7 +238,7 @@ int main(int argc, char *argv[])
             }
             else if(strcmp(argv[1], "--daemon") == 0)
             {
-                return start_daemon(ctx);
+                return start_daemon(ctx, std_os);
             }
             else
             {
@@ -234,12 +253,12 @@ int main(int argc, char *argv[])
             {
                 if(validate_mask(argv[2]))
                 {
-                    return list(ctx, argv[2]);
+                    return list(ctx, argv[2], std_os);
                 }
                 else
                 {
                     std::cout << "Invalid mask." << std::endl;
-                    
+
                     return EXIT_FAILURE;
                 }
             }
@@ -254,11 +273,11 @@ int main(int argc, char *argv[])
         {
             if(strcmp(argv[1], "--add") == 0)
             {
-                return add(ctx, argv[2], argv[3]);
+                return add(ctx, argv[2], argv[3], std_os);
             }
             else if(strcmp(argv[1], "--del") == 0)
             {
-                return del(ctx, argv[2], argv[3]);
+                return del(ctx, argv[2], argv[3], std_os);
             }
             else
             {

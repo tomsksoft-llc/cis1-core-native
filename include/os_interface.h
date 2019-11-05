@@ -59,6 +59,12 @@ struct os_interface
     virtual std::unique_ptr<ofstream_interface> open_ofstream(
             const std::filesystem::path& path,
             std::ios_base::openmode mode = std::ios_base::out) const = 0;
+
+    virtual void spawn_process(
+            const std::string& start_dir,
+            const std::string& executable,
+            const std::vector<std::string>& args,
+            boost::process::environment env) const = 0;
 };
 
 } // namespace cis1

@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 
     boost::asio::io_context io_ctx;
 
-    cron_manager cm(io_ctx, ctx, ctx.base_dir() / "core" / "crons");
+    cron_manager cm(io_ctx, ctx, ctx.base_dir() / "core" / "crons", std_os);
 
     boost::asio::signal_set signals(io_ctx, SIGINT, SIGTERM);
 

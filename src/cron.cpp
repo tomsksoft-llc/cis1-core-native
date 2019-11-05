@@ -29,18 +29,20 @@ const std::string& cron_entry::expr() const
 
 cron_list::cron_list(
         const std::filesystem::path& path,
-        const std::set<cron_entry>& crons)
+        const std::set<cron_entry>& crons,
+        cis1::os_interface& os)
     : crons_file_path_(path)
     , crons_(crons)
+    , os_(os)
 {}
 
 void cron_list::save()
 {
-    std::ofstream crons_file(crons_file_path_);
+    auto crons_file = os_.open_ofstream(crons_file_path_);
 
     for(auto& cron : crons_)
     {
-        crons_file << cron.job() << " "
+        crons_file->ostream() << cron.job() << " "
                    << cron.expr() << std::endl;
     }
 }
@@ -62,24 +64,25 @@ size_t cron_list::del(const cron_entry& expr)
 
 std::optional<cron_list> load_cron_list(
         const std::filesystem::path& path,
-        std::error_code& ec)
+        std::error_code& ec,
+        cis1::os_interface& os)
 {
-    std::ifstream crons_file(path);
+    auto crons_file = os.open_ifstream(path);
 
-    if(!crons_file.is_open())
+    if(!crons_file->is_open())
     {
         return std::nullopt;
     }
 
     std::set<cron_entry> crons;
 
-    while(crons_file.good())
+    while(crons_file->istream().good())
     {
         std::string job;
         std::string cron;
 
-        std::getline(crons_file, job, ' ');
-        std::getline(crons_file, cron, '\n');
+        std::getline(crons_file->istream(), job, ' ');
+        std::getline(crons_file->istream(), cron, '\n');
 
         if(job.empty() || cron.empty())
         {
@@ -89,7 +92,7 @@ std::optional<cron_list> load_cron_list(
         crons.insert(cron_entry{job, cron});
     }
 
-    return cron_list{path, crons};
+    return cron_list{path, crons, os};
 }
 
 cron_timer::cron_timer(
@@ -127,30 +130,32 @@ void cron_timer::cancel()
 cron_manager::cron_manager(
         boost::asio::io_context& io_ctx,
         cis1::context_interface& ctx,
-        const std::filesystem::path& path)
+        const std::filesystem::path& path,
+        cis1::os_interface& os)
     : io_ctx_(io_ctx)
     , ctx_(ctx)
     , crons_file_path_(path)
+    , os_(os)
 {}
 
 void cron_manager::update()
 {
-    std::ifstream crons_file(crons_file_path_);
+    auto crons_file = os_.open_ifstream(crons_file_path_);
 
-    if(!crons_file.is_open())
+    if(!crons_file->is_open())
     {
         return;
     }
 
     std::set<cron_entry> crons;
 
-    while(crons_file.good())
+    while(crons_file->istream().good())
     {
         std::string job;
         std::string cron;
 
-        std::getline(crons_file, job, ' ');
-        std::getline(crons_file, cron, '\n');
+        std::getline(crons_file->istream(), job, ' ');
+        std::getline(crons_file->istream(), cron, '\n');
 
         if(job.empty() || cron.empty())
         {
@@ -224,11 +229,10 @@ void cron_manager::run_job(const std::string& job)
                 std::filesystem::path{"core"}
                 / ctx_.env().at("startjob").to_vector()[0];
 
-        boost::process::spawn(
-                boost::process::start_dir =
-                        ctx_.base_dir().generic_string(),
+        os_.spawn_process(
+                ctx_.base_dir().generic_string(),
                 executable.generic_string(),
-                boost::process::args = std::vector<std::string>{job},
+                std::vector<std::string>{job},
                 ctx_.env());
     }
     catch(boost::process::process_error ex)
