@@ -26,7 +26,8 @@ add_executable(
     src/get_value.cpp
     src/get_param.cpp
     src/set_value.cpp
-    src/set_param.cpp)
+    src/set_param.cpp
+    src/cron.cpp)
 
 if(BUILD_TESTING)
 target_link_libraries(tests cis1_core ${CONAN_LIBS} std::filesystem)

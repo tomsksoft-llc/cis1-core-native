@@ -5,7 +5,7 @@
 #include <filesystem>
 
 #include <boost/asio.hpp>
-
+#include <gtest/gtest_prod.h>
 #include <croncpp.h>
 
 #include "context_interface.h"
@@ -19,6 +19,7 @@ public:
             const std::string& expr);
 
     bool operator<(const cron_entry& other) const;
+    bool operator==(const cron_entry& other) const;
 
     const std::string& job() const;
 
@@ -71,6 +72,11 @@ private:
     boost::asio::steady_timer timer_;
 };
 
+/// \cond DO_NOT_DOCUMENT
+class cron_manager_run_job_Test;
+class cron_manager_update_Test;
+/// \endcond
+
 class cron_manager
 {
 public:
@@ -81,6 +87,11 @@ public:
             cis1::os_interface& os);
 
     void update();
+
+    /// \cond DO_NOT_DOCUMENT
+    FRIEND_TEST(::cron_manager, run_job);
+    FRIEND_TEST(::cron_manager, update);
+    /// \endcond
 
 private:
     boost::asio::io_context& io_ctx_;

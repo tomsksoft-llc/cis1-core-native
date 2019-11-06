@@ -19,6 +19,12 @@ bool cron_entry::operator<(const cron_entry& other) const
          < std::tie(other.job_, other.expr_);
 }
 
+bool cron_entry::operator==(const cron_entry& other) const
+{
+    return std::tie(job_, expr_)
+         == std::tie(other.job_, other.expr_);
+}
+
 const std::string& cron_entry::job() const
 {
     return job_;
