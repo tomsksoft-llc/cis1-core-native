@@ -85,4 +85,18 @@ std::unique_ptr<ofstream_interface> os::open_ofstream(
     return std::make_unique<ofstream_adapter>(path, mode);
 }
 
+void os::spawn_process(
+        const std::string& start_dir,
+        const std::string& executable,
+        const std::vector<std::string>& args,
+        boost::process::environment env) const
+{
+    boost::process::spawn(
+            boost::process::start_dir = start_dir,
+            boost::process::exe = executable,
+            boost::process::args = args,
+            boost::process::env = env);
+
+}
+
 } // namespace cis1

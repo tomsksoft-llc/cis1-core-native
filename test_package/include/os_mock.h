@@ -51,4 +51,11 @@ public:
             std::unique_ptr<cis1::ofstream_interface>(
                     const std::filesystem::path& path,
                     std::ios_base::openmode mode));
+
+    MOCK_CONST_METHOD4(
+            spawn_process,
+            void(   const std::string& start_dir,
+                    const std::string& executable,
+                    const std::vector<std::string>& args,
+                    boost::process::environment env));
 };

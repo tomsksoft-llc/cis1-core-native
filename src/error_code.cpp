@@ -63,6 +63,15 @@ std::string error_category::message(int ev) const
         case error_code::cant_write_session_id_file:
             return "Cant write job session_id file";
 
+        case error_code::cant_read_crons_file:
+            return "Cant read crons file";
+
+        case error_code::cant_write_crons_file:
+            return "Cant write crons file";
+
+        case error_code::invalid_cron_expression:
+            return "Invalid cron expression";
+
         case error_code::cant_generate_build_num:
             return "Cant generate build number";
 
