@@ -39,25 +39,43 @@ int main(int argc, char* argv[])
 
     boost::asio::signal_set signals(io_ctx, SIGINT, SIGTERM);
 
+#ifdef __linux__
+    std::filesystem::remove("/dev/shm/cis1_cron_cv1", ec);
+    if(ec)
+    {
+        std::cout << ec.message() << std::endl;
+
+        return EXIT_FAILURE;
+    }
+
+    std::filesystem::remove("/dev/shm/sem.cis1_cron_m1", ec);
+    if(ec)
+    {
+        std::cout << ec.message() << std::endl;
+
+        return EXIT_FAILURE;
+    }
+#endif
+
+    boost::interprocess::named_condition cv1(
+            boost::interprocess::create_only,
+            "cis1_cron_cv1");
+
+    boost::interprocess::named_mutex m1(
+            boost::interprocess::create_only,
+            "cis1_cron_m1");
+
+    signals.async_wait(
+            [&](const boost::system::error_code& ec, int)
+            {
+                io_ctx.stop();
+                cv1.notify_one();
+            });
+
     std::thread update_watcher(
             [&,
             guard = boost::asio::make_work_guard(io_ctx)]() mutable
             {
-                boost::interprocess::named_condition cv1(
-                        boost::interprocess::open_or_create,
-                        "cis1_cron_cv1");
-
-                signals.async_wait(
-                        [&](const boost::system::error_code& ec, int)
-                        {
-                            io_ctx.stop();
-                            cv1.notify_one();
-                        });
-
-                boost::interprocess::named_mutex m1(
-                        boost::interprocess::open_or_create,
-                        "cis1_cron_m1");
-
                 boost::interprocess::scoped_lock lock(m1);
 
                 while(!io_ctx.stopped())
