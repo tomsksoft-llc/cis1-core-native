@@ -160,4 +160,10 @@ int main(int argc, char* argv[])
     {
         cis_log() << "action=\"close_session\"" << std::endl;
     }
+
+    std_os.spawn_process(
+            ctx.base_dir(),
+            std::filesystem::path{"core"} / ctx.env().at("maintenance").to_vector()[0],
+            {"--job", job_name},
+            ctx.env());
 }
