@@ -4,6 +4,8 @@
 #include "os.h"
 #include "logger.h"
 #include "read_istream_kv_str.h"
+#include "utils.h"
+#include "maintenance.h"
 
 void usage(const char* self_name)
 {
@@ -11,27 +13,9 @@ void usage(const char* self_name)
               << "\t" << self_name << " --job ${job_name}" << std::endl;
 }
 
-bool is_build(const std::string& dir_name)
-{
-    static const std::regex build_mask("^\\d{6}$");
-    return std::regex_match(dir_name, build_mask);
-}
-
-std::optional<uint32_t> u32_from_string(const std::string& str)
-{
-    try
-    {
-        return stoul(str);
-    }
-    catch(...)
-    {
-        return std::nullopt;
-    }
-}
-
 int clean_job(
         const std::string& job_name,
-        cis1::context& ctx,
+        cis1::context_interface& ctx,
         cis1::os_interface& os)
 {
     std::error_code ec;
@@ -134,16 +118,16 @@ int clean_job(
 
     for(size_t i = 0; i < succ_builds_to_erase; ++i)
     {
-        std::filesystem::remove_all(successful_builds.begin()->second, ec);
+        os.remove_all(successful_builds.begin()->second, ec);
         successful_builds.erase(successful_builds.begin());
     }
-    
+
     size_t break_builds_to_erase = (broken_builds.size() > *keep_break_builds ?
                   broken_builds.size() - *keep_break_builds : 0);
 
     for(size_t i = 0; i < break_builds_to_erase; ++i)
     {
-        std::filesystem::remove_all(broken_builds.begin()->second, ec);
+        os.remove_all(broken_builds.begin()->second, ec);
         broken_builds.erase(broken_builds.begin());
     }
 

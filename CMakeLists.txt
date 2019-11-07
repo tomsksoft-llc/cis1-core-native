@@ -32,7 +32,8 @@ add_library(cis1_core STATIC
         src/logger.cpp
         src/get_parent_id.cpp
         src/webui_session.cpp
-        src/cron.cpp)
+        src/cron.cpp
+        src/utils.cpp)
 
 add_executable(startjob src/startjob.cpp)
 add_executable(getparam src/getparam.cpp)

@@ -99,4 +99,18 @@ void os::spawn_process(
 
 }
 
+void os::remove(
+        const std::filesystem::path& path,
+        std::error_code& ec) const
+{
+    std::filesystem::remove(path, ec);
+}
+
+void os::remove_all(
+        const std::filesystem::path& path,
+        std::error_code& ec) const
+{
+    std::filesystem::remove_all(path, ec);
+}
+
 } // namespace cis1

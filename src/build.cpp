@@ -1,6 +1,5 @@
 #include "build.h"
 
-#include <regex>
 #include <sstream>
 #include <iomanip>
 
@@ -9,6 +8,7 @@
 #include "job_runner.h"
 #include "error_code.h"
 #include "read_istream_kv_str.h"
+#include "utils.h"
 
 namespace cis1
 {
@@ -35,12 +35,6 @@ std::vector<std::pair<std::string, std::string>>& build::params()
 
 void build::create_build_dir(std::error_code& ec)
 {
-    static auto is_build = [](const std::string& dir_name)
-    {
-        static const std::regex build_mask("^\\d{6}$");
-        return std::regex_match(dir_name, build_mask);
-    };
-
     int max_build_num = -1;
 
     for(auto& entry : os_.list_directory(job_dir_))

@@ -51,6 +51,14 @@ public:
             const std::string& executable,
             const std::vector<std::string>& args,
             boost::process::environment env) const override;
+
+    void remove(
+            const std::filesystem::path& path,
+            std::error_code& ec) const override;
+
+    void remove_all(
+            const std::filesystem::path& path,
+            std::error_code& ec) const override;
 };
 
 } // namespace cis1
