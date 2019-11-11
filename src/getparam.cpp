@@ -79,5 +79,8 @@ int main(int argc, char *argv[])
 
     std::cout << param_opt.value() << std::endl;
 
+    session_log()   << "action=\"getparam\" \""
+                    << argv[1] << "\"=\"" << param_opt.value() << "\"" << std::endl;
+
     return 0;
 }

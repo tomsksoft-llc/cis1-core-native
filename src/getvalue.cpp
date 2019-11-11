@@ -80,5 +80,8 @@ int main(int argc, char *argv[])
 
     std::cout << value_opt.value() << std::endl;
 
+    session_log()   << "action=\"getvalue\" \""
+                    << argv[1] << "\"=\"" << value_opt.value() << "\"" << std::endl;
+
     return 0;
 }

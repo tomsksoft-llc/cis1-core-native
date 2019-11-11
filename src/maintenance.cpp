@@ -4,6 +4,7 @@
 #include "os.h"
 #include "logger.h"
 #include "maintenance.h"
+#include "job.h"
 
 void usage(const char* self_name)
 {
@@ -35,5 +36,22 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    return clean_job(argv[2], ctx, std_os);
+    auto job_opt = cis1::load_job(argv[2], ec, ctx, std_os);
+    if(ec)
+    {
+        std::cout << ec.message() << std::endl;
+
+        return EXIT_FAILURE;
+    }
+    auto& job = job_opt.value();
+
+    job.cleanup(ec);
+    if(ec)
+    {
+        std::cout << ec.message() << std::endl;
+
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }

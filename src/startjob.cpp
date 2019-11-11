@@ -2,7 +2,7 @@
 
 #include "context.h"
 #include "session.h"
-#include "build.h"
+#include "job.h"
 #include "set_value.h"
 #include "logger.h"
 #include "os.h"
@@ -68,18 +68,19 @@ int main(int argc, char* argv[])
         cis_log() << "action=\"open_session\"" << std::endl;
     }
 
-    auto build_opt = cis1::prepare_build(ctx, job_name, ec, std_os);
+    auto job_opt = cis1::load_job(job_name, ec, ctx, std_os);
     if(ec)
     {
-        tee_log() << "action=\"error\" " << ec.message() << std::endl;
+        std::cout << ec.message() << std::endl;
 
-        return 1;
+        return EXIT_FAILURE;
     }
-    auto& build = build_opt.value();
+    auto& job = job_opt.value();
 
-    if(!build.params().empty() && session.opened_by_me())
+    auto params = job.params();
+    if(!params.empty() && session.opened_by_me())
     {
-        for(auto& [k, v] : build.params())
+        for(auto& [k, v] : params)
         {
             std::cout << "Type param value for parameter " << k
                       << "(\"Enter\" for default value:\""
@@ -94,19 +95,16 @@ int main(int argc, char* argv[])
             }
         }
     }
-    else if(!build.params().empty())
+    else if(!params.empty())
     {
-        build.prepare_params(ctx, session, ec);
+        cis1::prepare_params(params, std_os, ctx, session, ec);
     }
 
-    if(ec)
-    {
-        tee_log() << "action=\"error\" " << ec.message() << std::endl;
-
-        return 1;
-    }
-
-    build.prepare_build_dir(session, ec);
+    auto build_handle = job.prepare_build(
+            ctx,
+            session,
+            params,
+            ec);
     if(ec)
     {
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
@@ -124,7 +122,13 @@ int main(int argc, char* argv[])
 
     ctx.set_env("job_name", job_name);
 
-    cis1::set_value(ctx, session, "last_job_build_number", build.build_num(), ec, std_os);
+    cis1::set_value(
+            ctx,
+            session,
+            "last_job_build_number",
+            build_handle.number_string(),
+            ec,
+            std_os);
     if(ec)
     {
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
@@ -132,13 +136,14 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    ctx.set_env("build_number", build.build_num());
+    ctx.set_env("build_number", build_handle.number_string());
 
-    session_log() << "action=\"start_job\" job_name=\"" << job_name << "\"" << std::endl;
+    session_log() << "action=\"start_job\" job_name=\""
+                  << job_name << "\"" << std::endl;
 
     int exit_code = -1;
 
-    build.execute(ctx, ec, exit_code);
+    build_handle.execute(ctx, ec, exit_code);
     if(ec)
     {
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
@@ -146,14 +151,16 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    session_log() << "action=\"finish_job\" job_name=\"" << job_name << "\"" << std::endl;
+    session_log() << "action=\"finish_job\" job_name=\""
+                  << job_name << "\"" << std::endl;
 
     std::cout << "session_id=" << session.session_id()
               << " action=start_job"
               << " job_name=" << job_name
-              << " build_dir=" << build.build_num()
+              << " build_dir=" << build_handle.number_string()
               << " pid=" << ctx.pid()
               << " ppid=" << ctx.ppid() << std::endl;
+
     std::cout << "Exit code: " << exit_code << std::endl;
 
     if(session.opened_by_me())

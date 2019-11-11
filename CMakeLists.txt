@@ -19,7 +19,6 @@ add_library(cis1_core STATIC
         src/error_code.cpp
         src/context.cpp
         src/session.cpp
-        src/build.cpp
         src/os.cpp
         src/read_istream_kv_str.cpp
         src/ifstream_adapter.cpp
@@ -34,7 +33,8 @@ add_library(cis1_core STATIC
         src/webui_session.cpp
         src/cron.cpp
         src/utils.cpp
-        src/maintenance_impl.cpp)
+        src/maintenance_impl.cpp
+        src/job.cpp)
 
 add_executable(startjob src/startjob.cpp)
 add_executable(getparam src/getparam.cpp)

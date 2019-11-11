@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    session_log()   << "action=\"setparam\" \"" 
+    session_log()   << "action=\"setparam\" \""
                     << argv[1] << "\"=\"" << argv[2] << "\"" << std::endl;
 
     return 0;
