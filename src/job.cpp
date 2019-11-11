@@ -49,8 +49,6 @@ job::build_handle::operator bool() const
     return static_cast<bool>(number_);
 }
 
-
-
 job::job(
         const std::string& name,
         const config& cfg,
@@ -317,6 +315,13 @@ std::optional<job> load_job(
         return std::nullopt;
     }
 
+    if(!os.exists(job_path / conf["script"], ec) || ec)
+    {
+        ec = error_code::script_doesnt_exist;
+
+        return std::nullopt;
+    }
+
     auto is = os.open_ifstream(job_path / "job.params");
     std::vector<std::pair<std::string, std::string>> job_params;
     if(is && is->is_open())
@@ -338,15 +343,9 @@ std::optional<job> load_job(
     std::map<uint32_t, std::filesystem::path> broken_builds;
     std::map<uint32_t, std::filesystem::path> pending_builds;
 
-    for(auto it = std::filesystem::directory_iterator(job_path);
-             it != std::filesystem::directory_iterator();
-             it.increment(ec))
+    for(auto& entry_ptr : os.list_directory(job_path))
     {
-        if(ec)
-        {
-            return std::nullopt;
-        }
-        auto& entry = *it;
+        auto& entry = *entry_ptr;
 
         if(is_build(entry.path().filename().string()))
         {

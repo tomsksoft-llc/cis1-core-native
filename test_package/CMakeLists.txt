@@ -25,6 +25,7 @@ add_executable(
     src/get_param.cpp
     src/set_value.cpp
     src/set_param.cpp
+    src/job.cpp
     src/cron.cpp)
 
 if(BUILD_TESTING)
