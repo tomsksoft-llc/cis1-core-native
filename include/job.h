@@ -36,42 +36,18 @@ public:
     public:
         build_handle(
                 job& job_arg,
-                std::optional<uint32_t> number)
-            : job_(job_arg)
-            , number_(number)
-        {}
+                std::optional<uint32_t> number);
 
         void execute(
                 cis1::context_interface& ctx,
                 std::error_code& ec,
-                int& exit_code)
-        {
-            job_.execute(
-                    number_.value(),
-                    ctx,
-                    ec,
-                    exit_code);
-        }
+                int& exit_code);
 
-        std::string number_string()
-        {
-            std::stringstream ss;
+        std::string number_string();
 
-            ss << std::setfill('0')
-               << std::setw(6) << number_.value();
+        uint32_t number();
 
-            return ss.str();
-        }
-
-        uint32_t number()
-        {
-            return number_.value();
-        }
-
-        operator bool() const
-        {
-            return static_cast<bool>(number_);
-        }
+        operator bool() const;
 
     private:
         job& job_;

@@ -10,6 +10,47 @@
 namespace cis1
 {
 
+job::build_handle::build_handle(
+        job& job_arg,
+        std::optional<uint32_t> number)
+    : job_(job_arg)
+    , number_(number)
+{}
+
+void job::build_handle::execute(
+        cis1::context_interface& ctx,
+        std::error_code& ec,
+        int& exit_code)
+{
+    job_.execute(
+            number_.value(),
+            ctx,
+            ec,
+            exit_code);
+}
+
+std::string job::build_handle::number_string()
+{
+    std::stringstream ss;
+
+    ss << std::setfill('0')
+       << std::setw(6) << number_.value();
+
+    return ss.str();
+}
+
+uint32_t job::build_handle::number()
+{
+    return number_.value();
+}
+
+job::build_handle::operator bool() const
+{
+    return static_cast<bool>(number_);
+}
+
+
+
 job::job(
         const std::string& name,
         const config& cfg,
