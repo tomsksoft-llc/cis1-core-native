@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "read_istream_kv_str.h"
-#include "utils.h"
+#include "test_utils.h"
 
 TEST(read_istream_kv_str, empty_file)
 {
