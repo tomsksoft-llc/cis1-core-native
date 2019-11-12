@@ -14,7 +14,7 @@
 #include "process.h"
 
 /// \cond DO_NOT_DOCUMENT
-class build_execute_job_runner_Test;
+class job_execute_job_runner_Test;
 /// \endcond
 
 namespace cis1
@@ -47,7 +47,7 @@ public:
             on_line_read_cb_t&& on_err_line_read_cb) override;
 
     /// \cond DO_NOT_DOCUMENT
-    FRIEND_TEST(::build_execute, job_runner);
+    FRIEND_TEST(::job_execute, job_runner);
     /// \endcond
 
 private:

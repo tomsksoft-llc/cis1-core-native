@@ -58,4 +58,16 @@ public:
                     const std::string& executable,
                     const std::vector<std::string>& args,
                     boost::process::environment env));
+
+    MOCK_CONST_METHOD2(
+            remove,
+            void(
+                    const std::filesystem::path& path,
+                    std::error_code& ec));
+
+    MOCK_CONST_METHOD2(
+            remove_all,
+            void(
+                    const std::filesystem::path& path,
+                    std::error_code& ec));
 };

@@ -57,7 +57,7 @@ int add(cis1::context_interface& ctx,
     cron_list.add(cron_entry{job, cron});
 
     cron_list.save(ec);
-    
+
     if(ec)
     {
         std::cout << ec.message() << std::endl;
@@ -108,7 +108,7 @@ int del(cis1::context_interface& ctx,
     }
 
     cron_list.save(ec);
-    
+
     if(ec)
     {
         std::cout << ec.message() << std::endl;

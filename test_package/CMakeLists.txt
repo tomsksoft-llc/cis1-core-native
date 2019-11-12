@@ -19,14 +19,13 @@ add_executable(
     tests
     src/main.cpp
     src/read_istream_kv_str.cpp
-    src/build.cpp
     src/init_context.cpp
     src/invoke_session.cpp
-    src/prepare_build.cpp
     src/get_value.cpp
     src/get_param.cpp
     src/set_value.cpp
     src/set_param.cpp
+    src/job.cpp
     src/cron.cpp)
 
 if(BUILD_TESTING)

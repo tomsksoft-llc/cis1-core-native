@@ -65,6 +65,14 @@ struct os_interface
             const std::string& executable,
             const std::vector<std::string>& args,
             boost::process::environment env) const = 0;
+
+    virtual void remove(
+            const std::filesystem::path& path,
+            std::error_code& ec) const = 0;
+
+    virtual void remove_all(
+            const std::filesystem::path& path,
+            std::error_code& ec) const = 0;
 };
 
 } // namespace cis1
