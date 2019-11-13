@@ -3,7 +3,6 @@
 #include "context.h"
 #include "os.h"
 #include "logger.h"
-#include "maintenance.h"
 #include "job.h"
 
 void usage(const char* self_name)
