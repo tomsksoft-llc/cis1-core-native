@@ -18,6 +18,12 @@ class session
     : public session_interface
 {
 public:
+    /**
+     * \brief Constructs session instance
+     * @param[in] session_id Session identificator
+     * @param[in] opened_by_me Flag that identifies
+     *                         whether session created by this process
+     */
     session(const std::string& session_id,
             bool opened_by_me);
 

@@ -15,12 +15,17 @@ namespace cis1
 {
 
 /**
- * \brief Represents CIS itself and process info
+ * \brief Main implementation of CIS itself
  */
 class context
     : public context_interface
 {
 public:
+    /**
+     * \brief Constructs context instance
+     * @param[in] base_dir CIS directory
+     * @param[in] executables CIS names-to-executables map
+     */
     context(const std::filesystem::path& base_dir,
             const std::map<std::string, std::string>& executables);
 

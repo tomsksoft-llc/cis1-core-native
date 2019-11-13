@@ -20,6 +20,13 @@ struct job_runner_interface
 
     virtual ~job_runner_interface() = default;
 
+    /**
+     * \brief Starts job
+     * @param[in] filename name of executable
+     * @param[in] on_exit_cb will be called on exit
+     * @param[in] on_out_line_read_cb will be called on new line in stdout
+     * @param[in] on_err_line_read_cb will be called on new line in stderr
+     */
     virtual void run(
             const std::string& filename,
             on_exit_cb_t&& on_exit_cb,
