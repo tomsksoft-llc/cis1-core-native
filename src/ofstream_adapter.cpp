@@ -1,3 +1,11 @@
+/*
+ *    TomskSoft CIS1 Core
+ *
+ *   (c) 2019 TomskSoft LLC
+ *   (c) Mokin Innokentiy [mia@tomsksoft.com]
+ *
+ */
+
 #include "ofstream_adapter.h"
 
 namespace cis1
