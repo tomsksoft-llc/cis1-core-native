@@ -370,9 +370,11 @@ std::optional<job> load_job(
             if(!exitcode)
             {
                 pending_builds.emplace(build_num, entry.path());
+
+                continue;
             }
 
-            if(*exitcode != 0)
+            if(*exitcode == 0)
             {
                 successful_builds.emplace(build_num, entry.path());
             }
