@@ -1,3 +1,11 @@
+/*
+ *    TomskSoft CIS1 Core
+ *
+ *   (c) 2019 TomskSoft LLC
+ *   (c) Mokin Innokentiy [mia@tomsksoft.com]
+ *
+ */
+
 #pragma once
 
 #include <ostream>
@@ -12,8 +20,16 @@ struct ofstream_interface
 {
     virtual ~ofstream_interface() = default;
 
+    /**
+     * \brief Checks whether ofstream open
+     * \return true if open false otherwise
+     */
     virtual bool is_open() const = 0;
 
+    /**
+     * \brief Getter for ostream
+     * \return std::ostream& to corresponding ostream
+     */
     virtual std::ostream& ostream() = 0;
 };
 

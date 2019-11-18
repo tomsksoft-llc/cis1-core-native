@@ -1,3 +1,11 @@
+/*
+ *    TomskSoft CIS1 Core
+ *
+ *   (c) 2019 TomskSoft LLC
+ *   (c) Mokin Innokentiy [mia@tomsksoft.com]
+ *
+ */
+
 #pragma once
 
 #include <filesystem>
@@ -27,6 +35,13 @@ class job_runner
     : public job_runner_interface
 {
 public:
+    /**
+     * \brief Constructs job_runner instance
+     * @param[in] ctx
+     * @param[in] env Environment for process
+     * @param[in] working_dir Dir where process will be executed
+     * @param[in] os
+     */
     job_runner(
             boost::asio::io_context& ctx,
             boost::process::environment env,
@@ -35,10 +50,10 @@ public:
 
     /**
      * \brief Starts job
-     * @param filename name of executable
-     * @param on_exit_cb will be called on exit
-     * @param on_out_line_read_cb will be called on new line in stdout
-     * @param on_err_line_read_cb will be called on new line in stderr
+     * @param[in] filename name of executable
+     * @param[in] on_exit_cb will be called on exit
+     * @param[in] on_out_line_read_cb will be called on new line in stdout
+     * @param[in] on_err_line_read_cb will be called on new line in stderr
      */
     virtual void run(
             const std::string& filename,

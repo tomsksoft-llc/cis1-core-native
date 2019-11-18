@@ -33,7 +33,6 @@ add_library(cis1_core STATIC
         src/webui_session.cpp
         src/cron.cpp
         src/utils.cpp
-        src/maintenance_impl.cpp
         src/job.cpp)
 
 add_executable(startjob src/startjob.cpp)

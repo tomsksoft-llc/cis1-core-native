@@ -1,9 +1,16 @@
+/*
+ *    TomskSoft CIS1 Core
+ *
+ *   (c) 2019 TomskSoft LLC
+ *   (c) Mokin Innokentiy [mia@tomsksoft.com]
+ *
+ */
+
 #include <iostream>
 
 #include "context.h"
 #include "os.h"
 #include "logger.h"
-#include "maintenance.h"
 #include "job.h"
 
 void usage(const char* self_name)
