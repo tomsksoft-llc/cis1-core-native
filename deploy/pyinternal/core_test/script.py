@@ -44,9 +44,10 @@ def setvalue_getvalue_test(cis_current_build):
 def startjob_without_args_test(cis_current_build):
     print("Testing startjob without args...")
 
-    r = cis_current_build.startjob("pyinternal/core_test_job_without_args")
+    (r, exit_code) = cis_current_build.startjob("pyinternal/core_test_job_without_args")
 
     assert r == 0, ("Startjob should return 0.")
+    assert exit_code == 0, ("Job pyinternal/core_test_job_without_args failed.")
 
     (r, value) = cis_current_build.getvalue("last_job_name")
 
@@ -79,9 +80,10 @@ def startjob_with_args_test(cis_current_build):
 
     assert r == 0, ("Setparam should return 0.")
 
-    r = cis_current_build.startjob("pyinternal/core_test_job_with_args")
+    (r, exit_code) = cis_current_build.startjob("pyinternal/core_test_job_with_args")
 
     assert r == 0, ("Startjob should return 0.")
+    assert exit_code == 0, ("Job pyinternal/core_test_job_with_args failed.")
 
     #assert params deletion
 

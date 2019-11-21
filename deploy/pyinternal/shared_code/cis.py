@@ -124,14 +124,24 @@ class CisCurrentBuild:
             stdout = subprocess.PIPE,
             universal_newlines = True)
 
+        last_line = ""
+
         for stdout_line in iter(startjob_proc.stdout.readline, ""):
+            last_line = stdout_line
             print(stdout_line, end = '')
 
         startjob_proc.stdout.close()
 
         startjob_proc.wait()
 
-        return startjob_proc.returncode
+        match = re.match("Exit code: (\d+)", last_line)
+
+        exitcode = None
+
+        if not match == None:
+            exitcode = int(match.group(1))
+
+        return (startjob_proc.returncode, exitcode)
 
     def setvalue(self, name, value):
         setvalue_proc = subprocess.Popen(
