@@ -3,6 +3,7 @@ import sys
 import os
 import argparse
 import subprocess
+import re
 from shutil import copy
 from shutil import copytree
 
@@ -123,12 +124,33 @@ def main(argv = None):
         universal_newlines = True,
         env = penv)
 
+    last_line = ""
+
     for stdout_line in iter(startjob_proc.stdout.readline, ""):
-        print(stdout_line, end = '')
+        last_line = stdout_line
 
     startjob_proc.stdout.close()
 
     startjob_proc.wait()
+
+    match = re.match("Exit code: (\d+)", last_line)
+
+    exitcode = None
+
+    if not match == None:
+        exitcode = int(match.group(1))
+
+    if not startjob_proc.returncode == 0:
+        print("Deployment fail. Can't execute pyinternal job.")
+
+        return 1
+
+    if not exitcode == 0:
+        print("Deployment fail. Job pyinternal failed.")
+
+        return 1
+
+    print("Deployment success")
 
 if __name__ == "__main__":
     sys.exit(main())
