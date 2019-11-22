@@ -15,4 +15,8 @@ public:
     MOCK_CONST_METHOD0(
             session_id,
             const std::string&());
+
+    MOCK_METHOD1(
+            on_close,
+            void(std::function<void(session_interface&)> handler));
 };

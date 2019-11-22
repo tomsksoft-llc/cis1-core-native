@@ -35,6 +35,8 @@ public:
     session(const std::string& session_id,
             bool opened_by_me);
 
+    ~session();
+
     /**
      * \brief Identifies is current process session owner
      * \return \b true if session opened by current executable \b false otherwise
@@ -47,9 +49,16 @@ public:
      */
     virtual const std::string& session_id() const override;
 
+    /**
+     * \brief Sets close handler
+     * @param[in] handler
+     */
+    virtual void on_close(std::function<void(session_interface&)> handler) override;
+
 private:
     const std::string session_id_;
     const bool opened_by_me_;
+    std::function<void(session_interface&)> on_close_;
 };
 
 /**

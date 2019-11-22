@@ -74,6 +74,12 @@ int main(int argc, char* argv[])
     if(session.opened_by_me())
     {
         cis_log() << "action=\"open_session\"" << std::endl;
+
+        session.on_close(
+                [](cis1::session_interface&)
+                {
+                    cis_log() << "action=\"close_session\"" << std::endl;
+                });
     }
 
     auto job_opt = cis1::load_job(job_name, ec, ctx, std_os);
@@ -170,11 +176,6 @@ int main(int argc, char* argv[])
               << " ppid=" << ctx.ppid() << std::endl;
 
     std::cout << "Exit code: " << exit_code << std::endl;
-
-    if(session.opened_by_me())
-    {
-        cis_log() << "action=\"close_session\"" << std::endl;
-    }
 
     std_os.spawn_process(
             ctx.base_dir(),
