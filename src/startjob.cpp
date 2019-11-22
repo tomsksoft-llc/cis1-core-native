@@ -57,6 +57,7 @@ int main(int argc, char* argv[])
     auto session_opt = cis1::invoke_session(ctx, ec, std_os);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         cis_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
@@ -121,6 +122,7 @@ int main(int argc, char* argv[])
             ec);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
@@ -129,6 +131,7 @@ int main(int argc, char* argv[])
     cis1::set_value(ctx, session, "last_job_name", job_name, ec, std_os);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
@@ -145,6 +148,7 @@ int main(int argc, char* argv[])
             std_os);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
@@ -160,6 +164,7 @@ int main(int argc, char* argv[])
     build_handle.execute(ctx, ec, exit_code);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
