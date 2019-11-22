@@ -27,6 +27,7 @@ job::build_handle::build_handle(
 
 void job::build_handle::execute(
         cis1::context_interface& ctx,
+        bool force,
         std::error_code& ec,
         int& exit_code)
 {
@@ -34,7 +35,8 @@ void job::build_handle::execute(
             number_.value(),
             ctx,
             ec,
-            exit_code);
+            exit_code,
+            force);
 }
 
 std::string job::build_handle::number_string()
@@ -119,13 +121,38 @@ void job::execute(
         cis1::context_interface& ctx,
         std::error_code& ec,
         int& exit_code,
+        bool force,
         job_runner_factory_t job_runner_factory)
 {
-    boost::asio::io_context io_ctx;
-
     auto& build_dir = pending_builds_[build_number];
 
+    if(!os_.is_executable(build_dir / config_.script, ec))
+    {
+        if(ec)
+        {
+            return;
+        }
+
+        if(force)
+        {
+            os_.make_executable(build_dir / config_.script, ec);
+
+            if(ec)
+            {
+                return;
+            }
+        }
+        else
+        {
+            ec = cis1::error_code::script_is_not_executable;
+
+            return;
+        }
+    }
+
     ctx.set_env("build", build_dir.filename());
+
+    boost::asio::io_context io_ctx;
 
     auto runner = job_runner_factory(
             io_ctx,
@@ -251,7 +278,10 @@ job::build_handle job::prepare_build(
         os->ostream() << k << "=" << v << "\n";
     }
 
-    os_.copy(ctx.base_dir() / "jobs" / name_ / "job.conf", build_dir / "job.conf", ec);
+    os_.copy(
+            ctx.base_dir() / "jobs" / name_ / "job.conf",
+            build_dir / "job.conf",
+            ec);
     if(ec)
     {
         ec = cis1::error_code::cant_write_job_conf_file;
@@ -312,9 +342,11 @@ std::optional<job> load_job(
         return std::nullopt;
     }
 
-    auto keep_successful_builds = u32_from_string(conf["keep_last_success_builds"]);
+    auto keep_successful_builds = u32_from_string(
+            conf["keep_last_success_builds"]);
 
-    auto keep_broken_builds = u32_from_string(conf["keep_last_break_builds"]);
+    auto keep_broken_builds = u32_from_string(
+            conf["keep_last_break_builds"]);
 
     if(!keep_successful_builds || !keep_broken_builds)
     {
@@ -359,7 +391,8 @@ std::optional<job> load_job(
         {
             auto exitcode = [&]() -> std::optional<uint32_t>
             {
-                auto exitcode_file = os.open_ifstream(entry.path() / "exitcode.txt");
+                auto exitcode_file = os.open_ifstream(
+                        entry.path() / "exitcode.txt");
 
                 if(!exitcode_file)
                 {

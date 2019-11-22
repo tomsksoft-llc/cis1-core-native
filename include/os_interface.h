@@ -144,6 +144,24 @@ struct os_interface
     virtual void remove_all(
             const std::filesystem::path& path,
             std::error_code& ec) const = 0;
+
+    /**
+     * \brief Checks fs entry is executable
+     * @param[in] path Path to fs entry
+     * @param[out] ec
+     */
+    virtual bool is_executable(
+            const std::filesystem::path& path,
+            std::error_code& ec) const = 0;
+
+    /**
+     * \brief Makes fs entry executable
+     * @param[in] path Path to fs entry
+     * @param[out] ec
+     */
+    virtual void make_executable(
+            const std::filesystem::path& path,
+            std::error_code& ec) const = 0;
 };
 
 } // namespace cis1

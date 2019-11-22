@@ -965,11 +965,17 @@ TEST(job_execute, correct)
 
     int exit_code = -1;
 
+    EXPECT_CALL(os, is_executable(
+                job_dir / "000012" / "test_script",
+                _))
+        .WillOnce(Return(true));
+
     job.execute(
             12,
             ctx,
             ec,
             exit_code,
+            false,
             std::ref(job_runner_factory));
 
     ASSERT_EQ((bool)ec, false);

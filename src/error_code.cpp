@@ -95,6 +95,9 @@ std::string error_category::message(int ev) const
         case error_code::invalid_kv_file_format:
             return "Cant parse kv-file";
 
+        case error_code::script_is_not_executable:
+            return "Script is not executable";
+
         default:
             return "(unrecognized error)";
     }

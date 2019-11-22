@@ -42,6 +42,7 @@ enum class error_code
     cant_copy_script,
     cant_execute_script,
     invalid_kv_file_format,
+    script_is_not_executable,
 };
 
 std::error_code make_error_code(error_code ec);

@@ -64,11 +64,13 @@ public:
         /**
          * \brief Executes pending build and move it to corresponding map
          * @param[in] ctx
+         * @param[in] force Try to execute even if script is not executable
          * @param[out] ec
          * @param[out] exit_code Job exit code (if job finished correctly)
          */
         void execute(
                 cis1::context_interface& ctx,
+                bool force,
                 std::error_code& ec,
                 int& exit_code);
 
@@ -154,6 +156,7 @@ public:
      * @param[in] ctx
      * @param[out] ec
      * @param[out] exit_code Build exit_code
+     * @param[in] force Try to execute even if script isn't executable
      * @param[in] job_runner_factory
      */
     void execute(
@@ -161,6 +164,7 @@ public:
             cis1::context_interface& ctx,
             std::error_code& ec,
             int& exit_code,
+            bool force,
             job_runner_factory_t job_runner_factory =
                             [](auto&&... args)
                             {

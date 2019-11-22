@@ -130,6 +130,24 @@ public:
     void remove_all(
             const std::filesystem::path& path,
             std::error_code& ec) const override;
+
+    /**
+     * \brief Checks fs entry is executable
+     * @param[in] path Path to fs entry
+     * @param[out] ec
+     */
+    bool is_executable(
+            const std::filesystem::path& path,
+            std::error_code& ec) const override;
+
+    /**
+     * \brief Makes fs entry executable
+     * @param[in] path Path to fs entry
+     * @param[out] ec
+     */
+    void make_executable(
+            const std::filesystem::path& path,
+            std::error_code& ec) const override;
 };
 
 } // namespace cis1
