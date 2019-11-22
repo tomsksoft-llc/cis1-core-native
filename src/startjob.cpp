@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
     cis1::set_value(ctx, session, "last_job_name", job_name, ec, std_os);
     if(ec)
     {
-        tee_log() << ec.message() << std::endl;
+        tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
     }
