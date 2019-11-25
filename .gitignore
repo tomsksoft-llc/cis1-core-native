@@ -23,6 +23,9 @@
 !test_package/include/*
 !test_package/src/*
 
+!docs/
+!docs/*
+
 !deploy/
 !deploy/*
 !deploy/**
