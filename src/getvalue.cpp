@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
     auto session_opt = cis1::invoke_session(ctx, ec, std_os);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         cis_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
@@ -64,6 +65,7 @@ int main(int argc, char *argv[])
 
     if(argc != 2)
     {
+        std::cerr << "Wrong arguments" << std::endl;
         tee_log()  << "action=\"error\" "
                     << "Wrong args count in getvalue" << std::endl;
 
@@ -72,6 +74,7 @@ int main(int argc, char *argv[])
 
     if(session.opened_by_me())
     {
+        std::cerr << "Cant start getvalue outside of session" << std::endl;
         tee_log()  << "action=\"error\" "
                     << "Cant get value outside the session" << std::endl;
 
@@ -81,6 +84,7 @@ int main(int argc, char *argv[])
     auto value_opt = cis1::get_value(ctx, session, argv[1], ec, std_os);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;

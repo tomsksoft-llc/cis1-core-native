@@ -26,6 +26,14 @@ session::session(
     , opened_by_me_(opened_by_me)
 {}
 
+session::~session()
+{
+    if(on_close_)
+    {
+        on_close_(*this);
+    }
+}
+
 bool session::opened_by_me() const
 {
     return opened_by_me_;
@@ -34,6 +42,11 @@ bool session::opened_by_me() const
 const std::string& session::session_id() const
 {
     return session_id_;
+}
+
+void session::on_close(std::function<void(session_interface&)> handler)
+{
+    on_close_ = handler;
 }
 
 std::optional<session> invoke_session(

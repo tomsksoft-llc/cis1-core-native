@@ -32,6 +32,12 @@ struct session_interface
      * \return current session identifier
      */
     virtual const std::string& session_id() const = 0;
+
+    /**
+     * \brief Sets close handler
+     * @param[in] handler
+     */
+    virtual void on_close(std::function<void(session_interface&)> handler) = 0;
 };
 
 } // namespace cis1
