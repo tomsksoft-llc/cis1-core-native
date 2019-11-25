@@ -1,0 +1,8 @@
+startjob=startjob
+setparam=setparam
+getparam=getparam
+setvalue=setvalue
+getvalue=getvalue
+cis_cron=cis_cron
+cis_cron_daemon=cis_cron_daemon
+maintenance=maintenance

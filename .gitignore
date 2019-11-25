@@ -25,3 +25,7 @@
 
 !docs/
 !docs/*
+
+!deploy/
+!deploy/*
+!deploy/**
