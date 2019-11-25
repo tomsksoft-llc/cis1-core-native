@@ -121,4 +121,30 @@ void os::remove_all(
     std::filesystem::remove_all(path, ec);
 }
 
+bool os::is_executable(
+        const std::filesystem::path& path,
+        std::error_code& ec) const
+{
+    auto status = std::filesystem::status(path, ec);
+
+    if(ec)
+    {
+        return false;
+    }
+
+    return (status.permissions() & std::filesystem::perms::owner_exec)
+        != std::filesystem::perms::none;
+}
+
+void os::make_executable(
+        const std::filesystem::path& path,
+        std::error_code& ec) const
+{
+    std::filesystem::permissions(
+            path,
+            std::filesystem::perms::owner_exec,
+            std::filesystem::perm_options::add,
+            ec);
+}
+
 } // namespace cis1

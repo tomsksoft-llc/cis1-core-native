@@ -70,4 +70,16 @@ public:
             void(
                     const std::filesystem::path& path,
                     std::error_code& ec));
+
+    MOCK_CONST_METHOD2(
+            is_executable,
+            bool(
+                    const std::filesystem::path& path,
+                    std::error_code& ec));
+
+    MOCK_CONST_METHOD2(
+            make_executable,
+            void(
+                    const std::filesystem::path& path,
+                    std::error_code& ec));
 };

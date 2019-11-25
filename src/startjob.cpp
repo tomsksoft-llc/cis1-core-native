@@ -19,7 +19,7 @@
 void usage()
 {
     std::cout << "Usage:" << "\n"
-              << "startjob project/job" << "\n";
+              << "startjob project/job [--force]" << "\n";
 }
 
 int main(int argc, char* argv[])
@@ -46,12 +46,22 @@ int main(int argc, char* argv[])
 
     init_cis_log(ctx);
 
-    if(argc != 2)
+    if(argc > 3 || argc < 2)
     {
         usage();
 
         return 1;
     }
+
+    if(argc == 3 && strcmp(argv[2], "--force") != 0)
+    {
+        usage();
+
+        return 1;
+    }
+
+    bool force = (argc == 3);
+
     std::string job_name = argv[1];
 
     auto session_opt = cis1::invoke_session(ctx, ec, std_os);
@@ -161,7 +171,7 @@ int main(int argc, char* argv[])
 
     int exit_code = -1;
 
-    build_handle.execute(ctx, ec, exit_code);
+    build_handle.execute(ctx, force, ec, exit_code);
     if(ec)
     {
         std::cerr << ec.message() << std::endl;
