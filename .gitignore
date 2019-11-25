@@ -22,3 +22,6 @@
 !test_package/*
 !test_package/include/*
 !test_package/src/*
+
+!docs/
+!docs/*
