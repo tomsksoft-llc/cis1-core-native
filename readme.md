@@ -79,28 +79,8 @@ ${PATH_TO_BUILD_DIR}/bin
 
 ## Installation
 
-Create the following directory structure:
+Run `deploy/deploy.py`
 
 ```console
-cis
-├── core
-├── docs
-├── jobs
-├── logs
-└── sessions
-```
-
-Put executables in `cis/core` directory.
-
-Add file `cis.conf` to the same directory. File content on OS Linux:
-
-```console
-startjob=startjob
-setparam=setparam
-getparam=getparam
-setvalue=setvalue
-getvalue=getvalue
-cis_cron=cis_cron
-cis_cron_daemon=cis_cron_daemon
-maintenance=maintenance
+$ ./deploy.py --execs_dir ${PATH_TO_BUILT_EXECUTABLES} --deploy_dir ${PATH_WHERE_CIS_WILL_BE_DEPLOYED}
 ```
