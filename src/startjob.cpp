@@ -63,7 +63,6 @@ int main(int argc, char* argv[])
     }
     auto& session = session_opt.value();
 
-    std::cout << session.session_id() << std::endl;
     if(webui_session)
     {
         webui_session->auth(session);
@@ -75,6 +74,14 @@ int main(int argc, char* argv[])
     {
         cis_log() << "action=\"open_session\"" << std::endl;
     }
+
+    if(session.opened_by_me())
+    {
+        webui_log() << "action=\"root_job_stdout\" "
+                    << session.session_id() << std::endl;
+    }
+
+    std::cout << session.session_id() << std::endl;
 
     auto job_opt = cis1::load_job(job_name, ec, ctx, std_os);
     if(ec)
@@ -174,13 +181,31 @@ int main(int argc, char* argv[])
     session_log() << "action=\"finish_job\" job_name=\""
                   << job_name << "\"" << std::endl;
 
-    std::cout << "session_id=" << session.session_id()
+    std::stringstream ss;
+
+    ss << "session_id=" << session.session_id()
               << " job_name=" << job_name
               << " build_dir=" << build_handle.number_string()
               << " pid=" << ctx.process_id()
-              << " ppid=" << ctx.parent_startjob_id() << std::endl;
+              << " ppid=" << ctx.parent_startjob_id();
 
-    std::cout << "Exit code: " << exit_code << std::endl;
+    if(session.opened_by_me())
+    {
+        webui_log() << "action=\"root_job_stdout\" " << ss.str() << std::endl;
+    }
+
+    std::cout << ss.str() << std::endl;
+
+    ss.str("");
+
+    ss << "Exit code: " << exit_code;
+
+    if(session.opened_by_me())
+    {
+        webui_log() << "action=\"root_job_stdout\" " << ss.str() << std::endl;
+    }
+
+    std::cout << ss.str() << std::endl;
 
     if(session.opened_by_me())
     {
