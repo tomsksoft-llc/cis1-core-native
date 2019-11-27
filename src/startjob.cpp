@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
 
     std_os.spawn_process(
             ctx.base_dir(),
-            std::filesystem::path{"core"} / ctx.env().at("maintenance").to_vector()[0],
+            std::filesystem::path{"core"} / ctx.get_env_var("maintenance"),
             {"--job", job_name},
             ctx.env());
 }
