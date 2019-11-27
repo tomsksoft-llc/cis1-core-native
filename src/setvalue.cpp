@@ -58,20 +58,20 @@ int main(int argc, char *argv[])
         webui_session->auth(session);
     }
 
+    if(session.opened_by_me())
+    {
+        tee_log()  << "action=\"error\" "
+                    << "Cant set value outside the session" << std::endl;
+
+        return 1;
+    }
+
     init_session_log(ctx, session);
 
     if(argc != 3)
     {
         tee_log()  << "action=\"error\" "
                     << "Wrong args count in setvalue" << std::endl;
-
-        return 1;
-    }
-
-    if(session.opened_by_me())
-    {
-        tee_log()  << "action=\"error\" "
-                    << "Cant set value outside the session" << std::endl;
 
         return 1;
     }
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    session_log()   << "action=\"setvalue\" \"" 
+    session_log()   << "action=\"setvalue\" \""
                     << argv[1] << "\"=\"" << argv[2] << "\"" << std::endl;
 
     return 0;

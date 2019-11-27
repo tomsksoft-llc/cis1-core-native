@@ -869,7 +869,7 @@ TEST(job_execute, correct)
 
     boost::process::environment env{};
 
-    EXPECT_CALL(ctx, set_env("build", "000012"))
+    EXPECT_CALL(ctx, set_env_var("build", "000012"))
         .Times(1);
 
     EXPECT_CALL(ctx, env())
@@ -969,6 +969,7 @@ TEST(job_execute, correct)
             12,
             ctx,
             ec,
+            [](auto&&...){},
             exit_code,
             std::ref(job_runner_factory));
 

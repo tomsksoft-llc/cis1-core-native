@@ -25,12 +25,20 @@ struct context_interface
 
     /**
      * \brief Set environment variable locally
-     * @param[in] key environment variable
+     * @param[in] key environment variable name
      * @param[in] val value
      */
-    virtual void set_env(
+    virtual void set_env_var(
             const std::string& key,
             const std::string& val) = 0;
+
+    /**
+     * \brief Getter for environment variable
+     * @param[in] key environment variable name
+     * \return environment variable if found empty string otherwise
+     */
+    virtual std::string get_env_var(
+            const std::string& key) = 0;
 
     /**
      * \brief Getter for environment
@@ -48,13 +56,13 @@ struct context_interface
      * \brief Getter for process id
      * \return current process id
      */
-    virtual size_t pid() const = 0;
+    virtual size_t process_id() const = 0;
 
     /**
-     * \brief Getter for parent process id
-     * \return parent process pid
+     * \brief Getter for parent startjob id
+     * \return parent startjob id
      */
-    virtual size_t ppid() const = 0;
+    virtual size_t parent_startjob_id() const = 0;
 };
 
 } // namespace cis1

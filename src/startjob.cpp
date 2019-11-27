@@ -120,6 +120,8 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    ctx.set_env_var("parent_startjob_id", std::to_string(ctx.process_id()));
+
     cis1::set_value(ctx, session, "last_job_name", job_name, ec, std_os);
     if(ec)
     {
@@ -128,7 +130,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    ctx.set_env("job_name", job_name);
+    ctx.set_env_var("job_name", job_name);
 
     cis1::set_value(
             ctx,
@@ -144,14 +146,24 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    ctx.set_env("build_number", build_handle.number_string());
+    ctx.set_env_var("build_number", build_handle.number_string());
 
     session_log() << "action=\"start_job\" job_name=\""
                   << job_name << "\"" << std::endl;
 
     int exit_code = -1;
 
-    build_handle.execute(ctx, ec, exit_code);
+    build_handle.execute(
+            ctx,
+            ec,
+            [](bool error, const std::string& str)
+            {
+                webui_log() << "action=\""
+                            << (error ? "stderr" : "stdout")
+                            << "\" "
+                            << str << std::endl;
+            },
+            exit_code);
     if(ec)
     {
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
@@ -163,11 +175,10 @@ int main(int argc, char* argv[])
                   << job_name << "\"" << std::endl;
 
     std::cout << "session_id=" << session.session_id()
-              << " action=start_job"
               << " job_name=" << job_name
               << " build_dir=" << build_handle.number_string()
-              << " pid=" << ctx.pid()
-              << " ppid=" << ctx.ppid() << std::endl;
+              << " pid=" << ctx.process_id()
+              << " ppid=" << ctx.parent_startjob_id() << std::endl;
 
     std::cout << "Exit code: " << exit_code << std::endl;
 

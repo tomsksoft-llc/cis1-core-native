@@ -252,6 +252,7 @@ struct logger
         : combined_loggers(
                 &basic_loggers.cis_file,
                 &basic_loggers.session_file,
+                &basic_loggers.combined_file,
                 &basic_loggers.remote)
         , cis_log_sink(
                 std::make_unique<
@@ -285,6 +286,7 @@ struct logger
             : remote(&null, [](auto*){})
             , cis_file(&null, [](auto*){})
             , session_file(&null, [](auto*){})
+            , combined_file(&null, [](auto*){})
         {}
 
         null_logger null;
@@ -294,6 +296,8 @@ struct logger
         std::shared_ptr<logger_interface> cis_file;
 
         std::shared_ptr<logger_interface> session_file;
+
+        std::shared_ptr<logger_interface> combined_file;
     } basic_loggers;
 
     struct combined_loggers
@@ -301,11 +305,12 @@ struct logger
         combined_loggers(
                 std::shared_ptr<logger_interface>* cis_file,
                 std::shared_ptr<logger_interface>* session_file,
+                std::shared_ptr<logger_interface>* combined_file,
                 std::shared_ptr<logger_interface>* remote)
-            : cis{cis_file, remote}
-            , session{session_file, remote}
-            , tee{cis_file, session_file, remote}
-            , remote{remote}
+            : cis{cis_file, combined_file, remote}
+            , session{session_file, combined_file, remote}
+            , tee{cis_file, session_file, combined_file, remote}
+            , remote{combined_file, remote}
         {}
 
         combined_logger cis;
@@ -336,14 +341,15 @@ void init_webui_log(std::shared_ptr<webui_session> session)
 void init_cis_log(
         const cis1::context_interface& ctx)
 {
-    global_logger.state.pid = ctx.pid();
-    global_logger.state.ppid = ctx.ppid();
+    global_logger.state.pid = ctx.process_id();
+    global_logger.state.ppid = ctx.parent_startjob_id();
 
     auto cis_log = std::make_unique<file_logger>(
             ctx.base_dir() / "logs" / "cis.log",
               file_logger::log_parts::time
             | file_logger::log_parts::pid
-            | file_logger::log_parts::ppid,
+            | file_logger::log_parts::ppid
+            | file_logger::log_parts::session,
             std::ios_base::out | std::ios_base::app);
 
     if(!cis_log->is_open())
@@ -366,8 +372,7 @@ void init_session_log(
             / (session.session_id() + ".log"),
               file_logger::log_parts::time
             | file_logger::log_parts::pid
-            | file_logger::log_parts::ppid
-            | file_logger::log_parts::session,
+            | file_logger::log_parts::ppid,
             std::ios_base::out | std::ios_base::app);
 
     if(!session_log->is_open())
@@ -377,6 +382,24 @@ void init_session_log(
     }
 
     global_logger.basic_loggers.session_file = std::move(session_log);
+
+    global_logger.state.session_id = session.session_id();
+
+    auto combined_log = std::make_unique<file_logger>(
+            ctx.base_dir() / "sessions"
+            / (session.session_id() + ".combined.log"),
+              file_logger::log_parts::time
+            | file_logger::log_parts::pid
+            | file_logger::log_parts::ppid,
+            std::ios_base::out | std::ios_base::app);
+
+    if(!combined_log->is_open())
+    {
+        std::cerr << "Cant open combined log file" << std::endl;
+        exit(1);
+    }
+
+    global_logger.basic_loggers.combined_file = std::move(combined_log);
 }
 
 std::ostream& cis_log()

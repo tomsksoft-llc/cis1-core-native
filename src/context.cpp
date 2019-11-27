@@ -15,6 +15,7 @@
 #include "error_code.h"
 #include "read_istream_kv_str.h"
 #include "get_parent_id.h"
+#include "utils.h"
 
 namespace cis1
 {
@@ -25,19 +26,40 @@ context::context(
     : base_dir_(base_dir)
     , executables_(executables)
     , env_(boost::this_process::environment())
-    , pid_(boost::this_process::get_id())
-    , ppid_(get_parent_id())
+    , process_id_(boost::this_process::get_id())
+    , parent_startjob_id_(0)
 {
+    auto parent_startjob_id = get_env_var("parent_startjob_id");
+    if(auto parent_startjob_id_opt = u32_from_string(parent_startjob_id);
+            parent_startjob_id_opt)
+    {
+        parent_startjob_id_ = parent_startjob_id_opt.value();
+    }
+
     for(auto& [k, v] : executables)
     {
         env_[k] = v;
     }
 }
 
-
-void context::set_env(const std::string& key, const std::string& val)
+void context::set_env_var(
+        const std::string& key,
+        const std::string& val)
 {
     env_[key] = val;
+}
+
+std::string context::get_env_var(
+        const std::string& key)
+{
+    std::string var;
+
+    if(auto it = env_.find(key); it != env_.end())
+    {
+        var = it->to_vector()[0];
+    }
+
+    return var;
 }
 
 const boost::process::environment& context::env() const
@@ -50,14 +72,14 @@ const std::filesystem::path& context::base_dir() const
     return base_dir_;
 }
 
-size_t context::pid() const
+size_t context::process_id() const
 {
-    return pid_;
+    return process_id_;
 }
 
-size_t context::ppid() const
+size_t context::parent_startjob_id() const
 {
-    return ppid_;
+    return parent_startjob_id_;
 }
 
 std::optional<context> init_context(

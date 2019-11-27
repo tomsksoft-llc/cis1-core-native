@@ -9,8 +9,12 @@ class context_mock
 {
 public:
     MOCK_METHOD2(
-            set_env,
+            set_env_var,
             void(const std::string& var, const std::string& value));
+
+    MOCK_METHOD1(
+            get_env_var,
+            std::string(const std::string& var));
 
     MOCK_CONST_METHOD0(
             env,
@@ -21,10 +25,10 @@ public:
             const std::filesystem::path&());
 
     MOCK_CONST_METHOD0(
-            pid,
+            process_id,
             size_t());
 
     MOCK_CONST_METHOD0(
-            ppid,
+            parent_startjob_id,
             size_t());
 };

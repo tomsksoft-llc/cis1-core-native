@@ -28,12 +28,14 @@ job::build_handle::build_handle(
 void job::build_handle::execute(
         cis1::context_interface& ctx,
         std::error_code& ec,
+        std::function<void(bool, const std::string&)> newline_cb,
         int& exit_code)
 {
     job_.execute(
             number_.value(),
             ctx,
             ec,
+            newline_cb,
             exit_code);
 }
 
@@ -118,6 +120,7 @@ void job::execute(
         uint32_t build_number,
         cis1::context_interface& ctx,
         std::error_code& ec,
+        std::function<void(bool, const std::string&)> newline_cb,
         int& exit_code,
         job_runner_factory_t job_runner_factory)
 {
@@ -125,7 +128,7 @@ void job::execute(
 
     auto& build_dir = pending_builds_[build_number];
 
-    ctx.set_env("build", build_dir.filename());
+    ctx.set_env_var("build", build_dir.filename());
 
     auto runner = job_runner_factory(
             io_ctx,
@@ -167,10 +170,12 @@ void job::execute(
             [&](const std::string& str)
             {
                 output->ostream() << str << '\n';
+                newline_cb(false, str);
             },
             [&](const std::string& str)
             {
                 output->ostream() << str << '\n';
+                newline_cb(true, str);
             });
 
     io_ctx.run();

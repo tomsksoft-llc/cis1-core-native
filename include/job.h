@@ -65,11 +65,14 @@ public:
          * \brief Executes pending build and move it to corresponding map
          * @param[in] ctx
          * @param[out] ec
+         * @param[in] newline_cb Callback called when newline arrive in stdout
+         *                       or stderr
          * @param[out] exit_code Job exit code (if job finished correctly)
          */
         void execute(
                 cis1::context_interface& ctx,
                 std::error_code& ec,
+                std::function<void(bool, const std::string&)> newline_cb,
                 int& exit_code);
 
         /**
@@ -153,6 +156,8 @@ public:
      * @param[in] build_number Number of build to execute
      * @param[in] ctx
      * @param[out] ec
+     * @param[in] newline_cb Callback called when newline arrive in stdout
+     *                       or stderr
      * @param[out] exit_code Build exit_code
      * @param[in] job_runner_factory
      */
@@ -160,6 +165,7 @@ public:
             uint32_t build_number,
             cis1::context_interface& ctx,
             std::error_code& ec,
+            std::function<void(bool, const std::string&)> newline_cb,
             int& exit_code,
             job_runner_factory_t job_runner_factory =
                             [](auto&&... args)
