@@ -193,11 +193,11 @@ void job::execute(
             },
             [&](const std::string& str)
             {
-                output->ostream() << str << '\n';
+                output->ostream() << str << std::endl;
             },
             [&](const std::string& str)
             {
-                output->ostream() << str << '\n';
+                output->ostream() << str << std::endl;
             });
 
     io_ctx.run();
