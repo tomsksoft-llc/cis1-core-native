@@ -12,7 +12,7 @@
 
 std::string get_address(const boost::process::environment& env)
 {
-    if(auto addr = env.find("webui_address"); addr != env.end())
+    if(auto addr = env.find("webui_internal_address"); addr != env.end())
     {
         return addr->to_string();
     }
@@ -22,7 +22,7 @@ std::string get_address(const boost::process::environment& env)
 
 uint16_t get_port(const boost::process::environment& env)
 {
-    if(auto port = env.find("webui_port"); port != env.end())
+    if(auto port = env.find("webui_internal_port"); port != env.end())
     {
         try
         {
