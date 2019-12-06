@@ -263,7 +263,7 @@ void cron_manager::run_job(const std::string& job)
                 std::vector<std::string>{job},
                 ctx_.env());
     }
-    catch(boost::process::process_error ex)
+    catch(boost::process::process_error& ex)
     {
         cis_log() << "action=\"error\" "
                   << "Cron can't start job " << job << std::endl;
