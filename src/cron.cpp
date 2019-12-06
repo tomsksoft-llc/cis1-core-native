@@ -129,7 +129,7 @@ cron_timer::cron_timer(
 
 void cron_timer::run(const std::function<void()>& cb)
 {
-    auto now = std::time(0);
+    auto now = std::time(nullptr);
     auto next = cron::cron_next(expr_, now);
     auto time_to_next = std::chrono::system_clock::from_time_t(next)
                       - std::chrono::system_clock::from_time_t(now);
