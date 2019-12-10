@@ -45,7 +45,7 @@ std::string error_category::message(int ev) const
             return "Cant read job params file";
 
         case error_code::cant_read_session_params_file:
-            return "Cant read job params file";
+            return "Cant read session params file";
 
         case error_code::cant_read_session_values_file:
             return "Cant read sessions values file";

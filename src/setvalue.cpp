@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    session_log()   << "action=\"setvalue\" \"" 
+    session_log()   << "action=\"setvalue\" \""
                     << argv[1] << "\"=\"" << argv[2] << "\"" << std::endl;
 
     return 0;

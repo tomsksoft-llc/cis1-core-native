@@ -330,7 +330,7 @@ TEST(load_job, correct)
     EXPECT_CALL(os, list_directory(job_dir))
         .WillOnce(Return(ByMove(
                     std::vector<std::unique_ptr<cis1::fs_entry_interface>>{})));
-    
+
     std::error_code ec;
 
     auto job_opt = cis1::load_job("test_job", ec, ctx, os);

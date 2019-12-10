@@ -28,7 +28,7 @@ class process
 public:
     /**
      * \brief Execute command asynchronously
-     * @param[in] io_ctx 
+     * @param[in] io_ctx
      * @param[in] cb Process finished callback
      * @param[in] cmd Command to run
      * @param[in] env Environment passed to process
