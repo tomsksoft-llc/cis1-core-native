@@ -15,6 +15,7 @@
 #include "logger.h"
 #include "os.h"
 #include "webui_session.h"
+#include "version.h"
 
 void usage()
 {
@@ -22,8 +23,26 @@ void usage()
               << "startjob project/job [--force]" << "\n";
 }
 
+void print_version()
+{
+    std::cout << cis_current_version;
+
+    if(git_retreived_state)
+    {
+        std::cout << " " << git_sha1
+                  << (git_is_dirty ? " dirty" : "") << std::endl;
+    }
+}
+
 int main(int argc, char* argv[])
 {
+    if(argc == 2 && strcmp(argv[1], "--version") == 0)
+    {
+        print_version();
+
+        return EXIT_SUCCESS;
+    }
+
     cis1::os std_os;
 
     std::error_code ec;

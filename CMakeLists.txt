@@ -35,14 +35,19 @@ add_library(cis1_core STATIC
         src/utils.cpp
         src/job.cpp)
 
-add_executable(startjob src/startjob.cpp)
-add_executable(getparam src/getparam.cpp)
-add_executable(setparam src/setparam.cpp)
-add_executable(getvalue src/getvalue.cpp)
-add_executable(setvalue src/setvalue.cpp)
-add_executable(cis_cron src/cis_cron.cpp)
-add_executable(cis_cron_daemon src/cis_cron_daemon.cpp)
-add_executable(maintenance src/maintenance.cpp)
+set(PRE_CONFIGURE_FILE "include/version.h.in")
+set(POST_CONFIGURE_FILE "include/version.h")
+set(PROJECT_VERSION_FILE "version.txt")
+include(cmake/scripts/version_watcher.cmake)
+
+add_executable(startjob ${POST_CONFIGURE_FILE} src/startjob.cpp)
+add_executable(getparam ${POST_CONFIGURE_FILE} src/getparam.cpp)
+add_executable(setparam ${POST_CONFIGURE_FILE} src/setparam.cpp)
+add_executable(getvalue ${POST_CONFIGURE_FILE} src/getvalue.cpp)
+add_executable(setvalue ${POST_CONFIGURE_FILE} src/setvalue.cpp)
+add_executable(cis_cron ${POST_CONFIGURE_FILE} src/cis_cron.cpp)
+add_executable(cis_cron_daemon ${POST_CONFIGURE_FILE} src/cis_cron_daemon.cpp)
+add_executable(maintenance ${POST_CONFIGURE_FILE} src/maintenance.cpp)
 
 target_link_libraries(startjob cis1_core ${CONAN_LIBS} std::filesystem)
 target_link_libraries(getparam cis1_core ${CONAN_LIBS} std::filesystem)

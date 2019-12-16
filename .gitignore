@@ -17,6 +17,8 @@
 !src/*.cpp
 !include/
 !include/*.h
+!include/*.h.in
+include/version.h
 
 !test_package/
 !test_package/*
