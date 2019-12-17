@@ -19,3 +19,5 @@ else
 fi
 
 cp bin/* $cis_base_dir/jobs/$job_name/$build_number/artifacts
+
+cp -r $cis_base_dir/jobs/$job_name/shared_srcs/deploy $cis_base_dir/jobs/$job_name/$build_number/artifacts/
