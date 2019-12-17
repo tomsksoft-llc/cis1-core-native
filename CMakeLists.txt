@@ -33,7 +33,8 @@ add_library(cis1_core STATIC
         src/webui_session.cpp
         src/cron.cpp
         src/utils.cpp
-        src/job.cpp)
+        src/job.cpp
+        src/cis_version.cpp)
 
 set(PRE_CONFIGURE_FILE "include/version.h.in")
 set(POST_CONFIGURE_FILE "include/version.h")
