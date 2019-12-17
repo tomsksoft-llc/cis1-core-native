@@ -2,7 +2,7 @@ mkdir build
 cd build
 
 conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-conan install .. --profile $cis_base_dir/jobs/$job_name/../conan_profile -s build_type=Release --build=missing
+conan install $cis_base_dir/jobs/$job_name/shared_srcs --profile $cis_base_dir/jobs/$job_name/../conan_profile -s build_type=Release --build=missing
 
 cmake $cis_base_dir/jobs/$job_name/shared_srcs -DBUILD_TESTING=True -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++"
 
