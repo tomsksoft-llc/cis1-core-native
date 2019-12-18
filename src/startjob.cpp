@@ -146,31 +146,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    cis1::set_value(ctx, session, "last_job_name", job_name, ec, std_os);
-    if(ec)
-    {
-        std::cerr << ec.message() << std::endl;
-        tee_log() << "action=\"error\" " << ec.message() << std::endl;
-
-        return 1;
-    }
-
     ctx.set_env("job_name", job_name);
-
-    cis1::set_value(
-            ctx,
-            session,
-            "last_job_build_number",
-            build_handle.number_string(),
-            ec,
-            std_os);
-    if(ec)
-    {
-        std::cerr << ec.message() << std::endl;
-        tee_log() << "action=\"error\" " << ec.message() << std::endl;
-
-        return 1;
-    }
 
     ctx.set_env("build_number", build_handle.number_string());
 
@@ -190,6 +166,33 @@ int main(int argc, char* argv[])
 
     session_log() << "action=\"finish_job\" job_name=\""
                   << job_name << "\"" << std::endl;
+
+    if(!session.opened_by_me())
+    {
+        cis1::set_value(ctx, session, "last_job_name", job_name, ec, std_os);
+        if(ec)
+        {
+            std::cerr << ec.message() << std::endl;
+            tee_log() << "action=\"error\" " << ec.message() << std::endl;
+
+            return 1;
+        }
+
+        cis1::set_value(
+                ctx,
+                session,
+                "last_job_build_number",
+                build_handle.number_string(),
+                ec,
+                std_os);
+        if(ec)
+        {
+            std::cerr << ec.message() << std::endl;
+            tee_log() << "action=\"error\" " << ec.message() << std::endl;
+
+            return 1;
+        }
+    }
 
     std::cout << "session_id=" << session.session_id()
               << " action=start_job"
