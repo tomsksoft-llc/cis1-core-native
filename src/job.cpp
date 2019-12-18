@@ -150,8 +150,6 @@ void job::execute(
         }
     }
 
-    ctx.set_env("build", build_dir.filename());
-
     boost::asio::io_context io_ctx;
 
     auto runner = job_runner_factory(
