@@ -34,7 +34,8 @@ add_library(cis1_core STATIC
         src/cron.cpp
         src/utils.cpp
         src/job.cpp
-        src/cis_version.cpp)
+        src/cis_version.cpp
+        include/version.h)
 
 set(PRE_CONFIGURE_FILE "include/version.h.in")
 set(POST_CONFIGURE_FILE "include/version.h")
