@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
 import sys
 import os
 import argparse
@@ -48,6 +49,14 @@ def main(argv = None):
         type = str,
         required = True,
         help = 'directory where cis_base_dir will be created.')
+
+    parser.add_argument(
+        '--disable-check',
+        dest='check',
+        required = False,
+        action='store_false',
+        default = True,
+        help = 'disables check deployed cis instance.')
 
     args = parser.parse_args()
 
@@ -116,39 +125,40 @@ def main(argv = None):
 
     penv["cis_base_dir"] = deploy_dir
 
-    startjob_proc = subprocess.Popen(
-        args = [
-            os.path.join(deploy_dir, "core", cis_config["startjob"]),
-            "pyinternal/core_test"],
-        stdout = subprocess.PIPE,
-        universal_newlines = True,
-        env = penv)
+    if args.check == True:
+        startjob_proc = subprocess.Popen(
+            args = [
+                os.path.join(deploy_dir, "core", cis_config["startjob"]),
+                "pyinternal/core_test"],
+            stdout = subprocess.PIPE,
+            universal_newlines = True,
+            env = penv)
 
-    last_line = ""
+        last_line = ""
 
-    for stdout_line in iter(startjob_proc.stdout.readline, ""):
-        last_line = stdout_line
+        for stdout_line in iter(startjob_proc.stdout.readline, ""):
+            last_line = stdout_line
 
-    startjob_proc.stdout.close()
+        startjob_proc.stdout.close()
 
-    startjob_proc.wait()
+        startjob_proc.wait()
 
-    match = re.match("Exit code: (\d+)", last_line)
+        match = re.match("Exit code: (\d+)", last_line)
 
-    exitcode = None
+        exitcode = None
 
-    if not match == None:
-        exitcode = int(match.group(1))
+        if not match == None:
+            exitcode = int(match.group(1))
 
-    if not startjob_proc.returncode == 0:
-        print("Deployment fail. Can't execute pyinternal job.")
+        if not startjob_proc.returncode == 0:
+            print("Deployment fail. Can't execute pyinternal job.")
 
-        return 1
+            return 1
 
-    if not exitcode == 0:
-        print("Deployment fail. Job pyinternal failed.")
+        if not exitcode == 0:
+            print("Deployment fail. Job pyinternal failed.")
 
-        return 1
+            return 1
 
     print("Deployment success")
 

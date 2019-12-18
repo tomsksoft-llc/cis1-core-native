@@ -29,3 +29,7 @@
 !deploy/
 !deploy/*
 !deploy/**
+
+!.tscis
+!.tscis/*
+!.tscis/**
