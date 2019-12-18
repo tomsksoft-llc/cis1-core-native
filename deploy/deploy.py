@@ -50,11 +50,12 @@ def main(argv = None):
         help = 'directory where cis_base_dir will be created.')
 
     parser.add_argument(
-        '--check',
-        type = bool,
+        '--disable-check',
+        dest='check',
         required = False,
+        action='store_false',
         default = True,
-        help = 'check deployed cis instance.')
+        help = 'disables check deployed cis instance.')
 
     args = parser.parse_args()
 
