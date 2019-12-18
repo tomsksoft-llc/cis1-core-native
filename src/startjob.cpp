@@ -15,6 +15,7 @@
 #include "logger.h"
 #include "os.h"
 #include "webui_session.h"
+#include "cis_version.h"
 
 void usage()
 {
@@ -24,6 +25,13 @@ void usage()
 
 int main(int argc, char* argv[])
 {
+    if(argc == 2 && strcmp(argv[1], "--version") == 0)
+    {
+        print_version();
+
+        return EXIT_SUCCESS;
+    }
+
     cis1::os std_os;
 
     std::error_code ec;
