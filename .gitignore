@@ -10,8 +10,8 @@
 !LICENSE.txt
 
 !cmake
-!cmake/modules
-!cmake/modules/*
+!cmake/*
+!cmake/**
 
 !src/
 !src/*.cpp
