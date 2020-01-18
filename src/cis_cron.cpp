@@ -13,6 +13,7 @@
 #include "logger.h"
 #include "os.h"
 #include "cron.h"
+#include "cis_version.h"
 
 void usage()
 {
@@ -167,6 +168,13 @@ int list(
 
 int main(int argc, char *argv[])
 {
+    if(argc == 2 && strcmp(argv[1], "--version") == 0)
+    {
+        print_version();
+
+        return EXIT_SUCCESS;
+    }
+
     cis1::os std_os;
 
     std::error_code ec;
@@ -192,16 +200,15 @@ int main(int argc, char *argv[])
 
                 return EXIT_SUCCESS;
             }
-            else if(strcmp(argv[1], "--daemon") == 0)
+
+            if(strcmp(argv[1], "--daemon") == 0)
             {
                 return start_daemon(ctx, std_os);
             }
-            else
-            {
-                usage();
 
-                return EXIT_FAILURE;
-            }
+            usage();
+
+            return EXIT_FAILURE;
         }
         case 3:
         {
@@ -211,19 +218,15 @@ int main(int argc, char *argv[])
                 {
                     return list(ctx, argv[2], std_os);
                 }
-                else
-                {
-                    std::cout << "Invalid mask." << std::endl;
 
-                    return EXIT_FAILURE;
-                }
-            }
-            else
-            {
-                usage();
+                std::cout << "Invalid mask." << std::endl;
 
-                return EXIT_SUCCESS;
+                return EXIT_FAILURE;
             }
+
+            usage();
+
+            return EXIT_SUCCESS;
         }
         case 4:
         {
@@ -231,16 +234,15 @@ int main(int argc, char *argv[])
             {
                 return add(ctx, argv[2], argv[3], std_os);
             }
-            else if(strcmp(argv[1], "--del") == 0)
+
+            if(strcmp(argv[1], "--del") == 0)
             {
                 return del(ctx, argv[2], argv[3], std_os);
             }
-            else
-            {
-                usage();
 
-                return EXIT_FAILURE;
-            }
+            usage();
+
+            return EXIT_FAILURE;
         }
         default:
         {

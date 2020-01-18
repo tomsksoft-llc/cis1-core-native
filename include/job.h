@@ -64,6 +64,7 @@ public:
         /**
          * \brief Executes pending build and move it to corresponding map
          * @param[in] ctx
+         * @param[in] force Try to execute even if script is not executable
          * @param[out] ec
          * @param[in] newline_cb Callback called when newline arrive in stdout
          *                       or stderr
@@ -71,6 +72,7 @@ public:
          */
         void execute(
                 cis1::context_interface& ctx,
+                bool force,
                 std::error_code& ec,
                 std::function<void(bool, const std::string&)> newline_cb,
                 int& exit_code);
@@ -159,6 +161,7 @@ public:
      * @param[in] newline_cb Callback called when newline arrive in stdout
      *                       or stderr
      * @param[out] exit_code Build exit_code
+     * @param[in] force Try to execute even if script isn't executable
      * @param[in] job_runner_factory
      */
     void execute(
@@ -167,6 +170,7 @@ public:
             std::error_code& ec,
             std::function<void(bool, const std::string&)> newline_cb,
             int& exit_code,
+            bool force,
             job_runner_factory_t job_runner_factory =
                             [](auto&&... args)
                             {

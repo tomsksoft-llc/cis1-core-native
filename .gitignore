@@ -10,19 +10,28 @@
 !LICENSE.txt
 
 !cmake
-!cmake/modules
-!cmake/modules/*
+!cmake/*
+!cmake/**
 
 !src/
 !src/*.cpp
 !include/
 !include/*.h
+!include/*.h.in
+include/version.h
 
 !test_package/
 !test_package/*
 !test_package/include/*
 !test_package/src/*
 
+!docs/
+!docs/*
+
 !deploy/
 !deploy/*
 !deploy/**
+
+!.tscis
+!.tscis/*
+!.tscis/**

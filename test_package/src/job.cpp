@@ -330,7 +330,7 @@ TEST(load_job, correct)
     EXPECT_CALL(os, list_directory(job_dir))
         .WillOnce(Return(ByMove(
                     std::vector<std::unique_ptr<cis1::fs_entry_interface>>{})));
-    
+
     std::error_code ec;
 
     auto job_opt = cis1::load_job("test_job", ec, ctx, os);
@@ -869,9 +869,6 @@ TEST(job_execute, correct)
 
     boost::process::environment env{};
 
-    EXPECT_CALL(ctx, set_env_var("build", "000012"))
-        .Times(1);
-
     EXPECT_CALL(ctx, env())
         .WillOnce(ReturnRef(env));
 
@@ -965,12 +962,18 @@ TEST(job_execute, correct)
 
     int exit_code = -1;
 
+    EXPECT_CALL(os, is_executable(
+                job_dir / "000012" / "test_script",
+                _))
+        .WillOnce(Return(true));
+
     job.execute(
             12,
             ctx,
             ec,
             [](auto&&...){},
             exit_code,
+            false,
             std::ref(job_runner_factory));
 
     ASSERT_EQ((bool)ec, false);

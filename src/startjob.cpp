@@ -15,15 +15,23 @@
 #include "logger.h"
 #include "os.h"
 #include "webui_session.h"
+#include "cis_version.h"
 
 void usage()
 {
     std::cout << "Usage:" << "\n"
-              << "startjob project/job" << "\n";
+              << "startjob project/job [--force]" << "\n";
 }
 
 int main(int argc, char* argv[])
 {
+    if(argc == 2 && strcmp(argv[1], "--version") == 0)
+    {
+        print_version();
+
+        return EXIT_SUCCESS;
+    }
+
     cis1::os std_os;
 
     std::error_code ec;
@@ -46,17 +54,28 @@ int main(int argc, char* argv[])
 
     init_cis_log(ctx);
 
-    if(argc != 2)
+    if(argc > 3 || argc < 2)
     {
         usage();
 
         return 1;
     }
+
+    if(argc == 3 && strcmp(argv[2], "--force") != 0)
+    {
+        usage();
+
+        return 1;
+    }
+
+    bool force = (argc == 3);
+
     std::string job_name = argv[1];
 
     auto session_opt = cis1::invoke_session(ctx, ec, std_os);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         cis_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
@@ -73,6 +92,12 @@ int main(int argc, char* argv[])
     if(session.opened_by_me())
     {
         cis_log() << "action=\"open_session\"" << std::endl;
+
+        session.on_close(
+                [](cis1::session_interface&)
+                {
+                    cis_log() << "action=\"close_session\"" << std::endl;
+                });
     }
 
     if(session.opened_by_me())
@@ -122,36 +147,13 @@ int main(int argc, char* argv[])
             ec);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
-
-        return 1;
-    }
-
-    ctx.set_env_var("parent_startjob_id", std::to_string(ctx.process_id()));
-
-    cis1::set_value(ctx, session, "last_job_name", job_name, ec, std_os);
-    if(ec)
-    {
-        tee_log() << ec.message() << std::endl;
 
         return 1;
     }
 
     ctx.set_env_var("job_name", job_name);
-
-    cis1::set_value(
-            ctx,
-            session,
-            "last_job_build_number",
-            build_handle.number_string(),
-            ec,
-            std_os);
-    if(ec)
-    {
-        tee_log() << "action=\"error\" " << ec.message() << std::endl;
-
-        return 1;
-    }
 
     ctx.set_env_var("build_number", build_handle.number_string());
 
@@ -162,6 +164,7 @@ int main(int argc, char* argv[])
 
     build_handle.execute(
             ctx,
+            force,
             ec,
             [](bool error, const std::string& str)
             {
@@ -173,6 +176,7 @@ int main(int argc, char* argv[])
             exit_code);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
@@ -181,9 +185,37 @@ int main(int argc, char* argv[])
     session_log() << "action=\"finish_job\" job_name=\""
                   << job_name << "\"" << std::endl;
 
+    if(!session.opened_by_me())
+    {
+        cis1::set_value(ctx, session, "last_job_name", job_name, ec, std_os);
+        if(ec)
+        {
+            std::cerr << ec.message() << std::endl;
+            tee_log() << "action=\"error\" " << ec.message() << std::endl;
+
+            return 1;
+        }
+
+        cis1::set_value(
+                ctx,
+                session,
+                "last_job_build_number",
+                build_handle.number_string(),
+                ec,
+                std_os);
+        if(ec)
+        {
+            std::cerr << ec.message() << std::endl;
+            tee_log() << "action=\"error\" " << ec.message() << std::endl;
+
+            return 1;
+        }
+    }
+
     std::stringstream ss;
 
-    ss << "session_id=" << session.session_id()
+    std::cout << "session_id=" << session.session_id()
+              << " action=start_job"
               << " job_name=" << job_name
               << " build_dir=" << build_handle.number_string()
               << " pid=" << ctx.process_id()
@@ -206,11 +238,6 @@ int main(int argc, char* argv[])
     }
 
     std::cout << ss.str() << std::endl;
-
-    if(session.opened_by_me())
-    {
-        cis_log() << "action=\"close_session\"" << std::endl;
-    }
 
     std_os.spawn_process(
             ctx.base_dir(),

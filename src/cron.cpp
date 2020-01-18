@@ -129,7 +129,7 @@ cron_timer::cron_timer(
 
 void cron_timer::run(const std::function<void()>& cb)
 {
-    auto now = std::time(0);
+    auto now = std::time(nullptr);
     auto next = cron::cron_next(expr_, now);
     auto time_to_next = std::chrono::system_clock::from_time_t(next)
                       - std::chrono::system_clock::from_time_t(now);
@@ -263,7 +263,7 @@ void cron_manager::run_job(const std::string& job)
                 std::vector<std::string>{job},
                 ctx_.env());
     }
-    catch(boost::process::process_error ex)
+    catch(boost::process::process_error& ex)
     {
         cis_log() << "action=\"error\" "
                   << "Cron can't start job " << job << std::endl;

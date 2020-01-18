@@ -33,7 +33,8 @@ void read_istream_kv_str(
 
             return;
         }
-        else if(is.eof())
+
+        if(is.eof())
         {
             return;
         }
@@ -72,7 +73,8 @@ void read_istream_ordered_kv_str(
 
             return;
         }
-        else if(is.eof())
+
+        if(is.eof())
         {
             return;
         }

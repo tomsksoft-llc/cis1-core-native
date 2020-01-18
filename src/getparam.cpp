@@ -14,6 +14,7 @@
 #include "logger.h"
 #include "os.h"
 #include "webui_session.h"
+#include "cis_version.h"
 
 void usage()
 {
@@ -23,6 +24,13 @@ void usage()
 
 int main(int argc, char *argv[])
 {
+    if(argc == 2 && strcmp(argv[1], "--version") == 0)
+    {
+        print_version();
+
+        return EXIT_SUCCESS;
+    }
+
     cis1::os std_os;
 
     std::error_code ec;
@@ -48,6 +56,7 @@ int main(int argc, char *argv[])
     auto session_opt = cis1::invoke_session(ctx, ec, std_os);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         cis_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
@@ -61,6 +70,7 @@ int main(int argc, char *argv[])
 
     if(session.opened_by_me())
     {
+        std::cerr << "Wrong arguments" << std::endl;
         tee_log()  << "action=\"error\" "
                     << "Cant get param outside the session" << std::endl;
 
@@ -71,6 +81,7 @@ int main(int argc, char *argv[])
 
     if(argc != 2)
     {
+        std::cerr << "Cant start getparam outside of session" << std::endl;
         tee_log()  << "action=\"error\" "
                     << "Wrong args count in getparam" << std::endl;
 
@@ -80,6 +91,7 @@ int main(int argc, char *argv[])
     auto param_opt = cis1::get_param(ctx, session, argv[1], ec, std_os);
     if(ec)
     {
+        std::cerr << ec.message() << std::endl;
         tee_log() << "action=\"error\" " << ec.message() << std::endl;
 
         return 1;
