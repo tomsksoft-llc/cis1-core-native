@@ -214,6 +214,9 @@ TEST(cron_manager, run_job)
     EXPECT_CALL(ctx, env())
         .WillRepeatedly(ReturnRef(env));
 
+    EXPECT_CALL(ctx, get_env_var("startjob"))
+        .WillRepeatedly(Return(startjob));
+
     std::filesystem::path base_dir = "/base_dir";
 
     EXPECT_CALL(ctx, base_dir())
@@ -302,6 +305,9 @@ TEST(cron, start_daemon)
 
     EXPECT_CALL(ctx, env())
         .WillRepeatedly(ReturnRef(env));
+
+    EXPECT_CALL(ctx, get_env_var("cis_cron_daemon"))
+        .WillRepeatedly(Return(cis_cron_daemon));
 
     std::filesystem::path base_dir = "/base_dir";
 
