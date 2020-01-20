@@ -21,13 +21,9 @@ TEST(invoke_session, opened_by_me)
     EXPECT_CALL(ctx, set_env("session_opened_by_me", "true"))
         .Times(1);
 
-    std::error_code ec;
+    auto session = cis1::invoke_session(ctx, os);
 
-    auto session = cis1::invoke_session(ctx, ec, os);
-
-    ASSERT_EQ((bool)ec, false);
-    ASSERT_EQ((bool)session, true);
-    ASSERT_EQ(session.value().opened_by_me(), true);
+    ASSERT_EQ(session.opened_by_me(), true);
 }
 
 TEST(invoke_session, opened_by_smbd)
@@ -47,11 +43,7 @@ TEST(invoke_session, opened_by_smbd)
     EXPECT_CALL(ctx, set_env("session_opened_by_me", "false"))
         .Times(1);
 
-    std::error_code ec;
+    auto session = cis1::invoke_session(ctx, os);
 
-    auto session = cis1::invoke_session(ctx, ec, os);
-
-    ASSERT_EQ((bool)ec, false);
-    ASSERT_EQ((bool)session, true);
-    ASSERT_EQ(session.value().opened_by_me(), false);
+    ASSERT_EQ(session.opened_by_me(), false);
 }
