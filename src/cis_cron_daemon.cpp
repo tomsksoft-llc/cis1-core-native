@@ -47,7 +47,12 @@ int main(int argc, char* argv[])
     }
     auto& ctx = ctx_opt.value();
 
-    init_cis_log(ctx);
+    // session id is not specified here
+    const auto session_id = std::nullopt;
+    const scl::Logger::Options options
+            = make_logger_options(session_id, ctx, std_os);
+
+    init_cis_log(options, ctx);
 
     boost::asio::io_context io_ctx;
 

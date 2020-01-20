@@ -169,8 +169,7 @@ void cron_manager::update()
 
     if(!crons_file || !crons_file->is_open())
     {
-        cis_log() << "action=\"error\" "
-                  << "Daemon can't read crons file" << std::endl;
+        CIS_LOG(actions::error, "Daemon can't read crons file");
 
         return;
     }
@@ -265,8 +264,7 @@ void cron_manager::run_job(const std::string& job)
     }
     catch(boost::process::process_error& ex)
     {
-        cis_log() << "action=\"error\" "
-                  << "Cron can't start job " << job << std::endl;
+        CIS_LOG(actions::error, "Cron can't start job");
     }
 }
 

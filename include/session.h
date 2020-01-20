@@ -68,9 +68,8 @@ private:
  * @param[out] ec
  * @param[in] os
  */
-std::optional<session> invoke_session(
+session invoke_session(
         context_interface& ctx,
-        std::error_code& ec,
         const os_interface& os);
 
 } // namespace cis1
