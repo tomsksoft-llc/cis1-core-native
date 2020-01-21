@@ -146,6 +146,16 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    if(auto var = std_os.get_env_var("job_name"); !var.empty())
+    {
+        ctx.set_env("parent_job_name", var);
+    }
+
+    if(auto var = std_os.get_env_var("build_number"); !var.empty())
+    {
+        ctx.set_env("parent_job_build_number", var);
+    }
+
     ctx.set_env("job_name", job_name);
 
     ctx.set_env("build_number", build_handle.number_string());
