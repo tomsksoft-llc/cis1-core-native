@@ -33,7 +33,7 @@ class webui_recorder : public scl::IRecorder
 public:
     explicit webui_recorder(std::shared_ptr<webui_session> session)
             : remote_endpoint_(std::move(session)),
-              tr_(session->make_transaction())
+              tr_(remote_endpoint_->make_transaction())
     {
     }
 
@@ -41,10 +41,13 @@ public:
 
     void OnRecord(const scl::RecordInfo& record) final
     {
-        dto_.time = std::chrono::system_clock::now();
-        dto_.message = record.message;
-        rtrim(dto_.message);
-        tr_.send(dto_);
+        cis1::cwu::log_entry dto{};
+
+        dto.message = to_webui_message(record.action, record.message);
+        dto.time = std::chrono::system_clock::now();
+        rtrim(dto.message);
+
+        tr_.send(dto);
     }
 
 private:
@@ -60,8 +63,18 @@ private:
                 s.end());
     }
 
+    static std::string to_webui_message(const std::optional<std::string> &action,
+                                        const std::string &message) {
+        if (!action) {
+            return message;
+        }
+
+        std::stringstream result_stream;
+        result_stream << R"(action=")" << *action << "\" " << message;
+        return result_stream.str();
+    }
+
     std::shared_ptr<webui_session> remote_endpoint_;
-    cis1::cwu::log_entry dto_{};
     cis1::proto_utils::transaction tr_;
 };
 
