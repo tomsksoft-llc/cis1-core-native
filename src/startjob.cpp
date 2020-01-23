@@ -45,14 +45,19 @@ int main(int argc, char* argv[])
     }
     auto& ctx = ctx_opt.value();
 
+    auto session = cis1::invoke_session(ctx, std_os);
+
+    const scl::Logger::Options options
+            = make_logger_options(session.session_id(), ctx, std_os);
+
     auto webui_session = init_webui_session(ctx);
 
     if(webui_session != nullptr)
     {
-        init_webui_log(webui_session);
+        init_webui_log(options, webui_session);
     }
 
-    init_cis_log(ctx);
+    init_cis_log(options, ctx);
 
     if(argc > 3 || argc < 2)
     {
@@ -72,38 +77,27 @@ int main(int argc, char* argv[])
 
     std::string job_name = argv[1];
 
-    auto session_opt = cis1::invoke_session(ctx, ec, std_os);
-    if(ec)
-    {
-        std::cerr << ec.message() << std::endl;
-        cis_log() << "action=\"error\" " << ec.message() << std::endl;
-
-        return 1;
-    }
-    auto& session = session_opt.value();
-
     if(webui_session)
     {
         webui_session->auth(session);
     }
 
-    init_session_log(ctx, session);
+    init_session_log(options, ctx, session);
 
     if(session.opened_by_me())
     {
-        cis_log() << "action=\"open_session\"" << std::endl;
+        CIS_LOG(actions::open_session, "start");
 
         session.on_close(
                 [](cis1::session_interface&)
                 {
-                    cis_log() << "action=\"close_session\"" << std::endl;
+                    CIS_LOG(actions::close_session, "stop");
                 });
     }
 
     if(session.opened_by_me())
     {
-        webui_log() << "action=\"root_job_stdout\" "
-                    << session.session_id() << std::endl;
+        WEBUI_LOG(actions::startjob_stdout, R"(%s)", session.session_id());
     }
 
     std::cout << session.session_id() << std::endl;
@@ -148,17 +142,26 @@ int main(int argc, char* argv[])
     if(ec)
     {
         std::cerr << ec.message() << std::endl;
-        tee_log() << "action=\"error\" " << ec.message() << std::endl;
+        TEE_LOG(actions::error, "%s", ec.message());
 
         return 1;
+    }
+
+    if(auto var = std_os.get_env_var("job_name"); !var.empty())
+    {
+        ctx.set_env_var("parent_job_name", var);
+    }
+
+    if(auto var = std_os.get_env_var("build_number"); !var.empty())
+    {
+        ctx.set_env_var("parent_job_build_number", var);
     }
 
     ctx.set_env_var("job_name", job_name);
 
     ctx.set_env_var("build_number", build_handle.number_string());
 
-    session_log() << "action=\"start_job\" job_name=\""
-                  << job_name << "\"" << std::endl;
+    SES_LOG(actions::start_job, R"(job_name="%s")", job_name);
 
     int exit_code = -1;
 
@@ -168,22 +171,18 @@ int main(int argc, char* argv[])
             ec,
             [](bool error, const std::string& str)
             {
-                webui_log() << "action=\""
-                            << (error ? "stderr" : "stdout")
-                            << "\" "
-                            << str << std::endl;
+                WEBUI_LOG(error ? actions::startjob_stderr : actions::startjob_stdout, R"(%s)", str);
             },
             exit_code);
     if(ec)
     {
         std::cerr << ec.message() << std::endl;
-        tee_log() << "action=\"error\" " << ec.message() << std::endl;
+        TEE_LOG(actions::error, "%s", ec.message());
 
         return 1;
     }
 
-    session_log() << "action=\"finish_job\" job_name=\""
-                  << job_name << "\"" << std::endl;
+    SES_LOG(actions::finish_job, R"(job_name="%s")", job_name);
 
     if(!session.opened_by_me())
     {
@@ -191,7 +190,7 @@ int main(int argc, char* argv[])
         if(ec)
         {
             std::cerr << ec.message() << std::endl;
-            tee_log() << "action=\"error\" " << ec.message() << std::endl;
+            TEE_LOG(actions::error, "%s", ec.message());
 
             return 1;
         }
@@ -206,7 +205,7 @@ int main(int argc, char* argv[])
         if(ec)
         {
             std::cerr << ec.message() << std::endl;
-            tee_log() << "action=\"error\" " << ec.message() << std::endl;
+            TEE_LOG(actions::error, "%s", ec.message());
 
             return 1;
         }
@@ -223,7 +222,7 @@ int main(int argc, char* argv[])
 
     if(session.opened_by_me())
     {
-        webui_log() << "action=\"root_job_stdout\" " << ss.str() << std::endl;
+        WEBUI_LOG(actions::startjob_stdout, R"(%s)", ss.str());
     }
 
     std::cout << ss.str() << std::endl;
@@ -234,7 +233,7 @@ int main(int argc, char* argv[])
 
     if(session.opened_by_me())
     {
-        webui_log() << "action=\"root_job_stdout\" " << ss.str() << std::endl;
+        WEBUI_LOG(actions::startjob_stdout, R"(%s)", ss.str());
     }
 
     std::cout << ss.str() << std::endl;

@@ -49,9 +49,8 @@ void session::on_close(std::function<void(session_interface&)> handler)
     on_close_ = handler;
 }
 
-std::optional<session> invoke_session(
+session invoke_session(
         context_interface& ctx,
-        std::error_code& ec,
         const os_interface& os)
 {
     auto session_id = os.get_env_var("session_id");

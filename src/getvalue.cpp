@@ -44,47 +44,38 @@ int main(int argc, char *argv[])
     }
     auto& ctx = ctx_opt.value();
 
+    auto session = cis1::invoke_session(ctx, std_os);
+
+    const scl::Logger::Options options
+            = make_logger_options(session.session_id(), ctx, std_os);
+
     auto webui_session = init_webui_session(ctx);
 
     if(webui_session != nullptr)
     {
-        init_webui_log(webui_session);
+        init_webui_log(options, webui_session);
     }
 
-    init_cis_log(ctx);
-
-    auto session_opt = cis1::invoke_session(ctx, ec, std_os);
-    if(ec)
-    {
-        std::cerr << ec.message() << std::endl;
-        cis_log() << "action=\"error\" " << ec.message() << std::endl;
-
-        return 1;
-    }
-    auto& session = session_opt.value();
+    init_cis_log(options, ctx);
 
     if(webui_session)
     {
         webui_session->auth(session);
     }
 
-    if(session.opened_by_me())
-    {
-        std::cerr << "Wrong arguments" << std::endl;
-        tee_log()  << "action=\"error\" "
-                    << "Cant get value outside the session" << std::endl;
-
-        return 1;
-    }
-
-    init_session_log(ctx, session);
+    init_session_log(options, ctx, session);
 
     if(argc != 2)
     {
-        std::cerr << "Cant start getvalue outside of session" << std::endl;
-        tee_log()  << "action=\"error\" "
-                    << "Wrong args count in getvalue" << std::endl;
+        std::cerr << "Wrong arguments" << std::endl;
+        TEE_LOG(actions::error, "Wrong args count in getvalue");
+        return 1;
+    }
 
+    if(session.opened_by_me())
+    {
+        std::cerr << "Cant start getvalue outside of session" << std::endl;
+        TEE_LOG(actions::error, "Cant get value outside the session");
         return 1;
     }
 
@@ -92,15 +83,12 @@ int main(int argc, char *argv[])
     if(ec)
     {
         std::cerr << ec.message() << std::endl;
-        tee_log() << "action=\"error\" " << ec.message() << std::endl;
-
+        TEE_LOG(actions::error, "%s", ec.message());
         return 1;
     }
 
     std::cout << value_opt.value() << std::endl;
 
-    session_log()   << "action=\"getvalue\" \""
-                    << argv[1] << "\"=\"" << value_opt.value() << "\"" << std::endl;
-
+    SES_LOG(actions::getvalue, R"("%s"="%s")", argv[1], value_opt.value());
     return 0;
 }

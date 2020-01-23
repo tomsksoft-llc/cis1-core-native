@@ -54,8 +54,7 @@ int add(cis1::context_interface& ctx,
             os);
     if(!opt_cron_list)
     {
-        cis_log() << "action=\"error\" "
-                  << ec.message() << std::endl;
+        CIS_LOG(actions::error, "%s", ec.message());
 
         std::cout << ec.message() << std::endl;
 
@@ -101,7 +100,7 @@ int del(cis1::context_interface& ctx,
             os);
     if(!opt_cron_list)
     {
-        cis_log() << "action=\"error\" " << ec.message() << std::endl;
+        CIS_LOG(actions::error, "%s", ec.message());
 
         std::cout << ec.message() << std::endl;
 
@@ -144,7 +143,7 @@ int list(
 
     if(!opt_cron_list)
     {
-        cis_log() << "action=\"error\" " << "Can't load crons file." << std::endl;
+        CIS_LOG(actions::error, "Can't load crons file.");
 
         std::cout << "Can't load crons file." << std::endl;
 
@@ -188,7 +187,12 @@ int main(int argc, char *argv[])
     }
     auto& ctx = ctx_opt.value();
 
-    init_cis_log(ctx);
+    // session id is not specified here
+    const auto session_id = std::nullopt;
+    const scl::Logger::Options options
+            = make_logger_options(session_id, ctx, std_os);
+
+    init_cis_log(options, ctx);
 
     switch(argc)
     {
