@@ -44,7 +44,8 @@ public:
     {
         cis1::cwu::log_entry dto{};
 
-        dto.message = to_webui_message(record.action, record.message);
+        dto.action = record.action ? record.action.value() : "";
+        dto.message = record.message;
         dto.time = std::chrono::system_clock::now();
         rtrim(dto.message);
 
@@ -62,17 +63,6 @@ private:
                     return !std::isspace(ch);
                 }).base(),
                 s.end());
-    }
-
-    static std::string to_webui_message(const std::optional<std::string> &action,
-                                        const std::string &message) {
-        if (!action) {
-            return message;
-        }
-
-        std::stringstream result_stream;
-        result_stream << R"(action=")" << *action << "\" " << message;
-        return result_stream.str();
     }
 
     std::shared_ptr<webui_session> remote_endpoint_;
@@ -135,7 +125,7 @@ void webui_log(actions act, const std::string& message)
     {
         // TODO add a level param
         // now put the lowest level
-        offline_webui_logger->SesActRecord(scl::Level::Action, act, message);
+        offline_webui_logger->ActRecord(scl::Level::Action, act, message);
     }
 }
 

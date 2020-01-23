@@ -213,12 +213,12 @@ int main(int argc, char* argv[])
 
     std::stringstream ss;
 
-    std::cout << "session_id=" << session.session_id()
-              << " action=start_job"
-              << " job_name=" << job_name
-              << " build_dir=" << build_handle.number_string()
-              << " pid=" << ctx.process_id()
-              << " ppid=" << ctx.parent_startjob_id();
+    ss << "session_id=" << session.session_id()
+       << " action=start_job"
+       << " job_name=" << job_name
+       << " build_dir=" << build_handle.number_string()
+       << " pid=" << ctx.process_id()
+       << " ppid=" << ctx.parent_startjob_id();
 
     if(session.opened_by_me())
     {
