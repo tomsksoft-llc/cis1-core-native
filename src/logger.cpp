@@ -133,8 +133,20 @@ void webui_log(actions act, const std::string& message)
 
 void tee_log(actions act, const std::string& message)
 {
-    cis_log(act, message);
-    session_log(act, message);
+    if (cis_logger)
+    {
+        // TODO add a level param
+        // now put the lowest level
+        cis_logger->SesActRecord(scl::Level::Action, act, message);
+    }
+
+    if (session_logger)
+    {
+        // TODO add a level param
+        // now put the lowest level
+        session_logger->ActRecord(scl::Level::Action, act, message);
+    }
+
     webui_log(act, message);
 }
 
