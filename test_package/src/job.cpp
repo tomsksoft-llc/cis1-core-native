@@ -971,6 +971,7 @@ TEST(job_execute, correct)
             12,
             ctx,
             ec,
+            [](auto&&...){},
             exit_code,
             false,
             std::ref(job_runner_factory));

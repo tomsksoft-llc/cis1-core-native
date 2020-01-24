@@ -254,7 +254,7 @@ void cron_manager::run_job(const std::string& job)
     {
         auto executable =
                 std::filesystem::path{"core"}
-                / ctx_.env().at("startjob").to_vector()[0];
+                / ctx_.get_env_var("startjob");
 
         os_.spawn_process(
                 ctx_.base_dir().generic_string(),
@@ -283,7 +283,7 @@ int start_daemon(cis1::context_interface& ctx, cis1::os_interface& os)
     {
         auto executable =
                 std::filesystem::path{"core"}
-                / ctx.env().at("cis_cron_daemon").to_vector()[0];
+                / ctx.get_env_var("cis_cron_daemon");
 
         os.spawn_process(
                 ctx.base_dir().generic_string(),

@@ -8,8 +8,8 @@
 
 #pragma once
 
-// the longest action name is close_session
-const std::size_t max_action_name_length = 13;
+// the longest action name is startjob_stdout
+const std::size_t max_action_name_length = 15;
 
 enum class actions
 {
@@ -22,6 +22,8 @@ enum class actions
     close_session,
     start_job,
     finish_job,
+    startjob_stdout,
+    startjob_stderr,
 };
 
 inline std::string ToString(const actions action)
@@ -46,6 +48,10 @@ inline std::string ToString(const actions action)
             return "start_job";
         case actions::finish_job:
             return "finish_job";
+        case actions::startjob_stdout:
+            return "startjob_stdout";
+        case actions::startjob_stderr:
+            return "startjob_stderr";
         default:
             return "unknown";
     }

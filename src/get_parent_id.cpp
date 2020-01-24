@@ -58,7 +58,7 @@ size_t get_parent_id()
 
     return ppid;
 }
-#elif __linux__
+#elif defined(__linux__) || defined(__APPLE__)
 #include <unistd.h>
 
 size_t get_parent_id()

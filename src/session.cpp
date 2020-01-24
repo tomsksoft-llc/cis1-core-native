@@ -68,12 +68,13 @@ session invoke_session(
         auto id = boost::this_process::get_id();
         auto parent_id = get_parent_id();
         std::stringstream ss;
-        ss << std::put_time(std::localtime(&time), "%Y-%m-%d-%H-%M-%S-") << id << "_"  << parent_id;
+        ss << std::put_time(std::localtime(&time), "%Y-%m-%d-%H-%M-%S-")
+           << id << "_"  << parent_id;
         session_id = ss.str();
     }
 
-    ctx.set_env("session_id", session_id);
-    ctx.set_env(
+    ctx.set_env_var("session_id", session_id);
+    ctx.set_env_var(
             "session_opened_by_me",
             session_opened_by_me ? "true" : "false");
 

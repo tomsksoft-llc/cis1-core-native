@@ -18,6 +18,7 @@
 scl::LoggerPtr cis_logger;
 scl::LoggerPtr session_logger;
 scl::LoggerPtr webui_logger;
+scl::LoggerPtr offline_webui_logger;
 
 // session_id is a string in the %Y-%m-%d-%H-%M-%S-pid_ppid format, where:
 // %Y-%m-%d-%H-%M-%S contains time_length_k
@@ -43,7 +44,8 @@ public:
     {
         cis1::cwu::log_entry dto{};
 
-        dto.message = to_webui_message(record.action, record.message);
+        dto.action = record.action ? record.action.value() : "";
+        dto.message = record.message;
         dto.time = std::chrono::system_clock::now();
         rtrim(dto.message);
 
@@ -63,17 +65,6 @@ private:
                 s.end());
     }
 
-    static std::string to_webui_message(const std::optional<std::string> &action,
-                                        const std::string &message) {
-        if (!action) {
-            return message;
-        }
-
-        std::stringstream result_stream;
-        result_stream << R"(action=")" << *action << "\" " << message;
-        return result_stream.str();
-    }
-
     std::shared_ptr<webui_session> remote_endpoint_;
     cis1::proto_utils::transaction tr_;
 };
@@ -87,8 +78,8 @@ scl::Logger::Options make_logger_options(
     scl::Logger::Options options;
     // TODO set the value from env var
     options.level = scl::Level::Debug;
-    options.parent_pid = static_cast<scl::ProcessId>(ctx.ppid());
-    options.pid = static_cast<scl::ProcessId>(ctx.pid());
+    options.parent_pid = static_cast<scl::ProcessId>(ctx.parent_startjob_id());
+    options.pid = static_cast<scl::ProcessId>(ctx.process_id());
     options.session_id = session_id;
     return options;
 }
@@ -128,6 +119,13 @@ void webui_log(actions act, const std::string& message)
         // TODO add a level param
         // now put the lowest level
         webui_logger->SesActRecord(scl::Level::Action, act, message);
+    }
+
+    if(offline_webui_logger)
+    {
+        // TODO add a level param
+        // now put the lowest level
+        offline_webui_logger->ActRecord(scl::Level::Action, act, message);
     }
 }
 
@@ -220,6 +218,54 @@ void init_cis_log(
     );
 }
 
+void init_offline_webui_log(
+        const scl::Logger::Options& options,
+        const cis1::context_interface& ctx,
+        const cis1::session_interface& session)
+{
+    const auto on_error
+            = [](std::string_view error)
+            {
+                std::cerr << "Couldn't create a offline webui log: error = " << error << std::endl;
+                exit(1);
+            };
+
+    scl::FileRecorder::Options recorder_options;
+    recorder_options.log_directory = ctx.base_dir() / "sessions";
+    recorder_options.file_name_template = session.session_id() + ".combined.log";
+
+    // TODO set the recorder_options.size_limit
+    recorder_options.align_info = scl::AlignInfo{max_action_name_length};
+    auto recorder = std::visit(
+            meta::overloaded{
+                    [](scl::FileRecorderPtr&& val)
+                    { return std::move(val); },
+                    [&on_error](const auto& error)
+                    {
+                        on_error(scl::FileRecorder::ToStr(error));
+                        return scl::FileRecorderPtr{};
+                    }
+            },
+            scl::FileRecorder::Init(recorder_options)
+    );
+
+    scl::RecordersCont recorders;
+    recorders.push_back(std::move(recorder));
+
+    offline_webui_logger = std::visit(
+            meta::overloaded{
+                    [](scl::LoggerPtr&& val)
+                    { return std::move(val); },
+                    [&on_error](const auto& error)
+                    {
+                        on_error(scl::Logger::ToStr(error));
+                        return scl::LoggerPtr{};
+                    }
+            },
+            scl::Logger::Init(options, std::move(recorders))
+    );
+}
+
 void init_session_log(
         const scl::Logger::Options& options,
         const cis1::context_interface& ctx,
@@ -266,4 +312,6 @@ void init_session_log(
             },
             scl::Logger::Init(options, std::move(recorders))
     );
+
+    init_offline_webui_log(options, ctx, session);
 }

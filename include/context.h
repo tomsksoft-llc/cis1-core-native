@@ -39,12 +39,20 @@ public:
 
     /**
      * \brief Set environment variable locally
-     * @param[in] key environment variable
+     * @param[in] key environment variable name
      * @param[in] val value
      */
-    virtual void set_env(
+    virtual void set_env_var(
             const std::string& key,
             const std::string& val) override;
+
+    /**
+     * \brief Getter for environment variable
+     * @param[in] key environment variable name
+     * \return environment variable if found empty string otherwise
+     */
+    std::string get_env_var(
+            const std::string& key) override;
 
     /**
      * \brief Getter for environment
@@ -62,20 +70,20 @@ public:
      * \brief Getter for process id
      * \return current process id
      */
-    virtual size_t pid() const override;
+    virtual size_t process_id() const override;
 
     /**
-     * \brief Getter for parent process id
-     * \return parent process pid
+     * \brief Getter for parent startjob id
+     * \return parent startjob id
      */
-    virtual size_t ppid() const override;
+    virtual size_t parent_startjob_id() const override;
 
 private:
     const std::filesystem::path base_dir_;
     const std::map<std::string, std::string> executables_;
     boost::process::environment env_;
-    size_t pid_;
-    size_t ppid_;
+    size_t process_id_;
+    size_t parent_startjob_id_;
 };
 
 /**

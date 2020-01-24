@@ -15,10 +15,10 @@ TEST(invoke_session, opened_by_me)
 
     StrictMock<context_mock> ctx;
 
-    EXPECT_CALL(ctx, set_env("session_id", _))
+    EXPECT_CALL(ctx, set_env_var("session_id", _))
         .Times(1);
 
-    EXPECT_CALL(ctx, set_env("session_opened_by_me", "true"))
+    EXPECT_CALL(ctx, set_env_var("session_opened_by_me", "true"))
         .Times(1);
 
     auto session = cis1::invoke_session(ctx, os);
@@ -37,10 +37,10 @@ TEST(invoke_session, opened_by_smbd)
 
     StrictMock<context_mock> ctx;
 
-    EXPECT_CALL(ctx, set_env("session_id", "test_session"))
+    EXPECT_CALL(ctx, set_env_var("session_id", "test_session"))
         .Times(1);
 
-    EXPECT_CALL(ctx, set_env("session_opened_by_me", "false"))
+    EXPECT_CALL(ctx, set_env_var("session_opened_by_me", "false"))
         .Times(1);
 
     auto session = cis1::invoke_session(ctx, os);

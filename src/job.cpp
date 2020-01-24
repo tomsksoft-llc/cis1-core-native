@@ -29,12 +29,14 @@ void job::build_handle::execute(
         cis1::context_interface& ctx,
         bool force,
         std::error_code& ec,
+        std::function<void(bool, const std::string&)> newline_cb,
         int& exit_code)
 {
     job_.execute(
             number_.value(),
             ctx,
             ec,
+            newline_cb,
             exit_code,
             force);
 }
@@ -120,6 +122,7 @@ void job::execute(
         uint32_t build_number,
         cis1::context_interface& ctx,
         std::error_code& ec,
+        std::function<void(bool, const std::string&)> newline_cb,
         int& exit_code,
         bool force,
         job_runner_factory_t job_runner_factory)

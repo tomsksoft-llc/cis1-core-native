@@ -19,7 +19,6 @@
 namespace cis1
 {
 
-
 /**
  * \brief Default implementation for process-related things
  */

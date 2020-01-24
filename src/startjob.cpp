@@ -77,7 +77,6 @@ int main(int argc, char* argv[])
 
     std::string job_name = argv[1];
 
-    std::cout << session.session_id() << std::endl;
     if(webui_session)
     {
         webui_session->auth(session);
@@ -95,6 +94,13 @@ int main(int argc, char* argv[])
                     CIS_LOG(actions::close_session, "stop");
                 });
     }
+
+    if(session.opened_by_me())
+    {
+        WEBUI_LOG(actions::startjob_stdout, R"(%s)", session.session_id());
+    }
+
+    std::cout << session.session_id() << std::endl;
 
     auto job_opt = cis1::load_job(job_name, ec, ctx, std_os);
     if(ec)
@@ -143,23 +149,31 @@ int main(int argc, char* argv[])
 
     if(auto var = std_os.get_env_var("job_name"); !var.empty())
     {
-        ctx.set_env("parent_job_name", var);
+        ctx.set_env_var("parent_job_name", var);
     }
 
     if(auto var = std_os.get_env_var("build_number"); !var.empty())
     {
-        ctx.set_env("parent_job_build_number", var);
+        ctx.set_env_var("parent_job_build_number", var);
     }
 
-    ctx.set_env("job_name", job_name);
+    ctx.set_env_var("job_name", job_name);
 
-    ctx.set_env("build_number", build_handle.number_string());
+    ctx.set_env_var("build_number", build_handle.number_string());
 
     SES_LOG(actions::start_job, R"(job_name="%s")", job_name);
 
     int exit_code = -1;
 
-    build_handle.execute(ctx, force, ec, exit_code);
+    build_handle.execute(
+            ctx,
+            force,
+            ec,
+            [](bool error, const std::string& str)
+            {
+                WEBUI_LOG(error ? actions::startjob_stderr : actions::startjob_stdout, R"(%s)", str);
+            },
+            exit_code);
     if(ec)
     {
         std::cerr << ec.message() << std::endl;
@@ -197,18 +211,36 @@ int main(int argc, char* argv[])
         }
     }
 
-    std::cout << "session_id=" << session.session_id()
-              << " action=start_job"
-              << " job_name=" << job_name
-              << " build_dir=" << build_handle.number_string()
-              << " pid=" << ctx.pid()
-              << " ppid=" << ctx.ppid() << std::endl;
+    std::stringstream ss;
 
-    std::cout << "Exit code: " << exit_code << std::endl;
+    ss << "session_id=" << session.session_id()
+       << " action=start_job"
+       << " job_name=" << job_name
+       << " build_dir=" << build_handle.number_string()
+       << " pid=" << ctx.process_id()
+       << " ppid=" << ctx.parent_startjob_id();
+
+    if(session.opened_by_me())
+    {
+        WEBUI_LOG(actions::startjob_stdout, R"(%s)", ss.str());
+    }
+
+    std::cout << ss.str() << std::endl;
+
+    ss.str("");
+
+    ss << "Exit code: " << exit_code;
+
+    if(session.opened_by_me())
+    {
+        WEBUI_LOG(actions::startjob_stdout, R"(%s)", ss.str());
+    }
+
+    std::cout << ss.str() << std::endl;
 
     std_os.spawn_process(
             ctx.base_dir(),
-            std::filesystem::path{"core"} / ctx.env().at("maintenance").to_vector()[0],
+            std::filesystem::path{"core"} / ctx.get_env_var("maintenance"),
             {"--job", job_name},
             ctx.env());
 }
