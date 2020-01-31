@@ -7,6 +7,11 @@
  */
 
 #include <iostream>
+#include <vector>
+#include <string>
+#include <optional>
+
+#include <boost/program_options.hpp>
 
 #include "context.h"
 #include "session.h"
@@ -17,20 +22,111 @@
 #include "webui_session.h"
 #include "cis_version.h"
 
-void usage()
-{
-    std::cout << "Usage:" << "\n"
-              << "startjob project/job [--force]" << "\n";
-}
+namespace po = boost::program_options;
 
 int main(int argc, char* argv[])
 {
-    if(argc == 2 && strcmp(argv[1], "--version") == 0)
+    po::options_description common_desc("Common options");
+    common_desc.add_options()
+        ("help", "produce help message")
+        ("version", "print version");
+
+    po::options_description startjob_desc("Startjob options");
+    startjob_desc.add_options()
+        ("force", "try to start job even if script is not executable")
+        ("new_session", "makes new child session")
+        ("params", po::value<std::vector<std::string>>()->multitoken(), "params passed to job");
+
+    auto print_usage = [&]()
+    {
+        std::cout << "Usage: " << "\n"
+                  << common_desc << "\n"
+                  << startjob_desc << std::endl;
+    };
+
+    if(argc == 1)
+    {
+        print_usage();
+
+        return EXIT_SUCCESS;
+    }
+
+    po::variables_map vm;
+
+    try
+    {
+        po::store(po::parse_command_line(2, argv, common_desc), vm);
+    }
+    catch(...)
+    {
+        std::cout << "Invalid args" << "\n";
+
+        print_usage();
+
+        return EXIT_FAILURE;
+    }
+
+    po::notify(vm);
+
+    if(vm.count("help"))
+    {
+        print_usage();
+
+        return EXIT_SUCCESS;
+    }
+    else if(vm.count("version"))
     {
         print_version();
 
         return EXIT_SUCCESS;
     }
+
+    try
+    {
+        po::store(po::parse_command_line(argc - 1, argv + 1, startjob_desc), vm);
+    }
+    catch(...)
+    {
+        std::cout << "Invalid args" << "\n";
+
+        print_usage();
+
+        return EXIT_FAILURE;
+    }
+
+    po::notify(vm);
+
+    bool force = vm.count("force");
+
+    bool new_session = vm.count("new_session");
+
+    auto predefined_params = [&]() -> std::optional<std::map<std::string, std::string>>
+    {
+        if(vm.count("params"))
+        {
+            const auto& predefined_params_vec = vm["params"].as<std::vector<std::string>>();
+
+            std::map<std::string, std::string> params;
+
+            for(size_t i = 0; i < predefined_params_vec.size(); i += 2)
+            {
+                if(i + 1 < predefined_params_vec.size())
+                {
+                    params[predefined_params_vec[i]] = predefined_params_vec[i + 1];
+                }
+                else
+                {
+                    params[predefined_params_vec[i]] = {};
+                }
+            }
+
+            return params;
+        }
+
+        return std::nullopt;
+    }();
+
+    std::string job_name = argv[1];
 
     cis1::os std_os;
 
@@ -45,7 +141,7 @@ int main(int argc, char* argv[])
     }
     auto& ctx = ctx_opt.value();
 
-    auto session = cis1::invoke_session(ctx, std_os);
+    auto session = cis1::invoke_session(ctx, new_session, std_os);
 
     const scl::Logger::Options options
             = make_logger_options(session.session_id(), ctx, std_os);
@@ -59,23 +155,7 @@ int main(int argc, char* argv[])
 
     init_cis_log(options, ctx);
 
-    if(argc > 3 || argc < 2)
-    {
-        usage();
-
-        return 1;
-    }
-
-    if(argc == 3 && strcmp(argv[2], "--force") != 0)
-    {
-        usage();
-
-        return 1;
-    }
-
-    bool force = (argc == 3);
-
-    std::string job_name = argv[1];
+    std::cout << session.session_id() << std::endl;
 
     if(webui_session)
     {
@@ -112,7 +192,7 @@ int main(int argc, char* argv[])
     auto& job = job_opt.value();
 
     auto params = job.params();
-    if(!params.empty() && session.opened_by_me())
+    if(!params.empty() && session.opened_by_me() && !predefined_params)
     {
         for(auto& [k, v] : params)
         {
@@ -126,6 +206,17 @@ int main(int argc, char* argv[])
             if(!tmp.empty())
             {
                 v = tmp;
+            }
+        }
+    }
+    else if(predefined_params)
+    {
+        for(auto& [k, v] : params)
+        {
+            if(auto it = predefined_params->find(k);
+                    it != predefined_params->end())
+            {
+                v = it->second;
             }
         }
     }

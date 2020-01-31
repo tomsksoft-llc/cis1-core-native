@@ -65,11 +65,13 @@ private:
  * \brief Create session if possible
  * \return valid session or std::nullopt
  * @param[in, out] ctx session env vars will be set
+ * @param[in] force forces new_session creation
  * @param[out] ec
  * @param[in] os
  */
 session invoke_session(
         context_interface& ctx,
+        bool force,
         const os_interface& os);
 
 } // namespace cis1
