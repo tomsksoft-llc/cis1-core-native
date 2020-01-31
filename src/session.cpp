@@ -51,9 +51,12 @@ void session::on_close(std::function<void(session_interface&)> handler)
 
 session invoke_session(
         context_interface& ctx,
+        bool force,
         const os_interface& os)
 {
-    auto session_id = os.get_env_var("session_id");
+    auto session_id = force 
+        ? std::string{}
+        : os.get_env_var("session_id");
 
     bool session_opened_by_me = true;
 

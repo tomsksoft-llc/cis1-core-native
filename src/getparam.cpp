@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     }
     auto& ctx = ctx_opt.value();
 
-    auto session = cis1::invoke_session(ctx, std_os);
+    auto session = cis1::invoke_session(ctx, false, std_os);
 
     const scl::Logger::Options options
             = make_logger_options(session.session_id(), ctx, std_os);

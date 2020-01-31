@@ -19,6 +19,7 @@ class Cis1CoreNative(ConanFile):
         "cmake/*"]
     requires = ("gtest/1.8.1@bincrafters/stable",
                 "boost_process/1.69.0@bincrafters/stable",
+                "boost_program_options/1.69.0@bincrafters/stable",
                 "boost_filesystem/1.69.0@bincrafters/stable",
                 "boost_system/1.69.0@bincrafters/stable",
                 "boost_asio/1.69.0@bincrafters/stable",
