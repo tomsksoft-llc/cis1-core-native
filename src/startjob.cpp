@@ -180,8 +180,6 @@ int main(int argc, char* argv[])
         WEBUI_LOG(actions::startjob_stdout, R"(%s)", session.session_id());
     }
 
-    std::cout << session.session_id() << std::endl;
-
     auto job_opt = cis1::load_job(job_name, ec, ctx, std_os);
     if(ec)
     {
