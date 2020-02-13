@@ -8,6 +8,8 @@
 
 #include "get_value.h"
 
+#include "url_codec.h"
+
 namespace cis1
 {
 
@@ -39,9 +41,17 @@ std::optional<std::string> get_value(
         }
     }
 
-    if(auto it = values.find(value_name); it != values.end())
+    const auto encoded_value_name = url_encode(value_name);
+    if(auto it = values.find(encoded_value_name); it != values.end())
     {
-        return it->second;
+        std::string decoded_value;
+        if(!url_decode(it->second, decoded_value))
+        {
+            ec = cis1::error_code::cant_read_job_params_file;
+            return std::nullopt;
+        }
+
+        return decoded_value;
     }
 
     return "";

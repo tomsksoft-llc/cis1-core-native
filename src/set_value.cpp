@@ -8,6 +8,8 @@
 
 #include "set_value.h"
 
+#include "url_codec.h"
+
 namespace cis1
 {
 
@@ -48,12 +50,15 @@ void set_value(
         return;
     }
 
+    const auto encoded_value_name = url_encode(value_name);
+    const auto encoded_value = url_encode(value);
+
     bool found = false;
     for(auto& [k, v] : values)
     {
-        if(k == value_name)
+        if(k == encoded_value_name)
         {
-            v = value;
+            v = encoded_value;
             found = true;
         }
         session_dat_file->ostream() << k << '=' << v << '\n';
@@ -61,7 +66,7 @@ void set_value(
 
     if(!found)
     {
-        session_dat_file->ostream() << value_name << '=' << value << '\n';
+        session_dat_file->ostream() << encoded_value_name << '=' << encoded_value << '\n';
     }
 }
 
