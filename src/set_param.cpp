@@ -8,6 +8,8 @@
 
 #include "set_param.h"
 
+#include "url_codec.h"
+
 namespace cis1
 {
 
@@ -48,12 +50,15 @@ void set_param(
         return;
     }
 
+    const auto encoded_param_name = url_encode(param_name);
+    const auto encoded_value = url_encode(value);
+
     bool found = false;
     for(auto& [k, v] : values)
     {
-        if(k == param_name)
+        if(k == encoded_param_name)
         {
-            v = value;
+            v = encoded_value;
             found = true;
         }
         session_prm_file->ostream() << k << '=' << v << '\n';
@@ -61,7 +66,7 @@ void set_param(
 
     if(!found)
     {
-        session_prm_file->ostream() << param_name << '=' << value << '\n';
+        session_prm_file->ostream() << encoded_param_name << '=' << encoded_value << '\n';
     }
 }
 

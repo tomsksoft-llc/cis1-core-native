@@ -7,6 +7,13 @@
 #include "ifstream_mock.h"
 #include "ofstream_mock.h"
 
+#define VALUE_NAME "value name'@!#$%^&*()-_+=\\|/~{}[]`/?\"<>:,"
+#define VALUE "value '@!#$%^&*()-_+=\\|/~{}[]`/?\"<>:,"
+#define ENCODED_VALUE_NAME \
+    "value%20name%27%40%21%23%24%25%5E%26%2A%28%29-_%2B%3D%5C%7C%2F~%7B%7D%5B%5D%60%2F%3F%22%3C%3E%3A%2C"
+#define ENCODED_VALUE \
+    "value%20%27%40%21%23%24%25%5E%26%2A%28%29-_%2B%3D%5C%7C%2F~%7B%7D%5B%5D%60%2F%3F%22%3C%3E%3A%2C"
+
 TEST(set_param, correct)
 {
     using namespace ::testing;
@@ -67,10 +74,10 @@ TEST(set_param, correct)
 
     std::error_code ec;
 
-    cis1::set_param(ctx, session, "test_value", "value", ec, os);
+    cis1::set_param(ctx, session, VALUE_NAME, VALUE, ec, os);
 
     ASSERT_EQ((bool)ec, false);
-    ASSERT_STREQ(fc2.str().c_str(), "test_value=value\n");
+    ASSERT_STREQ(fc2.str().c_str(), ENCODED_VALUE_NAME "=" ENCODED_VALUE "\n");
 }
 
 TEST(set_param, no_file)
