@@ -8,7 +8,7 @@
 
 #include "set_value.h"
 
-#include "url_codec.h"
+#include <cis1_proto_utils/param_codec.h>
 
 namespace cis1
 {
@@ -50,8 +50,8 @@ void set_value(
         return;
     }
 
-    const auto encoded_value_name = url_encode(value_name);
-    const auto encoded_value = url_encode(value);
+    const auto encoded_value_name = proto_utils::encode_param(value_name);
+    const auto encoded_value = proto_utils::encode_param(value);
 
     bool found = false;
     for(auto& [k, v] : values)

@@ -8,7 +8,7 @@
 
 #include "get_value.h"
 
-#include "url_codec.h"
+#include <cis1_proto_utils/param_codec.h>
 
 namespace cis1
 {
@@ -41,11 +41,11 @@ std::optional<std::string> get_value(
         }
     }
 
-    const auto encoded_value_name = url_encode(value_name);
+    const auto encoded_value_name = proto_utils::encode_param(value_name);
     if(auto it = values.find(encoded_value_name); it != values.end())
     {
         std::string decoded_value;
-        if(!url_decode(it->second, decoded_value))
+        if(!proto_utils::decode_param(it->second, decoded_value))
         {
             ec = cis1::error_code::cant_read_job_params_file;
             return std::nullopt;

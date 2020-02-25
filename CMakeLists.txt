@@ -40,7 +40,6 @@ add_library(cis1_core STATIC
         src/utils.cpp
         src/job.cpp
         src/cis_version.cpp
-        src/url_codec.cpp
         ${POST_CONFIGURE_FILE})
 
 add_dependencies(cis1_core check_git_repository)
