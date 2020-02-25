@@ -7,12 +7,12 @@
 #include "ifstream_mock.h"
 #include "ofstream_mock.h"
 
-#define VALUE_NAME "value name'@!#$%^&*()-_+=\\|/~{}[]`/?\"<>:,"
-#define VALUE "value '@!#$%^&*()-_+=\\|/~{}[]`/?\"<>:,"
-#define ENCODED_VALUE_NAME \
-    "value%20name%27%40%21%23%24%25%5E%26%2A%28%29-_%2B%3D%5C%7C%2F~%7B%7D%5B%5D%60%2F%3F%22%3C%3E%3A%2C"
-#define ENCODED_VALUE \
-    "value%20%27%40%21%23%24%25%5E%26%2A%28%29-_%2B%3D%5C%7C%2F~%7B%7D%5B%5D%60%2F%3F%22%3C%3E%3A%2C"
+#define VALUE_NAME "origin\nvalue"
+#define VALUE R"(2 = 4 \ 2)"
+#define ENCODED_VALUE_NAME R"(origin\nvalue)"
+#define ENCODED_VALUE R"(2 \= 4 \\ 2)"
+// Unknown "\?" escaping
+#define INVALID_VALUE R"(2 \= \? 2)"
 
 TEST(set_param, correct)
 {
