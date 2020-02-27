@@ -33,6 +33,7 @@ void set_value(
 
             return;
         }
+
         read_istream_kv_str(session_dat_file->istream(), values, ec);
         if(ec)
         {

@@ -3,6 +3,51 @@
 #include "read_istream_kv_str.h"
 #include "test_utils.h"
 
+TEST(read_istream_kv_str, encoded_values)
+{
+    std::stringstream ss;
+    ss << R"(test\\\=key=test\nvalue)" << '\n';
+    ss << R"(testkey=test\=value)";
+
+    std::map<std::string, std::string> lines;
+
+    std::map<std::string, std::string> expected_lines
+    {
+            {R"(test\=key)", "test\nvalue"},
+            {"testkey", "test=value"}
+    };
+
+    std::error_code ec;
+    const auto decode = true;
+    cis1::read_istream_kv_str(ss, lines, ec, decode);
+    ASSERT_EQ((bool)ec, false);
+    ASSERT_EQ(is_maps_equal(lines, expected_lines), true);
+}
+
+TEST(read_istream_kv_str, empty_line)
+{
+    std::stringstream ss;
+    ss << R"(test\\\=key=test\nvalue)" << '\n';
+    ss << R"(test\=\=key=test value)" << "\r\n";
+    ss << '\n';
+    ss << R"(testkey\\=test\=value)";
+
+    std::map<std::string, std::string> lines;
+
+    std::map<std::string, std::string> expected_lines
+            {
+                    {R"(test\=key)", "test\nvalue"},
+                    {R"(test==key)", "test value"},
+                    {R"(testkey\)", "test=value"}
+            };
+
+    std::error_code ec;
+    const auto decode = true;
+    cis1::read_istream_kv_str(ss, lines, ec, decode);
+    ASSERT_EQ((bool)ec, false);
+    ASSERT_EQ(is_maps_equal(lines, expected_lines), true);
+}
+
 TEST(read_istream_kv_str, empty_file)
 {
     std::stringstream ss;

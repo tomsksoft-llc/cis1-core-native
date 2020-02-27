@@ -23,9 +23,9 @@ def root_job_owner_test(cis_current_build):
 def setvalue_getvalue_test(cis_current_build):
     print("Testing setvalue and getvalue...")
 
-    getsetvalue_key = "test setvalue @"
+    getsetvalue_key = "test\\=setvalue"
 
-    getsetvalue_val = "test set - ^ value";
+    getsetvalue_val = "test\\\\setvalue";
 
     r = cis_current_build.setvalue(getsetvalue_key, getsetvalue_val)
 
@@ -70,7 +70,7 @@ def startjob_with_args_test(cis_current_build):
 
     prepared_prm2 = "set to the = non empty value"
 
-    prepared_prm3 = "replace default param to FШ少:'@!#$%^&*()-_+=\\|/~{}[]`/?\"<>,"
+    prepared_prm3 = "replace default \\ param to \\= some"
 
     r = cis_current_build.setparam("prm2", prepared_prm2)
 

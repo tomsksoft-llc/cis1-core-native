@@ -35,7 +35,9 @@ std::optional<std::string> get_param(
 
             return std::nullopt;
         }
-        read_istream_kv_str(job_prm_file->istream(), values, ec);
+
+        const auto decode = true;
+        read_istream_kv_str(job_prm_file->istream(), values, ec, decode);
         if(ec)
         {
             ec = cis1::error_code::cant_read_job_params_file;
@@ -44,17 +46,9 @@ std::optional<std::string> get_param(
         }
     }
 
-    const auto encoded_value_name = proto_utils::encode_param(value_name);
-    if(auto it = values.find(encoded_value_name); it != values.end())
+    if(auto it = values.find(value_name); it != values.end())
     {
-        std::string decoded_value;
-        if(!proto_utils::decode_param(it->second, decoded_value))
-        {
-            ec = cis1::error_code::cant_read_job_params_file;
-            return std::nullopt;
-        }
-
-        return decoded_value;
+        return it->second;
     }
 
     return "";
