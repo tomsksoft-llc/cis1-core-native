@@ -32,7 +32,9 @@ std::optional<std::string> get_value(
 
             return std::nullopt;
         }
-        read_istream_kv_str(session_dat_file->istream(), values, ec);
+
+        const auto decode = true;
+        read_istream_kv_str(session_dat_file->istream(), values, ec, decode);
         if(ec)
         {
             ec = cis1::error_code::cant_read_session_values_file;
@@ -41,17 +43,9 @@ std::optional<std::string> get_value(
         }
     }
 
-    const auto encoded_value_name = proto_utils::encode_param(value_name);
-    if(auto it = values.find(encoded_value_name); it != values.end())
+    if(auto it = values.find(value_name); it != values.end())
     {
-        std::string decoded_value;
-        if(!proto_utils::decode_param(it->second, decoded_value))
-        {
-            ec = cis1::error_code::cant_read_job_params_file;
-            return std::nullopt;
-        }
-
-        return decoded_value;
+        return it->second;
     }
 
     return "";

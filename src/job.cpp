@@ -10,6 +10,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <cis1_proto_utils/param_codec.h>
 
 #include "utils.h"
 #include "read_istream_kv_str.h"
@@ -274,9 +275,12 @@ job::build_handle job::prepare_build(
         return {*this, std::nullopt};
     }
 
-    for(auto& [k, v] : params)
+    for(auto&[k, v] : params)
     {
-        os->ostream() << k << "=" << v << "\n";
+        os->ostream() << proto_utils::encode_param(k)
+                      << "="
+                      << proto_utils::encode_param(v)
+                      << "\n";
     }
 
     os_.copy(
@@ -367,10 +371,8 @@ std::optional<job> load_job(
     std::vector<std::pair<std::string, std::string>> job_params;
     if(is && is->is_open())
     {
-        read_istream_ordered_kv_str(
-                is->istream(),
-                job_params,
-                ec);
+        const auto decode = true;
+        read_istream_ordered_kv_str(is->istream(), job_params, ec, decode);
 
         if(ec)
         {
@@ -460,7 +462,9 @@ void prepare_params(
 
             return;
         }
-        read_istream_kv_str(session_prm_file->istream(), values, ec);
+
+        const auto decode = true;
+        read_istream_kv_str(session_prm_file->istream(), values, ec, decode);
         if(ec)
         {
             ec = cis1::error_code::cant_read_session_values_file;

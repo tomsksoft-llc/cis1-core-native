@@ -12,6 +12,7 @@
 #include <optional>
 
 #include <boost/program_options.hpp>
+#include <cis1_proto_utils/param_codec.h>
 
 #include "context.h"
 #include "session.h"
@@ -23,6 +24,8 @@
 #include "cis_version.h"
 
 namespace po = boost::program_options;
+
+std::optional<std::map<std::string, std::string>> prepared_params(po::variables_map& vm);
 
 int main(int argc, char* argv[])
 {
@@ -100,31 +103,7 @@ int main(int argc, char* argv[])
 
     bool new_session = vm.count("new_session");
 
-    auto predefined_params = [&]() -> std::optional<std::map<std::string, std::string>>
-    {
-        if(vm.count("params"))
-        {
-            const auto& predefined_params_vec = vm["params"].as<std::vector<std::string>>();
-
-            std::map<std::string, std::string> params;
-
-            for(size_t i = 0; i < predefined_params_vec.size(); i += 2)
-            {
-                if(i + 1 < predefined_params_vec.size())
-                {
-                    params[predefined_params_vec[i]] = predefined_params_vec[i + 1];
-                }
-                else
-                {
-                    params[predefined_params_vec[i]] = {};
-                }
-            }
-
-            return params;
-        }
-
-        return std::nullopt;
-    }();
+    auto predefined_params = prepared_params(vm);
 
     std::string job_name = argv[1];
 
@@ -203,7 +182,14 @@ int main(int argc, char* argv[])
 
             if(!tmp.empty())
             {
-                v = tmp;
+                std::string decoded_value;
+                if(!cis1::proto_utils::decode_param(tmp, decoded_value))
+                {
+                    std::cout << "Invalid params" << "\n";
+                    return EXIT_FAILURE;
+                }
+
+                v = decoded_value;
             }
         }
     }
@@ -332,4 +318,47 @@ int main(int argc, char* argv[])
             std::filesystem::path{"core"} / ctx.get_env_var("maintenance"),
             {"--job", job_name},
             ctx.env());
+}
+
+std::optional<std::map<std::string, std::string>> prepared_params(po::variables_map& vm)
+{
+    if(!vm.count("params"))
+    {
+        return std::nullopt;
+    }
+
+    const auto& predefined_params_vec = vm["params"].as<std::vector<std::string>>();
+
+    std::map<std::string, std::string> params;
+
+    for(size_t i = 0; i < predefined_params_vec.size(); i += 2)
+    {
+        const auto& param = predefined_params_vec[i];
+
+        std::string decoded_param;
+        if(!cis1::proto_utils::decode_param(param, decoded_param))
+        {
+            std::cout << "Invalid params" << "\n";
+            continue;
+        }
+
+        if(i + 1 < predefined_params_vec.size())
+        {
+            const auto& param_value = predefined_params_vec[i + 1];
+            std::string decoded_param_value;
+            if(!cis1::proto_utils::decode_param(param_value, decoded_param_value))
+            {
+                std::cout << "Invalid params" << "\n";
+                continue;
+            }
+
+            params[decoded_param] = decoded_param_value;
+        }
+        else
+        {
+            params[decoded_param] = {};
+        }
+    }
+
+    return params;
 }
