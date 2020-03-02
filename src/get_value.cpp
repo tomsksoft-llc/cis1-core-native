@@ -34,7 +34,7 @@ std::optional<std::string> get_value(
         }
 
         const auto decode = true;
-        read_istream_kv_str(session_dat_file->istream(), values, ec, decode);
+        proto_utils::read_istream_kv_str(session_dat_file->istream(), values, ec, decode);
         if(ec)
         {
             ec = cis1::error_code::cant_read_session_values_file;

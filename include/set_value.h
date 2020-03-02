@@ -8,8 +8,8 @@
 
 #pragma once
 
+#include <cis1_proto_utils/read_istream_kv_str.h>
 #include "error_code.h"
-#include "read_istream_kv_str.h"
 #include "context_interface.h"
 #include "session_interface.h"
 #include "os_interface.h"
