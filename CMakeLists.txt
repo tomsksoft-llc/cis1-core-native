@@ -25,7 +25,6 @@ add_library(cis1_core STATIC
         src/context.cpp
         src/session.cpp
         src/os.cpp
-        src/read_istream_kv_str.cpp
         src/ifstream_adapter.cpp
         src/ofstream_adapter.cpp
         src/fs_entry_adapter.cpp

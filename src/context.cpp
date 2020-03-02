@@ -12,8 +12,8 @@
 #include <string>
 #include <memory>
 
+#include <cis1_proto_utils/read_istream_kv_str.h>
 #include "error_code.h"
-#include "read_istream_kv_str.h"
 #include "get_parent_id.h"
 #include "utils.h"
 
@@ -111,7 +111,7 @@ std::optional<context> init_context(
     }
 
     std::map<std::string, std::string> executables;
-    read_istream_kv_str(
+    proto_utils::read_istream_kv_str(
             is->istream(),
             executables,
             ec);

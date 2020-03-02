@@ -37,7 +37,7 @@ std::optional<std::string> get_param(
         }
 
         const auto decode = true;
-        read_istream_kv_str(job_prm_file->istream(), values, ec, decode);
+        proto_utils::read_istream_kv_str(job_prm_file->istream(), values, ec, decode);
         if(ec)
         {
             ec = cis1::error_code::cant_read_job_params_file;

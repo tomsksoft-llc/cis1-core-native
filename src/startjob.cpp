@@ -322,43 +322,26 @@ int main(int argc, char* argv[])
 
 std::optional<std::map<std::string, std::string>> prepared_params(po::variables_map& vm)
 {
-    if(!vm.count("params"))
+    if(vm.count("params"))
     {
-        return std::nullopt;
-    }
+        const auto& predefined_params_vec = vm["params"].as<std::vector<std::string>>();
 
-    const auto& predefined_params_vec = vm["params"].as<std::vector<std::string>>();
+        std::map<std::string, std::string> params;
 
-    std::map<std::string, std::string> params;
-
-    for(size_t i = 0; i < predefined_params_vec.size(); i += 2)
-    {
-        const auto& param = predefined_params_vec[i];
-
-        std::string decoded_param;
-        if(!cis1::proto_utils::decode_param(param, decoded_param))
+        for(size_t i = 0; i < predefined_params_vec.size(); i += 2)
         {
-            std::cout << "Invalid params" << "\n";
-            continue;
-        }
-
-        if(i + 1 < predefined_params_vec.size())
-        {
-            const auto& param_value = predefined_params_vec[i + 1];
-            std::string decoded_param_value;
-            if(!cis1::proto_utils::decode_param(param_value, decoded_param_value))
+            if(i + 1 < predefined_params_vec.size())
             {
-                std::cout << "Invalid params" << "\n";
-                continue;
+                params[predefined_params_vec[i]] = predefined_params_vec[i + 1];
             }
+            else
+            {
+                params[predefined_params_vec[i]] = {};
+            }
+        }
 
-            params[decoded_param] = decoded_param_value;
-        }
-        else
-        {
-            params[decoded_param] = {};
-        }
+        return params;
     }
 
-    return params;
+    return std::nullopt;
 }

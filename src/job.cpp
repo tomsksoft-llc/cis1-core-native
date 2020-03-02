@@ -12,8 +12,8 @@
 #include <iomanip>
 #include <cis1_proto_utils/param_codec.h>
 
+#include <cis1_proto_utils/read_istream_kv_str.h>
 #include "utils.h"
-#include "read_istream_kv_str.h"
 #include "error_code.h"
 
 namespace cis1
@@ -335,7 +335,7 @@ std::optional<job> load_job(
 
     std::map<std::string, std::string> conf;
 
-    cis1::read_istream_kv_str(job_conf->istream(), conf, ec);
+    cis1::proto_utils::read_istream_kv_str(job_conf->istream(), conf, ec);
 
     if(ec
     || conf.count("script") != 1
@@ -372,7 +372,7 @@ std::optional<job> load_job(
     if(is && is->is_open())
     {
         const auto decode = true;
-        read_istream_ordered_kv_str(is->istream(), job_params, ec, decode);
+        proto_utils::read_istream_ordered_kv_str(is->istream(), job_params, ec, decode);
 
         if(ec)
         {
@@ -464,7 +464,7 @@ void prepare_params(
         }
 
         const auto decode = true;
-        read_istream_kv_str(session_prm_file->istream(), values, ec, decode);
+        proto_utils::read_istream_kv_str(session_prm_file->istream(), values, ec, decode);
         if(ec)
         {
             ec = cis1::error_code::cant_read_session_values_file;
