@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
 
     auto session = cis1::invoke_session(ctx, new_session, std_os);
 
-    const scl::Logger::Options options
+    const CoreLogger::Options options
             = make_logger_options(session.session_id(), ctx, std_os);
 
     auto webui_session = init_webui_session(ctx);

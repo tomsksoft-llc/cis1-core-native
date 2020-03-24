@@ -8,9 +8,6 @@
 
 #pragma once
 
-// the longest action name is startjob_stdout
-const std::size_t max_action_name_length = 15;
-
 enum class actions
 {
     error,
