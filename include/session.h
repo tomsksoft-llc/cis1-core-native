@@ -66,7 +66,6 @@ private:
  * \return valid session or std::nullopt
  * @param[in, out] ctx session env vars will be set
  * @param[in] force forces new_session creation
- * @param[out] ec
  * @param[in] os
  */
 session invoke_session(

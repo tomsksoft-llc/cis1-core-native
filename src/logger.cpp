@@ -12,24 +12,21 @@
 
 #include <scl/recorder.h>
 #include <scl/file_recorder.h>
+#include <cis1_core_logger/core_record.h>
 #include <cis1_cwu_protocol/protocol.h>
 #include <tpl_helpers/overloaded.h>
 
-scl::LoggerPtr cis_logger;
-scl::LoggerPtr session_logger;
-scl::LoggerPtr webui_logger;
-scl::LoggerPtr offline_webui_logger;
+using CoreRecord = cis1::core_logger::CoreRecord;
+using RecordersCont = scl::RecordersCont<CoreRecord>;
+using FileRecorder = scl::FileRecorder<CoreRecord>;
+using FileRecorderPtr = scl::FileRecorderPtr<CoreRecord>;
 
-// session_id is a string in the %Y-%m-%d-%H-%M-%S-pid_ppid format, where:
-// %Y-%m-%d-%H-%M-%S contains time_length_k
-// - is 1 char
-// pid contains pid_length_k
-// _ is 1 char
-// ppid contains pid_length_k
-const std::size_t session_id_length
-        = scl::detail::log_formatting::time_length_k + 2 * scl::detail::log_formatting::pid_length_k + 2;
+LoggerPtr cis_logger;
+LoggerPtr session_logger;
+LoggerPtr webui_logger;
+LoggerPtr offline_webui_logger;
 
-class webui_recorder : public scl::IRecorder
+class webui_recorder : public scl::IRecorder<CoreRecord>
 {
 public:
     explicit webui_recorder(std::shared_ptr<webui_session> session)
@@ -40,7 +37,7 @@ public:
 
     ~webui_recorder() final = default;
 
-    void OnRecord(const scl::RecordInfo& record) final
+    void OnRecord(const CoreRecord& record) final
     {
         cis1::cwu::log_entry dto{};
 
@@ -70,12 +67,12 @@ private:
 };
 
 
-scl::Logger::Options make_logger_options(
+CoreLogger::Options make_logger_options(
         const std::optional<std::string>& session_id,
         const cis1::context_interface& ctx,
         const cis1::os& std_os)
 {
-    scl::Logger::Options options;
+    CoreLogger::Options options;
     // TODO set the value from env var
     options.level = scl::Level::Debug;
     options.parent_pid = static_cast<scl::ProcessId>(ctx.parent_startjob_id());
@@ -131,14 +128,14 @@ void webui_log(actions act, const std::string& message)
 
 void tee_log(actions act, const std::string& message)
 {
-    if (cis_logger)
+    if(cis_logger)
     {
         // TODO add a level param
         // now put the lowest level
         cis_logger->SesActRecord(scl::Level::Action, act, message);
     }
 
-    if (session_logger)
+    if(session_logger)
     {
         // TODO add a level param
         // now put the lowest level
@@ -149,26 +146,26 @@ void tee_log(actions act, const std::string& message)
 }
 
 void init_webui_log(
-        const scl::Logger::Options& options,
+        const CoreLogger::Options& options,
         const std::shared_ptr<webui_session>& session)
 {
     auto recorder = std::make_unique<webui_recorder>(session);
-    scl::RecordersCont recorders;
+    RecordersCont recorders;
     recorders.push_back(std::move(recorder));
 
     webui_logger = std::visit(
             meta::overloaded{
-                    [](scl::LoggerPtr&& val)
+                    [](LoggerPtr&& val)
                     { return std::move(val); },
                     [](const auto&)
-                    { /*return an empty unique_ptr*/ return scl::LoggerPtr{}; }
+                    { /*return an empty unique_ptr*/ return LoggerPtr{}; }
             },
-            scl::Logger::Init(options, std::move(recorders))
+            CoreLogger::Init(options, std::move(recorders))
     );
 }
 
 void init_cis_log(
-        const scl::Logger::Options& options,
+        const CoreLogger::Options& options,
         const cis1::context_interface& ctx)
 {
     const auto on_error
@@ -178,48 +175,43 @@ void init_cis_log(
                 exit(1);
             };
 
-    scl::FileRecorder::Options recorder_options;
+    // TODO set the recorder_options.size_limit
+    FileRecorder::Options recorder_options;
     recorder_options.log_directory = ctx.base_dir() / "logs";
     recorder_options.file_name_template = "cis.%n.log";
 
-    // TODO set the recorder_options.size_limit
-    recorder_options.align_info
-            = scl::AlignInfo{
-                max_action_name_length,
-                session_id_length
-            };
     auto recorder = std::visit(
             meta::overloaded{
-                    [](scl::FileRecorderPtr&& val)
+                    [](FileRecorderPtr&& val)
                     { return std::move(val); },
                     [&on_error](const auto& error)
                     {
-                        on_error(scl::FileRecorder::ToStr(error));
-                        return scl::FileRecorderPtr{};
+                        on_error(FileRecorder::ToStr(error));
+                        return FileRecorderPtr{};
                     }
             },
-            scl::FileRecorder::Init(recorder_options)
+            FileRecorder::Init(recorder_options)
     );
 
-    scl::RecordersCont recorders;
+    RecordersCont recorders;
     recorders.push_back(std::move(recorder));
 
     cis_logger = std::visit(
             meta::overloaded{
-                    [](scl::LoggerPtr&& val)
+                    [](LoggerPtr&& val)
                     { return std::move(val); },
                     [&on_error](const auto& error)
                     {
-                        on_error(scl::Logger::ToStr(error));
-                        return scl::LoggerPtr{};
+                        on_error(CoreLogger::ToStr(error));
+                        return LoggerPtr{};
                     },
             },
-            scl::Logger::Init(options, std::move(recorders))
+            CoreLogger::Init(options, std::move(recorders))
     );
 }
 
 void init_offline_webui_log(
-        const scl::Logger::Options& options,
+        const CoreLogger::Options& options,
         const cis1::context_interface& ctx,
         const cis1::session_interface& session)
 {
@@ -230,44 +222,43 @@ void init_offline_webui_log(
                 exit(1);
             };
 
-    scl::FileRecorder::Options recorder_options;
+    // TODO set the recorder_options.size_limit
+    FileRecorder::Options recorder_options;
     recorder_options.log_directory = ctx.base_dir() / "sessions";
     recorder_options.file_name_template = session.session_id() + ".combined.log";
 
-    // TODO set the recorder_options.size_limit
-    recorder_options.align_info = scl::AlignInfo{max_action_name_length};
     auto recorder = std::visit(
             meta::overloaded{
-                    [](scl::FileRecorderPtr&& val)
+                    [](FileRecorderPtr&& val)
                     { return std::move(val); },
                     [&on_error](const auto& error)
                     {
-                        on_error(scl::FileRecorder::ToStr(error));
-                        return scl::FileRecorderPtr{};
+                        on_error(FileRecorder::ToStr(error));
+                        return FileRecorderPtr{};
                     }
             },
-            scl::FileRecorder::Init(recorder_options)
+            FileRecorder::Init(recorder_options)
     );
 
-    scl::RecordersCont recorders;
+    RecordersCont recorders;
     recorders.push_back(std::move(recorder));
 
     offline_webui_logger = std::visit(
             meta::overloaded{
-                    [](scl::LoggerPtr&& val)
+                    [](LoggerPtr&& val)
                     { return std::move(val); },
                     [&on_error](const auto& error)
                     {
-                        on_error(scl::Logger::ToStr(error));
-                        return scl::LoggerPtr{};
+                        on_error(CoreLogger::ToStr(error));
+                        return LoggerPtr{};
                     }
             },
-            scl::Logger::Init(options, std::move(recorders))
+            CoreLogger::Init(options, std::move(recorders))
     );
 }
 
 void init_session_log(
-        const scl::Logger::Options& options,
+        const CoreLogger::Options& options,
         const cis1::context_interface& ctx,
         const cis1::session_interface& session)
 {
@@ -278,39 +269,38 @@ void init_session_log(
                 exit(1);
             };
 
-    scl::FileRecorder::Options recorder_options;
+    // TODO set the recorder_options.size_limit
+    FileRecorder::Options recorder_options;
     recorder_options.log_directory = ctx.base_dir() / "sessions";
     recorder_options.file_name_template = session.session_id() + ".%n.log";
 
-    // TODO set the recorder_options.size_limit
-    recorder_options.align_info = scl::AlignInfo{max_action_name_length};
     auto recorder = std::visit(
             meta::overloaded{
-                    [](scl::FileRecorderPtr&& val)
+                    [](FileRecorderPtr&& val)
                     { return std::move(val); },
                     [&on_error](const auto& error)
                     {
-                        on_error(scl::FileRecorder::ToStr(error));
-                        return scl::FileRecorderPtr{};
+                        on_error(FileRecorder::ToStr(error));
+                        return FileRecorderPtr{};
                     }
             },
-            scl::FileRecorder::Init(recorder_options)
+            FileRecorder::Init(recorder_options)
     );
 
-    scl::RecordersCont recorders;
+    RecordersCont recorders;
     recorders.push_back(std::move(recorder));
 
     session_logger = std::visit(
             meta::overloaded{
-                    [](scl::LoggerPtr&& val)
+                    [](LoggerPtr&& val)
                     { return std::move(val); },
                     [&on_error](const auto& error)
                     {
-                        on_error(scl::Logger::ToStr(error));
-                        return scl::LoggerPtr{};
+                        on_error(CoreLogger::ToStr(error));
+                        return LoggerPtr{};
                     }
             },
-            scl::Logger::Init(options, std::move(recorders))
+            CoreLogger::Init(options, std::move(recorders))
     );
 
     init_offline_webui_log(options, ctx, session);

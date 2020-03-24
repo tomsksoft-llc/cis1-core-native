@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <scl/logger.h>
 #include <scf/scf.h>
+#include <cis1_core_logger/core_logger.h>
 
 #include "webui_session.h"
 #include "context_interface.h"
@@ -23,12 +23,16 @@
 #define WEBUI_LOG(action, format, ...) webui_log(action, SCFormat(format, ##__VA_ARGS__))
 #define TEE_LOG(action, format, ...) tee_log(action, SCFormat(format, ##__VA_ARGS__))
 
+using LoggerPtr = cis1::core_logger::LoggerPtr;
+using CoreLogger = cis1::core_logger::CoreLogger;
+
 /**
  * \brief Make Logger options by cis context and os
- * @param[in] options
- * @param[in] session
+ * @param[in] session_id
+ * @param[in] ctx
+ * @param[in] std_os
  */
-scl::Logger::Options make_logger_options(
+CoreLogger::Options make_logger_options(
         const std::optional<std::string>& session_id,
         const cis1::context_interface& ctx,
         const cis1::os& std_os);
@@ -39,7 +43,7 @@ scl::Logger::Options make_logger_options(
  * @param[in] session
  */
 void init_webui_log(
-        const scl::Logger::Options& options,
+        const CoreLogger::Options& options,
         const std::shared_ptr<webui_session>& session);
 
 /**
@@ -48,7 +52,7 @@ void init_webui_log(
  * @param[in] ctx
  */
 void init_cis_log(
-        const scl::Logger::Options& options,
+        const CoreLogger::Options& options,
         const cis1::context_interface& ctx);
 
 /**
@@ -58,7 +62,7 @@ void init_cis_log(
  * @param[in] session
  */
 void init_session_log(
-        const scl::Logger::Options& options,
+        const CoreLogger::Options& options,
         const cis1::context_interface& ctx,
         const cis1::session_interface& session);
 
@@ -93,6 +97,6 @@ void webui_log(actions act, const std::string& message);
  */
 void tee_log(actions act, const std::string& message);
 
-extern scl::LoggerPtr cis_logger;
-extern scl::LoggerPtr session_logger;
-extern scl::LoggerPtr webui_logger;
+extern LoggerPtr cis_logger;
+extern LoggerPtr session_logger;
+extern LoggerPtr webui_logger;

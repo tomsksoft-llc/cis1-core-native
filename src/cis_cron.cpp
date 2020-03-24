@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 
     // session id is not specified here
     const auto session_id = std::nullopt;
-    const scl::Logger::Options options
+    const CoreLogger::Options options
             = make_logger_options(session_id, ctx, std_os);
 
     init_cis_log(options, ctx);
