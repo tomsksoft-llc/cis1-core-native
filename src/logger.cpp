@@ -179,6 +179,7 @@ void init_cis_log(
     FileRecorder::Options recorder_options;
     recorder_options.log_directory = ctx.base_dir() / "logs";
     recorder_options.file_name_template = "cis.%n.log";
+    recorder_options.align = true;
 
     auto recorder = std::visit(
             meta::overloaded{
@@ -226,6 +227,7 @@ void init_offline_webui_log(
     FileRecorder::Options recorder_options;
     recorder_options.log_directory = ctx.base_dir() / "sessions";
     recorder_options.file_name_template = session.session_id() + ".combined.log";
+    recorder_options.align = true;
 
     auto recorder = std::visit(
             meta::overloaded{
@@ -273,6 +275,7 @@ void init_session_log(
     FileRecorder::Options recorder_options;
     recorder_options.log_directory = ctx.base_dir() / "sessions";
     recorder_options.file_name_template = session.session_id() + ".%n.log";
+    recorder_options.align = true;
 
     auto recorder = std::visit(
             meta::overloaded{
