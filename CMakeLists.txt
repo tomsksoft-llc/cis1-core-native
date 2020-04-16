@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 find_package(Filesystem REQUIRED Final)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+conan_basic_setup(TARGETS)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
@@ -41,6 +41,22 @@ add_library(cis1_core STATIC
         src/cis_version.cpp
         ${POST_CONFIGURE_FILE})
 
+target_link_libraries(
+    cis1_core
+    CONAN_PKG::gtest
+    CONAN_PKG::boost_process
+    CONAN_PKG::boost_program_options
+    CONAN_PKG::boost_filesystem
+    CONAN_PKG::boost_system
+    CONAN_PKG::boost_asio
+    CONAN_PKG::boost_iostreams
+    CONAN_PKG::boost_interprocess
+    CONAN_PKG::cis1_cwu_transport
+    CONAN_PKG::cis1_cwu_protocol
+    CONAN_PKG::cis1_proto_utils
+    CONAN_PKG::sc_logger
+    CONAN_PKG::croncpp)
+
 add_dependencies(cis1_core check_git_repository)
 
 add_executable(startjob src/startjob.cpp)
@@ -52,14 +68,14 @@ add_executable(cis_cron src/cis_cron.cpp)
 add_executable(cis_cron_daemon src/cis_cron_daemon.cpp)
 add_executable(maintenance src/maintenance.cpp)
 
-target_link_libraries(startjob cis1_core ${CONAN_LIBS} std::filesystem)
-target_link_libraries(getparam cis1_core ${CONAN_LIBS} std::filesystem)
-target_link_libraries(setparam cis1_core ${CONAN_LIBS} std::filesystem)
-target_link_libraries(getvalue cis1_core ${CONAN_LIBS} std::filesystem)
-target_link_libraries(setvalue cis1_core ${CONAN_LIBS} std::filesystem)
-target_link_libraries(cis_cron cis1_core ${CONAN_LIBS} std::filesystem)
-target_link_libraries(cis_cron_daemon cis1_core ${CONAN_LIBS} std::filesystem)
-target_link_libraries(maintenance cis1_core ${CONAN_LIBS} std::filesystem)
+target_link_libraries(startjob cis1_core)
+target_link_libraries(getparam cis1_core)
+target_link_libraries(setparam cis1_core)
+target_link_libraries(getvalue cis1_core)
+target_link_libraries(setvalue cis1_core)
+target_link_libraries(cis_cron cis1_core)
+target_link_libraries(cis_cron_daemon cis1_core)
+target_link_libraries(maintenance cis1_core)
 
 set_property(TARGET cis1_core PROPERTY CXX_STANDARD 17)
 set_property(TARGET startjob PROPERTY CXX_STANDARD 17)

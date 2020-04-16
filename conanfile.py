@@ -28,7 +28,7 @@ class Cis1CoreNative(ConanFile):
                 "cis1_cwu_transport/0.0.5@tomsksoft/cis1",
                 "cis1_cwu_protocol/0.0.5@tomsksoft/cis1",
                 "cis1_proto_utils/0.0.7@tomsksoft/cis1",
-                "sc_logger/1.0.2@tomsksoft/cis1",
+                "sc_logger/1.0.3@tomsksoft/cis1",
                 "croncpp/1.0@tomsksoft/cis1")
 
     def build(self):
